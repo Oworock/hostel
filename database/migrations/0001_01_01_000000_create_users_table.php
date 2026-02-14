@@ -17,6 +17,14 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['student', 'manager', 'admin'])->default('student');
+            $table->string('phone')->nullable();
+            $table->string('id_number')->nullable()->unique();
+            $table->text('address')->nullable();
+            $table->string('guardian_name')->nullable();
+            $table->string('guardian_phone')->nullable();
+            $table->foreignId('hostel_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });
