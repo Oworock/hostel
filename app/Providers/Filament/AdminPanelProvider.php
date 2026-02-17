@@ -10,7 +10,6 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -21,9 +20,7 @@ use App\Filament\Pages\UserProfile;
 use App\Filament\Pages\SendSMS;
 use App\Filament\Pages\SendEmail;
 use App\Filament\Pages\SystemSettings;
-use App\Filament\Pages\StudentSettings;
-use App\Filament\Pages\ManagerSettings;
-use App\Filament\Pages\StudentBookingHistory;
+use App\Http\Middleware\AdminMiddleware;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -41,22 +38,16 @@ class AdminPanelProvider extends PanelProvider
             ->resources([
                 // Add explicit resources here and remove ones that conflict with pages
             ])
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            // Keep explicit pages to avoid duplicates from legacy pages.
             ->pages([
                 Pages\Dashboard::class,
                 UserProfile::class,
-                StudentSettings::class,
-                ManagerSettings::class,
                 SendSMS::class,
                 SendEmail::class,
                 SystemSettings::class,
-                StudentBookingHistory::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
-            ])
+            ->widgets([])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -70,6 +61,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                AdminMiddleware::class,
             ]);
     }
 }

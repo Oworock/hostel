@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
 use App\Models\Booking;
+use App\Services\OutboundWebhookService;
 use Illuminate\Http\Request;
 
 class ComplaintController extends Controller
@@ -29,7 +30,14 @@ class ComplaintController extends Controller
         $validated['user_id'] = auth()->id();
         $validated['status'] = 'open';
 
-        Complaint::create($validated);
+        $complaint = Complaint::create($validated);
+        app(OutboundWebhookService::class)->dispatch('complaint.created', [
+            'complaint_id' => $complaint->id,
+            'student_id' => $complaint->user_id,
+            'booking_id' => $complaint->booking_id,
+            'status' => $complaint->status,
+            'subject' => $complaint->subject,
+        ]);
 
         return redirect()->route('student.complaints.index')->with('success', 'Complaint filed successfully');
     }

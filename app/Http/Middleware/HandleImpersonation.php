@@ -9,11 +9,9 @@ class HandleImpersonation
 {
     public function handle(Request $request, Closure $next)
     {
-        if (session('impersonated_user_id') && auth()->user()?->role === 'admin') {
-            $user = \App\Models\User::find(session('impersonated_user_id'));
-            if ($user) {
-                auth()->setUser($user);
-            }
+        // Legacy cleanup for older impersonation implementation.
+        if (session()->has('impersonated_user_id')) {
+            session()->forget('impersonated_user_id');
         }
 
         return $next($request);

@@ -100,15 +100,54 @@ class SendSMS extends Page
         }
 
         $recipients = $this->getRecipients($data['recipient_type'], $data);
+        $method = strtoupper($settings['sms_http_method'] ?? 'POST');
+        $headers = is_array($settings['sms_custom_headers'] ?? null) ? $settings['sms_custom_headers'] : [];
+        $payloadTemplate = is_array($settings['sms_payload_template'] ?? null) ? $settings['sms_payload_template'] : [];
 
         foreach ($recipients as $phone) {
-            Http::post($settings['sms_url'], [
+            $sender = $settings['sms_sender_id'] ?? 'Hostel App';
+            $payload = $this->buildSmsPayload($payloadTemplate, [
                 'phone' => $phone,
+                'to' => $phone,
                 'message' => $data['message'],
-                'sender_id' => $settings['sms_sender_id'] ?? 'Hostel App',
+                'sender_id' => $sender,
+                'from' => $sender,
                 'api_key' => $settings['sms_api_key'] ?? '',
             ]);
+
+            $request = Http::withHeaders(array_filter($headers, fn ($value) => $value !== null && $value !== ''));
+
+            $response = $method === 'GET'
+                ? $request->get($settings['sms_url'], $payload)
+                : $request->post($settings['sms_url'], $payload);
+
+            if (!$response->successful()) {
+                throw new \Exception('SMS provider returned error: ' . $response->body());
+            }
         }
+    }
+
+    protected function buildSmsPayload(array $template, array $replacements): array
+    {
+        if (empty($template)) {
+            return [
+                'to' => $replacements['phone'],
+                'message' => $replacements['message'],
+                'sender_id' => $replacements['sender_id'],
+                'api_key' => $replacements['api_key'],
+            ];
+        }
+
+        $payload = [];
+        foreach ($template as $key => $value) {
+            $resolved = (string) $value;
+            foreach ($replacements as $placeholder => $replacement) {
+                $resolved = str_replace('{' . $placeholder . '}', (string) $replacement, $resolved);
+            }
+            $payload[$key] = $resolved;
+        }
+
+        return $payload;
     }
 
     protected function getRecipients(string $type, array $data): array
@@ -143,6 +182,6 @@ class SendSMS extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->role === 'admin' || auth()->user()?->role === 'manager';
+        return auth()->user()?->role === 'admin';
     }
 }

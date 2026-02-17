@@ -4,8 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PaymentResource\Pages;
 use App\Filament\Resources\PaymentResource\RelationManagers;
+use App\Models\Booking;
 use App\Models\Payment;
 use Filament\Forms;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -27,12 +29,36 @@ class PaymentResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Payment Information')
                     ->schema([
-                        Forms\Components\Select::make('booking_id')
-                            ->relationship('booking', 'id')
+                        Forms\Components\Select::make('user_id')
+                            ->relationship('user', 'name')
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->label('Booking'),
+                            ->live()
+                            ->afterStateUpdated(fn (Forms\Set $set) => $set('booking_id', null))
+                            ->label('Student'),
+
+                        Forms\Components\Select::make('booking_id')
+                            ->options(function (Get $get) {
+                                $userId = $get('user_id');
+                                if (!$userId) {
+                                    return [];
+                                }
+
+                                return Booking::where('user_id', $userId)
+                                    ->with('room')
+                                    ->latest()
+                                    ->get()
+                                    ->mapWithKeys(fn (Booking $booking) => [
+                                        $booking->id => 'Booking #' . $booking->id . ' - Room ' . ($booking->room->room_number ?? 'N/A'),
+                                    ])
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->preload(false)
+                            ->required()
+                            ->label('Booking')
+                            ->helperText('Select student first, then choose one of their bookings.'),
                         
                         Forms\Components\TextInput::make('amount')
                             ->numeric()
@@ -46,6 +72,7 @@ class PaymentResource extends Resource
                                 'card' => 'Credit/Debit Card',
                                 'cash' => 'Cash',
                                 'check' => 'Check',
+                                'manual_admin' => 'Manual (Admin)',
                             ])
                             ->required(),
                         
@@ -56,8 +83,9 @@ class PaymentResource extends Resource
                         Forms\Components\Select::make('status')
                             ->options([
                                 'pending' => 'Pending',
-                                'completed' => 'Completed',
+                                'paid' => 'Paid',
                                 'failed' => 'Failed',
+                                'refunded' => 'Refunded',
                             ])
                             ->default('pending')
                             ->required(),
@@ -97,8 +125,10 @@ class PaymentResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
-                        'completed' => 'success',
+                        'paid' => 'success',
                         'failed' => 'danger',
+                        'refunded' => 'gray',
+                        default => 'gray',
                     }),
                 
                 Tables\Columns\TextColumn::make('payment_date')
@@ -109,8 +139,9 @@ class PaymentResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
                         'pending' => 'Pending',
-                        'completed' => 'Completed',
+                        'paid' => 'Paid',
                         'failed' => 'Failed',
+                        'refunded' => 'Refunded',
                     ]),
                 
                 Tables\Filters\SelectFilter::make('payment_method')
@@ -119,6 +150,7 @@ class PaymentResource extends Resource
                         'card' => 'Credit/Debit Card',
                         'cash' => 'Cash',
                         'check' => 'Check',
+                        'manual_admin' => 'Manual (Admin)',
                     ]),
             ])
             ->actions([

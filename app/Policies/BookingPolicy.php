@@ -14,7 +14,7 @@ class BookingPolicy
         }
 
         if ($user->isManager()) {
-            return $booking->room->hostel_id === $user->hostel_id;
+            return $user->managedHostelIds()->contains($booking->room->hostel_id);
         }
 
         if ($user->isStudent()) {
@@ -31,7 +31,11 @@ class BookingPolicy
         }
 
         if ($user->isManager()) {
-            return $booking->room->hostel_id === $user->hostel_id;
+            return $user->managedHostelIds()->contains($booking->room->hostel_id);
+        }
+
+        if ($user->isStudent()) {
+            return $booking->user_id === $user->id;
         }
 
         return false;

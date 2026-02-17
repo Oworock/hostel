@@ -3,14 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\RoomResource\Pages;
-use App\Filament\Resources\RoomResource\RelationManagers;
 use App\Models\Room;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class RoomResource extends Resource
 {
@@ -44,7 +42,6 @@ class RoomResource extends Resource
                                 'double' => 'Double Occupancy',
                                 'triple' => 'Triple Occupancy',
                                 'quad' => 'Quad Occupancy',
-                                'dormitory' => 'Dormitory',
                             ])
                             ->required(),
                         
@@ -59,11 +56,21 @@ class RoomResource extends Resource
                             ->required()
                             ->minValue(0)
                             ->step(0.01)
-                            ->label('Price per Month (₦)'),
+                            ->label('Price per Booking Period'),
                         
                         Forms\Components\Textarea::make('description')
                             ->rows(3)
                             ->maxLength(500),
+
+                        Forms\Components\FileUpload::make('cover_image')
+                            ->label('Room Cover Image (Optional)')
+                            ->image()
+                            ->directory('rooms')
+                            ->disk('public')
+                            ->visibility('public')
+                            ->deletable()
+                            ->downloadable()
+                            ->openable(),
                         
                         Forms\Components\Toggle::make('is_available')
                             ->default(true)
@@ -85,6 +92,11 @@ class RoomResource extends Resource
                                     ->label('Image')
                                     ->image()
                                     ->directory('room-images')
+                                    ->disk('public')
+                                    ->visibility('public')
+                                    ->deletable()
+                                    ->downloadable()
+                                    ->openable()
                                     ->maxSize(5120)
                                     ->required(),
                             ])
@@ -97,6 +109,10 @@ class RoomResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('cover_image')
+                    ->label('Image')
+                    ->disk('public')
+                    ->square(),
                 Tables\Columns\TextColumn::make('hostel.name')
                     ->searchable()
                     ->sortable()
@@ -113,7 +129,6 @@ class RoomResource extends Resource
                         'info' => 'double',
                         'warning' => 'triple',
                         'warning' => 'quad',
-                        'secondary' => 'dormitory',
                     ]),
                 
                 Tables\Columns\TextColumn::make('capacity')
@@ -151,7 +166,6 @@ class RoomResource extends Resource
                         'double' => 'Double',
                         'triple' => 'Triple',
                         'quad' => 'Quad',
-                        'dormitory' => 'Dormitory',
                     ]),
                 
                 Tables\Filters\TernaryFilter::make('is_available'),

@@ -9,7 +9,19 @@ class ComplaintPolicy
 {
     public function view(User $user, Complaint $complaint): bool
     {
-        return $user->id === $complaint->user_id || $user->role === 'admin' || ($user->role === 'manager' && $user->id === $complaint->assigned_to);
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        if ($user->role === 'student') {
+            return $user->id === $complaint->user_id;
+        }
+
+        if ($user->role === 'manager') {
+            return $complaint->user && $user->managedHostelIds()->contains($complaint->user->hostel_id);
+        }
+
+        return false;
     }
 
     public function create(User $user): bool
@@ -19,7 +31,15 @@ class ComplaintPolicy
 
     public function update(User $user, Complaint $complaint): bool
     {
-        return $user->role === 'admin' || ($user->role === 'manager' && $user->id === $complaint->assigned_to);
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        if ($user->role === 'manager') {
+            return $complaint->user && $user->managedHostelIds()->contains($complaint->user->hostel_id);
+        }
+
+        return false;
     }
 
     public function delete(User $user, Complaint $complaint): bool

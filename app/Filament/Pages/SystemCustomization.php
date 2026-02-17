@@ -109,6 +109,7 @@ class SystemCustomization extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->role === 'admin';
+        // Legacy page kept for backward compatibility; replaced by System Settings + Website Content CRUD.
+        return false;
     }
 }

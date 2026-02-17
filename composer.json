@@ -9,14 +9,22 @@
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.1",
         "filament/filament": "^3.2",
+        "flutterwavedev/flutterwave-v3": "^1.1",
         "laravel/fortify": "^1.30",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.9.0",
-        "livewire/volt": "^1.7.0"
+        "livewire/volt": "^1.7.0",
+        "paypal/paypal-server-sdk": "^2.2",
+        "razorpay/razorpay": "^2.9",
+        "square/square": "^44.0",
+        "stripe/stripe-php": "^19.3",
+        "symfony/intl": "^8.0",
+        "yabacon/paystack-php": "^2.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "filament/upgrade": "^4.2",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",
         "laravel/sail": "^1.41",

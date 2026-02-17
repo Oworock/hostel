@@ -14,7 +14,7 @@ class RoomPolicy
         }
 
         if ($user->isManager()) {
-            return $room->hostel_id === $user->hostel_id;
+            return $user->managedHostelIds()->contains($room->hostel_id);
         }
 
         return true;
@@ -27,7 +27,7 @@ class RoomPolicy
         }
 
         if ($user->isManager()) {
-            return $room->hostel_id === $user->hostel_id;
+            return $user->managedHostelIds()->contains($room->hostel_id);
         }
 
         return false;

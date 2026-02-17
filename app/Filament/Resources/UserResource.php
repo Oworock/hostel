@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -20,6 +21,8 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-users';
     
     protected static ?string $navigationGroup = 'User Management';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -61,15 +64,23 @@ class UserResource extends Resource
                     ->maxLength(20),
                 Forms\Components\Select::make('role')
                     ->options([
-                        'student' => 'Student',
                         'manager' => 'Manager',
                         'admin' => 'Admin',
                     ])
+                    ->live()
                     ->required(),
                 Forms\Components\Select::make('hostel_id')
                     ->relationship('hostel', 'name')
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->visible(fn (Forms\Get $get): bool => $get('role') !== 'manager'),
+                Forms\Components\Select::make('managedHostels')
+                    ->label('Managed Hostels')
+                    ->relationship('managedHostels', 'name')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->visible(fn (Forms\Get $get): bool => $get('role') === 'manager'),
                 Forms\Components\Toggle::make('is_active')
                     ->default(true),
             ]);
@@ -103,7 +114,6 @@ class UserResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('role')
                     ->options([
-                        'student' => 'Student',
                         'manager' => 'Manager',
                         'admin' => 'Admin',
                     ]),
@@ -113,10 +123,11 @@ class UserResource extends Resource
                 Tables\Actions\Action::make('impersonate')
                     ->icon('heroicon-o-arrow-right')
                     ->label('Login As')
-                    ->visible(fn () => auth()->user()?->role === 'admin')
+                    ->visible(fn (User $record) => auth()->user()?->role === 'admin' && $record->role !== 'admin')
                     ->action(function (User $record) {
-                        session(['impersonated_user_id' => $record->id]);
-                        return redirect('/admin');
+                        session(['impersonator_id' => auth()->id()]);
+                        Auth::login($record);
+                        return redirect()->route('dashboard');
                     }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -142,5 +153,15 @@ class UserResource extends Resource
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Admins & Managers';
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereIn('role', ['admin', 'manager']);
     }
 }

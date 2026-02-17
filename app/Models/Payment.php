@@ -15,11 +15,14 @@ class Payment extends Model
         'transaction_id',
         'payment_date',
         'notes',
+        'is_manual',
+        'created_by_admin_id',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
         'payment_date' => 'date',
+        'is_manual' => 'boolean',
     ];
 
     public function booking()
@@ -30,6 +33,11 @@ class Payment extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function createdByAdmin()
+    {
+        return $this->belongsTo(User::class, 'created_by_admin_id');
     }
 
     public function isPaid()

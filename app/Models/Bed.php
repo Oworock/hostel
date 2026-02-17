@@ -11,12 +11,18 @@ class Bed extends Model
         'bed_number',
         'name',
         'is_occupied',
+        'is_approved',
+        'approved_by',
+        'approved_at',
+        'created_by',
         'user_id',
         'occupied_from',
     ];
 
     protected $casts = [
         'is_occupied' => 'boolean',
+        'is_approved' => 'boolean',
+        'approved_at' => 'datetime',
         'occupied_from' => 'datetime',
     ];
 

@@ -48,6 +48,10 @@ class BedResource extends Resource
                             ->disabled()
                             ->default(false)
                             ->label('Currently Occupied'),
+
+                        Forms\Components\Toggle::make('is_approved')
+                            ->label('Approved for Student Booking')
+                            ->default(true),
                     ]),
                 
                 Forms\Components\Section::make('Bed Images')
@@ -101,6 +105,13 @@ class BedResource extends Resource
                         'success' => 'Available',
                         'danger' => 'Occupied',
                     ]),
+
+                Tables\Columns\BadgeColumn::make('is_approved')
+                    ->getStateUsing(fn ($record) => $record->is_approved ? 'Approved' : 'Pending Approval')
+                    ->colors([
+                        'success' => 'Approved',
+                        'warning' => 'Pending Approval',
+                    ]),
                 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -136,6 +147,24 @@ class BedResource extends Resource
                             ->success()
                             ->title('Student Removed')
                             ->body('Student has been removed from this bed.')
+                            ->send();
+                    }),
+                Tables\Actions\Action::make('approveBed')
+                    ->label('Approve')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn ($record) => !$record->is_approved)
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        $record->update([
+                            'is_approved' => true,
+                            'approved_by' => auth()->id(),
+                            'approved_at' => now(),
+                        ]);
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Bed Approved')
+                            ->body('Bed space is now available for student booking.')
                             ->send();
                     }),
                 Tables\Actions\EditAction::make(),

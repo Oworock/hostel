@@ -36,8 +36,8 @@
         </div>
         
         <div class="bg-white rounded-lg shadow-md p-6">
-            <p class="text-gray-600 text-sm">Price Per Month</p>
-            <p class="text-lg font-bold text-gray-900">${{ number_format($hostel->price_per_month, 2) }}</p>
+            <p class="text-gray-600 text-sm">Price Per {{ ucfirst(getBookingPeriodLabel()) }}</p>
+            <p class="text-lg font-bold text-gray-900">{{ getCurrencySymbol() }}{{ number_format($hostel->price_per_month, 2) }}</p>
         </div>
         
         <div class="bg-white rounded-lg shadow-md p-6">

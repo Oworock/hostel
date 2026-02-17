@@ -15,6 +15,7 @@ class Hostel extends Model
         'postal_code',
         'phone',
         'email',
+        'image_path',
         'owner_id',
         'price_per_month',
         'total_capacity',
@@ -33,7 +34,7 @@ class Hostel extends Model
 
     public function managers()
     {
-        return $this->hasMany(User::class)->where('role', 'manager');
+        return $this->belongsToMany(User::class, 'hostel_manager', 'hostel_id', 'user_id')->withTimestamps();
     }
 
     public function students()
@@ -54,5 +55,10 @@ class Hostel extends Model
     public function payments()
     {
         return $this->hasManyThrough(Payment::class, Booking::class);
+    }
+
+    public function incomingChangeRequests()
+    {
+        return $this->hasMany(HostelChangeRequest::class, 'requested_hostel_id');
     }
 }

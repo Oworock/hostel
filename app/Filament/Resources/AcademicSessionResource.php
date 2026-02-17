@@ -3,15 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AcademicSessionResource\Pages;
-use App\Filament\Resources\AcademicSessionResource\RelationManagers;
 use App\Models\AcademicSession;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AcademicSessionResource extends Resource
 {
@@ -62,8 +59,9 @@ class AcademicSessionResource extends Resource
                 Tables\Columns\TextColumn::make('end_year')
                     ->label('End Year')
                     ->sortable(),
-                Tables\Columns\BooleanColumn::make('is_active')
+                Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
+                    ->boolean()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

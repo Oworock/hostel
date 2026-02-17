@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use App\Models\SystemSetting;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -18,26 +19,88 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        Validator::make($input, [
+        $optionalFields = json_decode(SystemSetting::getSetting('registration_fields_json', ''), true);
+        $requiredFields = json_decode(SystemSetting::getSetting('registration_required_fields_json', ''), true);
+        $customFields = json_decode(SystemSetting::getSetting('registration_custom_fields_json', ''), true);
+        $optionalFields = is_array($optionalFields) ? $optionalFields : ['phone'];
+        $requiredFields = is_array($requiredFields) ? $requiredFields : [];
+        $customFields = is_array($customFields) ? $customFields : [];
+
+        $optionalMap = [
+            'phone' => ['string', 'max:20'],
+            'id_number' => ['string', 'max:50'],
+            'address' => ['string', 'max:255'],
+            'guardian_name' => ['string', 'max:255'],
+            'guardian_phone' => ['string', 'max:20'],
+        ];
+
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
                 'string',
-                'email',
+                'email:rfc,dns',
                 'max:255',
                 Rule::unique(User::class),
             ],
             'password' => $this->passwordRules(),
-            'phone' => ['nullable', 'string'],
-        ])->validate();
+        ];
 
-        return User::create([
+        foreach ($optionalMap as $field => $baseRules) {
+            if (!in_array($field, $optionalFields, true)) {
+                continue;
+            }
+
+            $rules[$field] = in_array($field, $requiredFields, true)
+                ? array_merge(['required'], $baseRules)
+                : array_merge(['nullable'], $baseRules);
+        }
+
+        $customFieldRules = [];
+        foreach ($customFields as $field) {
+            $name = $field['name'] ?? null;
+            if (!$name || !preg_match('/^[a-z][a-z0-9_]*$/', $name)) {
+                continue;
+            }
+
+            $type = $field['type'] ?? 'text';
+            $required = (bool) ($field['required'] ?? false);
+            $base = match ($type) {
+                'email' => ['email', 'max:255'],
+                'tel' => ['string', 'max:20'],
+                'number' => ['numeric'],
+                'date' => ['date'],
+                default => ['string', 'max:255'],
+            };
+
+            $customFieldRules[$name] = array_merge([$required ? 'required' : 'nullable'], $base);
+            $rules[$name] = $customFieldRules[$name];
+        }
+
+        Validator::make($input, $rules)->validate();
+
+        $payload = [
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
-            'phone' => $input['phone'] ?? null,
             'role' => 'student',
             'is_active' => true,
-        ]);
+        ];
+
+        foreach (array_keys($optionalMap) as $field) {
+            if (in_array($field, $optionalFields, true)) {
+                $payload[$field] = $input[$field] ?? null;
+            }
+        }
+
+        $extraData = [];
+        foreach (array_keys($customFieldRules) as $fieldName) {
+            $extraData[$fieldName] = $input[$fieldName] ?? null;
+        }
+        if (!empty($extraData)) {
+            $payload['extra_data'] = $extraData;
+        }
+
+        return User::create($payload);
     }
 }

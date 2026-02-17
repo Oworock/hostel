@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\DB;
 class BookingChart extends ChartWidget
 {
     protected static ?string $heading = 'Bookings Over Time';
+    protected static ?int $sort = 90;
+    protected int | string | array $columnSpan = 1;
+
+    public static function canView(): bool
+    {
+        return auth()->check() && auth()->user()->isAdmin();
+    }
 
     protected function getData(): array
     {

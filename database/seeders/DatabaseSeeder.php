@@ -14,6 +14,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            SettingsSeeder::class,
+        ]);
+
         // Student User
         User::firstOrCreate(
             ['email' => 'student@example.com'],

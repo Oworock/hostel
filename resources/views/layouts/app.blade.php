@@ -6,6 +6,22 @@
     <title>@yield('title') - Hostel Management System</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @php
+        $customCss = \App\Models\SystemSetting::getSetting('custom_css', '');
+    @endphp
+    @if(!empty($customCss))
+        <style>{!! $customCss !!}</style>
+    @endif
+    @include('components.website-theme-style')
+    @php
+        $favicon = \App\Models\SystemSetting::getSetting('global_header_favicon', \App\Models\SystemSetting::getSetting('global_header_logo', ''));
+    @endphp
+    @if(!empty($favicon))
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $favicon) }}">
+    @endif
+    <style>
+        .site-footer { display: block !important; visibility: visible !important; width: 100% !important; }
+    </style>
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen flex flex-col">

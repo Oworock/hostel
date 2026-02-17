@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\PaymentGateway;
 use App\Models\Room;
 use App\Models\AcademicSession;
 use App\Models\Semester;
+use App\Services\OutboundWebhookService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -23,7 +25,7 @@ class BookingController extends Controller
     public function available()
     {
         $rooms = Room::where('is_available', true)
-            ->with(['hostel', 'beds'])
+            ->with(['hostel', 'beds', 'images'])
             ->paginate(12);
 
         return view('student.bookings.available', compact('rooms'));
@@ -31,6 +33,7 @@ class BookingController extends Controller
 
     public function create(Room $room)
     {
+        $room->load(['images', 'hostel']);
         $availableBeds = $room->availableBeds()->get();
 
         if ($availableBeds->isEmpty()) {
@@ -70,23 +73,65 @@ class BookingController extends Controller
                 'semester_id' => 'required|exists:semesters,id',
                 'academic_session_id' => 'required|exists:academic_sessions,id',
             ]);
+
+            $semester = Semester::where('id', $validated['semester_id'])
+                ->where('academic_session_id', $validated['academic_session_id'])
+                ->first();
+
+            if (!$semester) {
+                return redirect()->back()->with('error', 'Invalid semester/session selection.');
+            }
+
+            $validated['check_in_date'] = $semester->start_date;
+            $validated['check_out_date'] = $semester->end_date;
         }
 
         $room = Room::find($validated['room_id']);
+        if (!$room || !$room->is_available) {
+            return redirect()->back()->with('error', 'Selected room is not available.');
+        }
+
+        if (!empty($validated['bed_id'])) {
+            $bed = $room->beds()
+                ->where('id', $validated['bed_id'])
+                ->where('is_occupied', false)
+                ->where('is_approved', true)
+                ->first();
+
+            if (!$bed) {
+                return redirect()->back()->with('error', 'Selected bed is not available for booking.');
+            }
+        } else {
+            $autoBed = $room->availableBeds()->first();
+            $validated['bed_id'] = $autoBed?->id;
+        }
+
         $validated['user_id'] = auth()->id();
         $validated['total_amount'] = $room->price_per_month;
 
         $booking = Booking::create($validated);
+        app(OutboundWebhookService::class)->dispatch('booking.created', [
+            'booking_id' => $booking->id,
+            'student_id' => $booking->user_id,
+            'room_id' => $booking->room_id,
+            'bed_id' => $booking->bed_id,
+            'status' => $booking->status,
+            'total_amount' => $booking->total_amount,
+        ]);
 
-        return redirect()->route('student.bookings.show', $booking)->with('success', 'Booking created successfully');
+        return redirect()->route('student.bookings.show', $booking)->with('success', 'Booking created. Complete payment to conclude your booking.');
     }
 
     public function show(Booking $booking)
     {
         $this->authorize('view', $booking);
-        $booking->load(['room', 'bed', 'payments']);
+        $booking->load(['room.hostel', 'bed', 'payments.createdByAdmin']);
+        $activeGateways = PaymentGateway::whereIn('name', ['Paystack', 'Flutterwave', 'Stripe', 'PayPal', 'Razorpay', 'Square'])
+            ->where('is_active', true)
+            ->get()
+            ->keyBy(fn ($gateway) => strtolower($gateway->name));
 
-        return view('student.bookings.show', compact('booking'));
+        return view('student.bookings.show', compact('booking', 'activeGateways'));
     }
 
     public function cancel(Booking $booking)
@@ -97,7 +142,16 @@ class BookingController extends Controller
             return redirect()->back()->with('error', 'Cannot cancel this booking');
         }
 
+        if ($booking->payments()->exists()) {
+            return redirect()->back()->with('error', 'Booking cannot be cancelled after payment has been initiated.');
+        }
+
         $booking->update(['status' => 'cancelled']);
+        app(OutboundWebhookService::class)->dispatch('booking.cancelled', [
+            'booking_id' => $booking->id,
+            'student_id' => $booking->user_id,
+            'status' => $booking->status,
+        ]);
 
         return redirect()->route('student.bookings.index')->with('success', 'Booking cancelled successfully');
     }
@@ -105,7 +159,7 @@ class BookingController extends Controller
     public function receipt(Booking $booking)
     {
         $this->authorize('view', $booking);
-        $booking->load(['room', 'bed', 'payments', 'user']);
+        $booking->load(['room.hostel', 'bed', 'payments.createdByAdmin', 'user']);
         
         $pdf = \PDF::loadView('student.bookings.receipt', compact('booking'));
         return $pdf->download('Receipt-' . $booking->id . '.pdf');

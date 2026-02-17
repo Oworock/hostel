@@ -1,77 +1,39 @@
-@extends('layouts.app')
+<x-dashboard-layout title="Rooms">
+    <x-slot name="sidebar">
+        @include('components.manager-sidebar')
+    </x-slot>
 
-@section('title', 'Rooms')
+    <div class="uniform-page">
+        <div class="uniform-header">
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100">Rooms</h1>
+            <a href="{{ route('manager.rooms.create') }}" class="inline-flex items-center justify-center bg-blue-600 text-white px-7 py-3 rounded-2xl hover:bg-blue-700 font-semibold text-lg sm:text-xl">+ Add New Room</a>
+        </div>
 
-@section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="flex items-center justify-between mb-8">
-        <h1 class="text-4xl font-bold text-gray-900">Rooms</h1>
-        <a href="{{ route('manager.rooms.create') }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">
-            + Add New Room
-        </a>
-    </div>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse($rooms as $room)
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-900">{{ $room->room_number }}</h2>
-                        <p class="text-gray-600 text-sm">{{ ucfirst($room->type) }} Room</p>
-                    </div>
-                    <span class="px-3 py-1 rounded-full text-sm font-medium {{ $room->is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                        {{ $room->is_available ? 'Available' : 'Unavailable' }}
-                    </span>
+        <div class="uniform-grid-2">
+            @forelse($rooms as $room)
+                <x-room-listing-card variant="manager" :room="$room">
+                    <x-slot name="actions">
+                        <div class="grid grid-cols-3 gap-3">
+                            <a href="{{ route('manager.rooms.show', $room) }}" class="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-4 py-2.5 rounded-2xl text-center text-lg font-semibold hover:bg-blue-200 dark:hover:bg-blue-900/60">View</a>
+                            <a href="{{ route('manager.rooms.edit', $room) }}" class="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-4 py-2.5 rounded-2xl text-center text-lg font-semibold hover:bg-amber-200 dark:hover:bg-amber-900/60">Edit</a>
+                            <form method="POST" action="{{ route('manager.rooms.destroy', $room) }}" onsubmit="return confirm('Are you sure?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 px-4 py-2.5 rounded-2xl text-lg font-semibold hover:bg-red-200 dark:hover:bg-red-900/60">Delete</button>
+                            </form>
+                        </div>
+                    </x-slot>
+                </x-room-listing-card>
+            @empty
+                <div class="col-span-full uniform-card p-12 text-center">
+                    <p class="text-slate-600 dark:text-slate-300 text-lg mb-4">No rooms found.</p>
+                    <a href="{{ route('manager.rooms.create') }}" class="inline-block bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 font-medium">Create First Room</a>
                 </div>
-                
-                <div class="space-y-2 mb-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-600">Capacity:</span>
-                        <span class="font-medium text-gray-900">{{ $room->capacity }} beds</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-600">Occupancy:</span>
-                        <span class="font-medium text-gray-900">{{ $room->getOccupancyPercentage() }}%</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-600">Price:</span>
-                        <span class="font-medium text-gray-900">${{ number_format($room->price_per_month, 2) }}/mo</span>
-                    </div>
-                </div>
-                
-                @if($room->description)
-                    <p class="text-sm text-gray-600 mb-4">{{ $room->description }}</p>
-                @endif
-                
-                <div class="flex items-center space-x-2">
-                    <a href="{{ route('manager.rooms.show', $room) }}" class="flex-1 bg-blue-100 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-200 font-medium text-center">
-                        View
-                    </a>
-                    <a href="{{ route('manager.rooms.edit', $room) }}" class="flex-1 bg-yellow-100 text-yellow-600 px-4 py-2 rounded-lg hover:bg-yellow-200 font-medium text-center">
-                        Edit
-                    </a>
-                    <form method="POST" action="{{ route('manager.rooms.destroy', $room) }}" onsubmit="return confirm('Are you sure?')" class="flex-1">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="w-full bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 font-medium">
-                            Delete
-                        </button>
-                    </form>
-                </div>
-            </div>
-        @empty
-            <div class="col-span-3 bg-white rounded-lg shadow-md p-12 text-center">
-                <p class="text-gray-600 text-lg mb-4">No rooms found</p>
-                <a href="{{ route('manager.rooms.create') }}" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">
-                    Create First Room
-                </a>
-            </div>
-        @endforelse
+            @endforelse
+        </div>
+
+        <div>
+            {{ $rooms->links() }}
+        </div>
     </div>
-    
-    <!-- Pagination -->
-    <div class="mt-8">
-        {{ $rooms->links() }}
-    </div>
-</div>
-@endsection
+</x-dashboard-layout>

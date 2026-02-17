@@ -4,23 +4,32 @@ namespace App\Filament\Widgets;
 
 use App\Models\Booking;
 use App\Models\Hostel;
-use App\Models\Student;
 use App\Models\Payment;
+use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class AdminStatsOverview extends BaseWidget
 {
+    protected static ?int $sort = 1;
+    protected int | string | array $columnSpan = 'full';
+
+    public static function canView(): bool
+    {
+        return auth()->check() && auth()->user()->isAdmin();
+    }
+
     protected function getStats(): array
     {
         $totalBookings = Booking::count();
-        $activeBookings = Booking::where('status', 'active')->count();
-        $totalRevenue = Payment::where('status', 'completed')->sum('amount');
+        $pendingBookings = Booking::where('status', 'pending')->count();
+        $approvedBookings = Booking::where('status', 'approved')->count();
+        $totalRevenue = Payment::where('status', 'paid')->sum('amount');
         $totalHostels = Hostel::count();
-        $totalStudents = Student::count();
-        $totalUsers = \App\Models\User::count();
+        $totalStudents = User::where('role', 'student')->count();
+        $totalManagers = User::where('role', 'manager')->count();
         
-        $currency = config('app.currency', 'NGN');
+        $currency = get_setting('system_currency', 'NGN');
         $currencySymbol = $this->getCurrencySymbol($currency);
 
         return [
@@ -34,13 +43,18 @@ class AdminStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-clipboard-document-list')
                 ->color('info'),
             
-            Stat::make('Active Bookings', $activeBookings)
-                ->description('Currently active')
-                ->descriptionIcon('heroicon-m-check-circle')
+            Stat::make('Pending Bookings', $pendingBookings)
+                ->description('Awaiting payment/approval')
+                ->descriptionIcon('heroicon-m-clock')
                 ->color('warning'),
+
+            Stat::make('Approved Bookings', $approvedBookings)
+                ->description('Concluded bookings')
+                ->descriptionIcon('heroicon-m-check-circle')
+                ->color('success'),
             
             Stat::make('Total Revenue', $currencySymbol . number_format($totalRevenue, 2))
-                ->description('From all payments')
+                ->description('From all paid transactions')
                 ->descriptionIcon('heroicon-m-wallet')
                 ->color('success'),
             
@@ -49,8 +63,8 @@ class AdminStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('primary'),
             
-            Stat::make('System Users', $totalUsers)
-                ->description('Admin + Managers')
+            Stat::make('Total Managers', $totalManagers)
+                ->description('Hostel managers')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('secondary'),
         ];

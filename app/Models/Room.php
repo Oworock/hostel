@@ -13,6 +13,7 @@ class Room extends Model
         'capacity',
         'price_per_month',
         'description',
+        'cover_image',
         'is_available',
     ];
 
@@ -43,7 +44,7 @@ class Room extends Model
 
     public function availableBeds()
     {
-        return $this->beds()->where('is_occupied', false);
+        return $this->beds()->where('is_occupied', false)->where('is_approved', true);
     }
 
     public function occupiedBeds()

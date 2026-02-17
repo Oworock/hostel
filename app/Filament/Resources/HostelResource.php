@@ -3,15 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\HostelResource\Pages;
-use App\Filament\Resources\HostelResource\RelationManagers;
 use App\Models\Hostel;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class HostelResource extends Resource
 {
@@ -39,6 +36,16 @@ class HostelResource extends Resource
                 Forms\Components\TextInput::make('phone')
                     ->tel()
                     ->maxLength(20),
+                Forms\Components\FileUpload::make('image_path')
+                    ->label('Hostel Image (Optional)')
+                    ->image()
+                    ->directory('hostels')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->deletable()
+                    ->downloadable()
+                    ->openable()
+                    ->columnSpanFull(),
                 Forms\Components\Select::make('owner_id')
                     ->relationship('owner', 'name')
                     ->searchable()
@@ -53,6 +60,10 @@ class HostelResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image_path')
+                    ->label('Image')
+                    ->disk('public')
+                    ->square(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),

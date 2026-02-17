@@ -140,6 +140,6 @@ class SendEmail extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->role === 'admin' || auth()->user()?->role === 'manager';
+        return auth()->user()?->role === 'admin';
     }
 }

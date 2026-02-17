@@ -67,6 +67,26 @@
         .info-row .value {
             text-align: right;
         }
+
+        .payments-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        .payments-table th,
+        .payments-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .payments-table th {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
         
         .total-row {
             display: flex;
@@ -171,24 +191,34 @@
         <div class="section">
             <div class="section-title">Payment Information</div>
             @if ($booking->payments->count() > 0)
-                @foreach ($booking->payments as $payment)
-                    <div class="info-row">
-                        <label>Amount:</label>
-                        <div class="value">{{ getCurrencySymbol() }}{{ number_format($payment->amount, 2) }}</div>
-                    </div>
-                    <div class="info-row">
-                        <label>Payment Method:</label>
-                        <div class="value">{{ ucfirst($payment->payment_method) }}</div>
-                    </div>
-                    <div class="info-row">
-                        <label>Payment Date:</label>
-                        <div class="value">{{ $payment->payment_date ? $payment->payment_date->format('d M Y') : 'N/A' }}</div>
-                    </div>
-                    <div class="info-row">
-                        <label>Status:</label>
-                        <div class="value">{{ ucfirst($payment->status) }}</div>
-                    </div>
-                @endforeach
+                <table class="payments-table">
+                    <thead>
+                        <tr>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($booking->payments as $payment)
+                            <tr>
+                                <td>{{ getCurrencySymbol() }}{{ number_format($payment->amount, 2) }}</td>
+                                <td>{{ ucfirst(str_replace('_', ' ', $payment->payment_method ?? 'N/A')) }}</td>
+                                <td>{{ ucfirst($payment->status) }}</td>
+                                <td>{{ $payment->payment_date ? $payment->payment_date->format('d M Y') : 'N/A' }}</td>
+                                <td>
+                                    @if($payment->is_manual && $payment->status === 'paid')
+                                        Cleared by admin{{ $payment->createdByAdmin ? ': ' . $payment->createdByAdmin->name : '' }}
+                                    @else
+                                        {{ $payment->transaction_id ?: '-' }}
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             @else
                 <div class="info-row">
                     <label>No payments recorded</label>
@@ -200,6 +230,18 @@
             <div class="total-row">
                 <label>Total Amount:</label>
                 <div>{{ getCurrencySymbol() }}{{ number_format($booking->total_amount, 2) }}</div>
+            </div>
+            @php
+                $paidTotal = (float) $booking->payments->where('status', 'paid')->sum('amount');
+                $balance = max(0, (float) $booking->total_amount - $paidTotal);
+            @endphp
+            <div class="info-row">
+                <label>Total Paid:</label>
+                <div class="value">{{ getCurrencySymbol() }}{{ number_format($paidTotal, 2) }}</div>
+            </div>
+            <div class="info-row">
+                <label>Outstanding:</label>
+                <div class="value">{{ getCurrencySymbol() }}{{ number_format($balance, 2) }}</div>
             </div>
         </div>
 

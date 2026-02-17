@@ -79,4 +79,22 @@ class Booking extends Model
     {
         return $this->status === 'cancelled';
     }
+
+    public function paidAmount(): float
+    {
+        return (float) $this->payments()
+            ->where('status', 'paid')
+            ->sum('amount');
+    }
+
+    public function outstandingAmount(): float
+    {
+        $total = (float) ($this->total_amount ?? 0);
+        return max(0, $total - $this->paidAmount());
+    }
+
+    public function isFullyPaid(): bool
+    {
+        return $this->outstandingAmount() <= 0;
+    }
 }

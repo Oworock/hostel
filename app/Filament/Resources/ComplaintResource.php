@@ -23,7 +23,7 @@ class ComplaintResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->role === 'admin' || auth()->user()?->role === 'manager';
+        return auth()->user()?->role === 'admin';
     }
 
     public static function form(Form $form): Form
@@ -143,5 +143,15 @@ class ComplaintResource extends Resource
             'create' => Pages\CreateComplaint::route('/create'),
             'edit' => Pages\EditComplaint::route('/{record}/edit'),
         ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->role === 'admin';
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()?->role === 'admin';
     }
 }

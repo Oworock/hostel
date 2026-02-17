@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 
 class User extends Authenticatable
 {
@@ -19,6 +20,7 @@ class User extends Authenticatable
         'address',
         'guardian_name',
         'guardian_phone',
+        'extra_data',
         'hostel_id',
         'is_active',
         'profile_image',
@@ -32,6 +34,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_active' => 'boolean',
+        'extra_data' => 'array',
     ];
 
     public function hostel()
@@ -44,9 +47,19 @@ class User extends Authenticatable
         return $this->hasMany(Hostel::class, 'owner_id');
     }
 
+    public function managedHostels()
+    {
+        return $this->belongsToMany(Hostel::class, 'hostel_manager', 'user_id', 'hostel_id')->withTimestamps();
+    }
+
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function hostelChangeRequests()
+    {
+        return $this->hasMany(HostelChangeRequest::class, 'student_id');
     }
 
     public function beds()
@@ -67,5 +80,19 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->role === 'admin';
+    }
+
+    public function managedHostelIds(): Collection
+    {
+        if (!$this->isManager()) {
+            return collect();
+        }
+
+        $ids = $this->managedHostels()->pluck('hostels.id');
+        if ($ids->isEmpty() && $this->hostel_id) {
+            $ids = collect([$this->hostel_id]);
+        }
+
+        return $ids->unique()->values();
     }
 }

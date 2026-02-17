@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Bed;
+use App\Models\Booking;
+use App\Models\Complaint;
+use App\Models\Hostel;
+use App\Models\Payment;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
@@ -28,48 +34,147 @@ class DashboardController extends Controller
 
     private function managerDashboard()
     {
-        $hostel = auth()->user()->hostel;
-
-        if (!$hostel) {
+        $manager = auth()->user();
+        $hostelIds = $manager->managedHostelIds();
+        $hostels = Hostel::whereIn('id', $hostelIds)->get();
+        if ($hostels->isEmpty()) {
             return redirect('/')->with('error', 'No hostel assigned to your account');
         }
+        $roomIds = \App\Models\Room::whereIn('hostel_id', $hostelIds)->pluck('id');
+        $bookingsQuery = Booking::whereIn('room_id', $roomIds);
+        $paymentsQuery = Payment::whereHas('booking.room', function ($query) use ($hostelIds) {
+            $query->whereIn('hostel_id', $hostelIds);
+        });
+        $complaintsQuery = Schema::hasTable('complaints') && Schema::hasColumn('complaints', 'user_id') && Schema::hasColumn('users', 'hostel_id')
+            ? Complaint::whereHas('user', function ($query) use ($hostelIds) {
+                $query->whereIn('hostel_id', $hostelIds);
+            })
+            : Complaint::query()->whereRaw('1 = 0');
+
+        $totalBeds = Bed::whereIn('room_id', $roomIds)->count();
+        $occupiedBeds = Bed::whereIn('room_id', $roomIds)->where('is_occupied', true)->count();
+        $availableBeds = max(0, $totalBeds - $occupiedBeds);
 
         $stats = [
-            'total_rooms' => $hostel->rooms()->count(),
-            'total_students' => $hostel->students()->count(),
-            'occupancy_rate' => $this->calculateOccupancy($hostel),
-            'pending_bookings' => $hostel->bookings()->where('status', 'pending')->count(),
+            'total_rooms' => \App\Models\Room::whereIn('hostel_id', $hostelIds)->count(),
+            'total_students' => \App\Models\User::where('role', 'student')->whereIn('hostel_id', $hostelIds)->count(),
+            'occupancy_rate' => $this->calculateOccupancy($hostelIds),
+            'total_beds' => $totalBeds,
+            'occupied_beds' => $occupiedBeds,
+            'available_beds' => $availableBeds,
+            'pending_bookings' => (clone $bookingsQuery)->where('status', 'pending')->count(),
+            'approved_bookings' => (clone $bookingsQuery)->where('status', 'approved')->count(),
+            'open_complaints' => (clone $complaintsQuery)->whereIn('status', ['open', 'in_progress'])->count(),
+            'monthly_revenue' => (clone $paymentsQuery)
+                ->where('status', 'paid')
+                ->whereMonth('payment_date', now()->month)
+                ->whereYear('payment_date', now()->year)
+                ->sum('amount'),
+            'total_revenue' => (clone $paymentsQuery)->where('status', 'paid')->sum('amount'),
         ];
 
-        $recentBookings = $hostel->bookings()->latest()->limit(10)->get();
+        $recentBookings = (clone $bookingsQuery)
+            ->with(['user', 'room', 'bed'])
+            ->latest()
+            ->limit(8)
+            ->get();
 
-        return view('manager.dashboard', compact('stats', 'recentBookings', 'hostel'));
+        $recentPayments = (clone $paymentsQuery)
+            ->with(['booking.room', 'user', 'createdByAdmin'])
+            ->latest()
+            ->limit(6)
+            ->get();
+
+        $manualAdminPayments = (clone $paymentsQuery)
+            ->where('is_manual', true)
+            ->with(['booking.room', 'user', 'createdByAdmin'])
+            ->latest()
+            ->limit(6)
+            ->get();
+
+        $recentComplaints = (clone $complaintsQuery)
+            ->with('user')
+            ->latest()
+            ->limit(6)
+            ->get();
+
+        $roomSnapshot = \App\Models\Room::whereIn('hostel_id', $hostelIds)
+            ->withCount([
+                'beds as occupied_beds_count' => function ($query) {
+                    $query->where('is_occupied', true);
+                },
+                'beds as total_beds_count',
+            ])
+            ->orderBy('room_number')
+            ->limit(6)
+            ->get();
+
+        $hostelLabel = $hostels->count() === 1
+            ? ($hostels->first()->name ?? 'Assigned Hostel')
+            : $hostels->pluck('name')->join(', ');
+
+        return view(
+            'manager.dashboard',
+            compact('stats', 'recentBookings', 'recentPayments', 'recentComplaints', 'roomSnapshot', 'hostelLabel', 'manualAdminPayments')
+        );
     }
 
     private function studentDashboard()
     {
-        $currentBooking = auth()->user()->bookings()
+        $student = auth()->user();
+
+        $currentBooking = $student->bookings()
             ->whereIn('status', ['approved', 'pending'])
             ->latest()
             ->first();
 
+        $paidPayments = Payment::where('user_id', $student->id)->where('status', 'paid');
+        $openComplaints = Schema::hasTable('complaints') && Schema::hasColumn('complaints', 'user_id')
+            ? Complaint::where('user_id', $student->id)->whereIn('status', ['open', 'in_progress'])
+            : Complaint::query()->whereRaw('1 = 0');
+        $recentBookings = $student->bookings()->with(['room.hostel', 'bed'])->latest()->limit(5)->get();
+        $recentPayments = Payment::where('user_id', $student->id)
+            ->with('booking.room')
+            ->latest()
+            ->limit(5)
+            ->get();
+        $recentComplaints = Schema::hasTable('complaints') && Schema::hasColumn('complaints', 'user_id')
+            ? Complaint::where('user_id', $student->id)->latest()->limit(5)->get()
+            : collect();
+
+        $currentBookingPaidAmount = $currentBooking
+            ? Payment::where('booking_id', $currentBooking->id)->where('status', 'paid')->sum('amount')
+            : 0;
+        $currentBookingBalance = $currentBooking
+            ? max(0, (float) $currentBooking->total_amount - (float) $currentBookingPaidAmount)
+            : 0;
+
         $stats = [
             'active_booking' => $currentBooking ? true : false,
-            'pending_bookings' => auth()->user()->bookings()->where('status', 'pending')->count(),
-            'completed_bookings' => auth()->user()->bookings()->where('status', 'completed')->count(),
+            'pending_bookings' => $student->bookings()->where('status', 'pending')->count(),
+            'completed_bookings' => $student->bookings()->where('status', 'completed')->count(),
+            'total_paid' => (clone $paidPayments)->sum('amount'),
+            'open_complaints' => (clone $openComplaints)->count(),
+            'current_booking_balance' => $currentBookingBalance,
+            'days_to_checkout' => $currentBooking?->check_out_date
+                ? max(0, Carbon::now()->startOfDay()->diffInDays($currentBooking->check_out_date, false))
+                : null,
         ];
 
-        return view('student.dashboard', compact('stats', 'currentBooking'));
+        return view(
+            'student.dashboard',
+            compact('stats', 'currentBooking', 'recentBookings', 'recentPayments', 'recentComplaints')
+        );
     }
 
-    private function calculateOccupancy($hostel)
+    private function calculateOccupancy($hostelIds)
     {
-        $totalBeds = $hostel->rooms()->withCount('beds')->get()->sum('beds_count');
+        $totalBeds = \App\Models\Room::whereIn('hostel_id', $hostelIds)->withCount('beds')->get()->sum('beds_count');
         if ($totalBeds === 0) {
             return 0;
         }
 
-        $occupiedBeds = \App\Models\Bed::whereIn('room_id', $hostel->rooms()->pluck('id'))
+        $occupiedBeds = \App\Models\Bed::whereIn('room_id', \App\Models\Room::whereIn('hostel_id', $hostelIds)->pluck('id'))
             ->where('is_occupied', true)
             ->count();
 
