@@ -38,10 +38,17 @@
 
                 <hr class="border-gray-200 dark:border-slate-700">
 
-                <div>
-                    <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-slate-200 mb-2">Full Name</label>
-                    <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100">
-                    @error('name')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="first_name" class="block text-sm font-semibold text-gray-700 dark:text-slate-200 mb-2">First Name</label>
+                        <input type="text" name="first_name" id="first_name" value="{{ old('first_name', $user->first_name) }}" class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100">
+                        @error('first_name')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label for="last_name" class="block text-sm font-semibold text-gray-700 dark:text-slate-200 mb-2">Last Name</label>
+                        <input type="text" name="last_name" id="last_name" value="{{ old('last_name', $user->last_name) }}" class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100">
+                        @error('last_name')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                    </div>
                 </div>
 
                 <div>
@@ -60,6 +67,22 @@
                     <label for="admission_number" class="block text-sm font-semibold text-gray-700 dark:text-slate-200 mb-2">Admission Number</label>
                     <input type="text" name="admission_number" id="admission_number" value="{{ old('admission_number', $user->admission_number) }}" class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100">
                     @error('admission_number')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                </div>
+
+                <div>
+                    <label for="new_password" class="block text-sm font-semibold text-gray-700 dark:text-slate-200 mb-2">
+                        New Password
+                        @if($user->is_admin_uploaded && $user->must_change_password)
+                            <span class="text-red-600">*</span>
+                        @endif
+                    </label>
+                    <input type="password" name="new_password" id="new_password" class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100">
+                    @error('new_password')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                </div>
+
+                <div>
+                    <label for="new_password_confirmation" class="block text-sm font-semibold text-gray-700 dark:text-slate-200 mb-2">Confirm New Password</label>
+                    <input type="password" name="new_password_confirmation" id="new_password_confirmation" class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100">
                 </div>
 
                 <hr class="border-gray-200 dark:border-slate-700">

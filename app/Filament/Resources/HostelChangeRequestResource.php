@@ -58,6 +58,10 @@ class HostelChangeRequestResource extends Resource
                         'pending_admin_approval' => 'info',
                         default => 'warning',
                     }),
+                Tables\Columns\TextColumn::make('manager_note')
+                    ->label('Manager Note')
+                    ->limit(50)
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
             ])
             ->filters([

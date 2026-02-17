@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostel Management System Documentation (Print/PDF)</title>
+  <link rel="stylesheet" href="./print.css">
+</head>
+<body>
+  <main class="doc">
+    <section class="cover page-break-after">
+      <h1>Hostel Management System</h1>
+      <h2>Implementation & Operations Documentation</h2>
+      <p>Print/PDF Edition</p>
+      <p class="muted">Prepared for installation, onboarding, and operational handover.</p>
+    </section>
+
+    <section class="toc page-break-after">
+      <h2>Table of Contents</h2>
+      <ol>
+        <li>Overview</li>
+        <li>System Requirements</li>
+        <li>Installation Paths</li>
+        <li>First-Time Installer Flow</li>
+        <li>Manual Setup (CLI)</li>
+        <li>Deployment by Server Type</li>
+        <li>Configuration & Settings</li>
+        <li>Role Access Model</li>
+        <li>Admin Module</li>
+        <li>Manager Module</li>
+        <li>Student Module</li>
+        <li>Notification Architecture</li>
+        <li>Payment Architecture</li>
+        <li>Data Model Summary</li>
+        <li>Critical Route Summary</li>
+        <li>Security Checklist</li>
+        <li>Troubleshooting</li>
+        <li>Maintenance Plan</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>1. Overview</h2>
+      <p>This platform is a multi-role hostel management system built on Laravel. It supports end-to-end operations across public discovery, student booking/payment, manager operations, and admin governance.</p>
+      <ul>
+        <li>Public room browsing and configurable welcome page</li>
+        <li>Student booking lifecycle with payment integration</li>
+        <li>Manager room, booking, complaint, and request workflows</li>
+        <li>Admin system settings, analytics, user governance, content management</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>2. System Requirements</h2>
+      <ul>
+        <li>PHP 8.2+</li>
+        <li>Composer 2.x</li>
+        <li>Node.js 18+ and npm</li>
+        <li>Database: SQLite, MySQL, or PostgreSQL</li>
+        <li>Web server: Nginx or Apache (production)</li>
+        <li>Core PHP extensions used by Laravel (PDO, mbstring, openssl, tokenizer, xml, ctype, json, fileinfo, bcmath)</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>3. Installation Paths</h2>
+      <ol>
+        <li><strong>Web Installer:</strong> Automatic first-run setup when <code>.env</code> is missing.</li>
+        <li><strong>Manual CLI:</strong> For developer and CI/CD deployments.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>4. First-Time Installer Flow</h2>
+      <p>When <code>.env</code> is not present, middleware redirects users to <code>/install</code>.</p>
+      <p>The installer captures app/database/admin details and executes:</p>
+      <ol>
+        <li>Write environment configuration</li>
+        <li>Generate app key</li>
+        <li>Run database migrations and seeders</li>
+        <li>Create admin account</li>
+        <li>Create install lock file at <code>storage/framework/installed.lock</code></li>
+      </ol>
+      <p>Once lock exists, installer access is blocked and login becomes default entry.</p>
+    </section>
+
+    <section>
+      <h2>5. Manual Setup (CLI)</h2>
+      <pre><code>composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+npm run build</code></pre>
+      <p>Development mode:</p>
+      <pre><code>php artisan serve
+npm run dev</code></pre>
+    </section>
+
+    <section>
+      <h2>6. Deployment by Server Type</h2>
+      <h3>Nginx + PHP-FPM</h3>
+      <ul>
+        <li>Set document root to <code>public/</code></li>
+        <li>Correct permissions on <code>storage/</code> and <code>bootstrap/cache</code></li>
+        <li>Run caches: <code>config:cache</code>, <code>route:cache</code>, <code>view:cache</code></li>
+      </ul>
+      <h3>Apache</h3>
+      <ul>
+        <li>Set DocumentRoot to <code>public/</code></li>
+        <li>Enable <code>mod_rewrite</code></li>
+      </ul>
+      <h3>cPanel/Shared Hosting</h3>
+      <ul>
+        <li>Map domain/subdomain to <code>public/</code></li>
+        <li>Run artisan commands via terminal/SSH if available</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>7. Configuration & Settings</h2>
+      <p>System Settings controls:</p>
+      <ul>
+        <li>General app identity and contacts</li>
+        <li>Website theme and global custom CSS</li>
+        <li>Homepage enable/disable toggle (root behavior)</li>
+        <li>Registration form schema (default + custom fields)</li>
+        <li>Payment gateways, diagnostics, and currency setup</li>
+        <li>SMTP and SMS settings with test actions</li>
+        <li>Webhook and API key management</li>
+        <li>Notification template customization</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>8. Role Access Model</h2>
+      <ul>
+        <li><strong>Admin:</strong> Full system administration and global controls</li>
+        <li><strong>Manager:</strong> Hostel-scoped operations for assigned hostels</li>
+        <li><strong>Student:</strong> Personal accommodation and support workflows</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>9. Admin Module</h2>
+      <ul>
+        <li>Admin dashboard with key metrics and health widgets</li>
+        <li>User governance (admins/managers/students)</li>
+        <li>Global room/booking/payment/complaint oversight</li>
+        <li>Website content management (header/footer/welcome body)</li>
+        <li>Central monitoring of hostel-change and room-change requests</li>
+        <li>API documentation and credentials management</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>10. Manager Module</h2>
+      <ul>
+        <li>Hostel operations dashboard with occupancy and performance views</li>
+        <li>Room and bed-space management in assigned hostels</li>
+        <li>Booking approvals/rejections and payment oversight</li>
+        <li>Complaint response workflow</li>
+        <li>Hostel/room change request approvals with manager comments</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>11. Student Module</h2>
+      <ul>
+        <li>Browse rooms and create bookings</li>
+        <li>Pay with active configured gateways</li>
+        <li>View payment history and download receipts</li>
+        <li>Submit complaints and maintain profile</li>
+        <li>Request hostel change and room change</li>
+        <li>One active/pending booking policy enforced</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>12. Notification Architecture</h2>
+      <ul>
+        <li>In-app system notifications (database) for admin/manager/student</li>
+        <li>Email notifications (where enabled/configured)</li>
+        <li>SMS notifications (where enabled/configured)</li>
+      </ul>
+      <p>In-app notifications are independent and do not disable email or SMS delivery.</p>
+    </section>
+
+    <section>
+      <h2>13. Payment Architecture</h2>
+      <p>Integrated gateway set includes Paystack, Flutterwave, Stripe, PayPal, Razorpay, and Square.</p>
+      <ul>
+        <li>Per-gateway activation and credentials via settings</li>
+        <li>Gateway diagnostics before production go-live</li>
+        <li>Booking progression tied to successful payment verification</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>14. Data Model Summary</h2>
+      <ul>
+        <li>Users, Hostels, Rooms, Beds</li>
+        <li>Bookings, Payments, Complaints</li>
+        <li>Hostel change requests, Room change requests</li>
+        <li>System settings and notification records</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>15. Critical Route Summary</h2>
+      <ul>
+        <li><code>/install</code> installer</li>
+        <li><code>/</code> root (welcome or login redirect based on setting)</li>
+        <li><code>/dashboard</code> role-routed dashboard</li>
+        <li><code>/admin/*</code>, <code>/manager/*</code>, <code>/student/*</code> protected modules</li>
+        <li><code>/notifications</code> in-app notification center</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>16. Security Checklist</h2>
+      <ul>
+        <li>Enable HTTPS and secure cookies in production</li>
+        <li>Set <code>APP_DEBUG=false</code> in production</li>
+        <li>Use strong credentials for DB, SMTP, gateways, API keys</li>
+        <li>Rotate API/webhook secrets periodically</li>
+        <li>Back up database and uploaded assets regularly</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>17. Troubleshooting</h2>
+      <ul>
+        <li>If installer loops, verify <code>.env</code> permissions and lock file state</li>
+        <li>If images fail, run <code>php artisan storage:link</code></li>
+        <li>If route/view mismatch occurs, run <code>php artisan optimize:clear</code></li>
+        <li>If payments fail, verify gateway keys and callback URLs</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>18. Maintenance Plan</h2>
+      <ul>
+        <li>Daily: review failed jobs/log errors and pending critical requests</li>
+        <li>Weekly: test gateway/SMS/SMTP health and backup restore validity</li>
+        <li>Monthly: review inactive users, security patches, and dependency updates</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
+

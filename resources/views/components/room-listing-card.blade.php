@@ -4,6 +4,8 @@
     'actionUrl' => null,
     'actionLabel' => 'Book Now',
     'periodLabel' => null,
+    'locked' => false,
+    'lockedLabel' => 'Booking Locked',
 ])
 
 @php
@@ -86,7 +88,11 @@
             @if(isset($actions))
                 <div>{{ $actions }}</div>
             @elseif($actionUrl)
-                @if($availableBeds > 0 && $isAvailable)
+                @if($locked)
+                    <button type="button" disabled class="block w-full text-center bg-gray-400 dark:bg-slate-700 text-white px-4 py-2 rounded-lg cursor-not-allowed font-medium">
+                        {{ $lockedLabel }}
+                    </button>
+                @elseif($availableBeds > 0 && $isAvailable)
                     <a href="{{ $actionUrl }}" class="block w-full text-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium">
                         {{ $actionLabel }}
                     </a>

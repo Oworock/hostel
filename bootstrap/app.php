@@ -13,8 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
+            \App\Http\Middleware\RedirectToInstaller::class,
             \App\Http\Middleware\HandleImpersonation::class,
             \App\Http\Middleware\SecureHeaders::class,
+            \App\Http\Middleware\EnforcePasswordChange::class,
         ]);
         
         $middleware->alias([

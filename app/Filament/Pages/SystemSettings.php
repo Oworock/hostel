@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\PaymentGateway;
 use App\Services\PaymentGatewayDiagnosticsService;
+use App\Services\NotificationTemplateService;
 use App\Support\CurrencyCatalog;
 use Filament\Forms;
 use Filament\Pages\Page;
@@ -55,6 +56,7 @@ class SystemSettings extends Page
         $registrationRequiredFields = json_decode(SystemSetting::getSetting('registration_required_fields_json', ''), true);
         $registrationCustomFields = json_decode(SystemSetting::getSetting('registration_custom_fields_json', ''), true);
         $webhookEvents = json_decode(SystemSetting::getSetting('webhook_events_json', ''), true);
+        $notificationTemplates = app(NotificationTemplateService::class)->forRepeater();
         
         $defaultCustomCss = $this->getDefaultCustomCss();
         $currentCustomCss = SystemSetting::getSetting('custom_css', '');
@@ -69,6 +71,7 @@ class SystemSettings extends Page
             'app_phone' => SystemSetting::getSetting('app_phone', config('app.phone')),
             'system_currency' => SystemSetting::getSetting('system_currency', 'NGN'),
             'website_theme' => SystemSetting::getSetting('website_theme', 'oceanic'),
+            'homepage_enabled' => filter_var(SystemSetting::getSetting('homepage_enabled', true), FILTER_VALIDATE_BOOL),
             'custom_css' => $currentCustomCss,
             'registration_fields' => is_array($registrationFields) ? $registrationFields : ['phone'],
             'registration_required_fields' => is_array($registrationRequiredFields) ? $registrationRequiredFields : [],
@@ -121,6 +124,7 @@ class SystemSettings extends Page
             'webhook_events' => is_array($webhookEvents) ? $webhookEvents : [],
             'api_enabled' => filter_var(SystemSetting::getSetting('api_enabled', false), FILTER_VALIDATE_BOOL),
             'api_access_key' => SystemSetting::getSetting('api_access_key', ''),
+            'notification_templates' => $notificationTemplates,
         ]);
     }
 
@@ -177,6 +181,10 @@ class SystemSettings extends Page
                                 Forms\Components\Section::make('Website Theme')
                                     ->description('Choose one of five professional preset website layouts/design directions.')
                                     ->schema([
+                                        Forms\Components\Toggle::make('homepage_enabled')
+                                            ->label('Enable Welcome/Home Page')
+                                            ->helperText('If disabled, the root URL redirects to Login and the welcome page is inaccessible.')
+                                            ->default(true),
                                         Forms\Components\Select::make('website_theme')
                                             ->label('Theme Preset')
                                             ->options([
@@ -558,6 +566,34 @@ class SystemSettings extends Page
                                             ->content(new HtmlString('<button type="button" onclick="(function(){const i=document.querySelector(\'input[name=&quot;data[api_access_key]&quot;]\'); if(!i||!i.value){alert(\'No API key available.\');return;} navigator.clipboard.writeText(i.value).then(()=>alert(\'API key copied.\')).catch(()=>alert(\'Copy failed. Please copy manually.\'));})();" class="fi-btn fi-btn-size-sm fi-color-primary fi-btn-color-primary fi-ac-action fi-ac-btn-action">Copy API Key</button>')),
                                     ]),
                             ]),
+
+                        Forms\Components\Tabs\Tab::make('Notifications')
+                            ->icon('heroicon-m-bell')
+                            ->schema([
+                                Forms\Components\Section::make('System Notification Message Templates')
+                                    ->description('Customize in-app, email, and SMS message copy. Placeholders: {student_name}, {actor_name}, {current_hostel}, {requested_hostel}, {current_room}, {requested_room}, {status}, {reason}.')
+                                    ->schema([
+                                        Forms\Components\Repeater::make('notification_templates')
+                                            ->label('Event Templates')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('event')
+                                                    ->disabled()
+                                                    ->dehydrated(true)
+                                                    ->required(),
+                                                Forms\Components\TextInput::make('title')
+                                                    ->required()
+                                                    ->maxLength(255),
+                                                Forms\Components\Textarea::make('message')
+                                                    ->rows(2)
+                                                    ->required(),
+                                            ])
+                                            ->columns(1)
+                                            ->reorderable(false)
+                                            ->addable(false)
+                                            ->deletable(false)
+                                            ->columnSpanFull(),
+                                    ]),
+                            ]),
                     ]),
             ])
             ->statePath('data');
@@ -577,6 +613,17 @@ class SystemSettings extends Page
         $data['registration_fields_json'] = json_encode(array_values($data['registration_fields'] ?? []));
         $data['registration_required_fields_json'] = json_encode(array_values($data['registration_required_fields'] ?? []));
         $data['registration_custom_fields_json'] = json_encode(array_values($data['registration_custom_fields'] ?? []));
+        $data['notification_templates_json'] = json_encode(
+            collect($data['notification_templates'] ?? [])
+                ->filter(fn ($row) => is_array($row) && !empty($row['event']))
+                ->mapWithKeys(fn ($row) => [
+                    (string) $row['event'] => [
+                        'title' => trim((string) ($row['title'] ?? '')),
+                        'message' => trim((string) ($row['message'] ?? '')),
+                    ],
+                ])
+                ->all()
+        );
 
         // Keep required list subset of visible fields.
         $visibleFields = collect($data['registration_fields'] ?? [])->values();
@@ -613,7 +660,7 @@ class SystemSettings extends Page
         $data['registration_custom_fields_json'] = json_encode($customFields);
 
         foreach ($data as $key => $value) {
-            if (!in_array($key, ['test_phone', 'sms_payload_template', 'sms_custom_headers', 'webhook_events', 'registration_fields', 'registration_required_fields', 'registration_custom_fields'], true)) {
+            if (!in_array($key, ['test_phone', 'sms_payload_template', 'sms_custom_headers', 'webhook_events', 'registration_fields', 'registration_required_fields', 'registration_custom_fields', 'notification_templates'], true)) {
                 SystemSetting::setSetting($key, $value);
             }
         }

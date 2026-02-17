@@ -122,6 +122,7 @@ class DashboardController extends Controller
     private function studentDashboard()
     {
         $student = auth()->user();
+        $student->load('hostel');
 
         $currentBooking = $student->bookings()
             ->whereIn('status', ['approved', 'pending'])
@@ -161,9 +162,12 @@ class DashboardController extends Controller
                 : null,
         ];
 
+        $currentHostelName = $student->hostel?->name
+            ?? $currentBooking?->room?->hostel?->name;
+
         return view(
             'student.dashboard',
-            compact('stats', 'currentBooking', 'recentBookings', 'recentPayments', 'recentComplaints')
+            compact('stats', 'currentBooking', 'recentBookings', 'recentPayments', 'recentComplaints', 'currentHostelName')
         );
     }
 

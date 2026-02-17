@@ -56,6 +56,7 @@ CSS;
             'timezone' => 'UTC',
             'support_email' => 'support@hostelmanager.com',
             'website_theme' => 'oceanic',
+            'homepage_enabled' => '1',
             'custom_css' => $defaultCustomCss,
             'registration_fields_json' => json_encode(['phone']),
             'registration_required_fields_json' => json_encode([]),
@@ -110,6 +111,40 @@ CSS;
                 'api_key' => '{api_key}',
             ]),
             'sms_custom_headers_json' => json_encode([]),
+            'notification_templates_json' => json_encode([
+                'hostel_change.submitted' => [
+                    'title' => 'Hostel Change Request Submitted',
+                    'message' => 'A hostel change request by {student_name} was submitted and is awaiting manager review.',
+                ],
+                'hostel_change.manager_approved' => [
+                    'title' => 'Hostel Change Manager Approved',
+                    'message' => '{actor_name} approved a hostel change request. Awaiting admin approval.',
+                ],
+                'hostel_change.manager_rejected' => [
+                    'title' => 'Hostel Change Rejected by Manager',
+                    'message' => '{actor_name} rejected a hostel change request.',
+                ],
+                'hostel_change.admin_approved' => [
+                    'title' => 'Hostel Change Approved',
+                    'message' => '{actor_name} approved the hostel change request.',
+                ],
+                'hostel_change.admin_rejected' => [
+                    'title' => 'Hostel Change Rejected by Admin',
+                    'message' => '{actor_name} rejected the hostel change request.',
+                ],
+                'room_change.submitted' => [
+                    'title' => 'Room Change Request Submitted',
+                    'message' => '{student_name} requested to move from room {current_room} to room {requested_room}.',
+                ],
+                'room_change.approved' => [
+                    'title' => 'Room Change Approved',
+                    'message' => '{actor_name} approved room change to {requested_room}.',
+                ],
+                'room_change.rejected' => [
+                    'title' => 'Room Change Rejected',
+                    'message' => '{actor_name} rejected room change request to {requested_room}.',
+                ],
+            ]),
         ];
 
         foreach ($settings as $key => $value) {

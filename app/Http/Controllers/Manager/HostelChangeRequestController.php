@@ -30,6 +30,9 @@ class HostelChangeRequestController extends Controller
     {
         $manager = auth()->user();
         $hostelIds = $manager->managedHostelIds();
+        $request->validate([
+            'manager_note' => ['nullable', 'string', 'max:1000'],
+        ]);
 
         abort_unless($hostelIds->contains($hostelChangeRequest->requested_hostel_id), 403);
 
@@ -52,6 +55,9 @@ class HostelChangeRequestController extends Controller
     {
         $manager = auth()->user();
         $hostelIds = $manager->managedHostelIds();
+        $validated = $request->validate([
+            'manager_note' => ['required', 'string', 'max:1000'],
+        ]);
 
         abort_unless($hostelIds->contains($hostelChangeRequest->requested_hostel_id), 403);
 
@@ -63,7 +69,7 @@ class HostelChangeRequestController extends Controller
             'status' => 'rejected',
             'manager_approved_by' => $manager->id,
             'manager_approved_at' => now(),
-            'manager_note' => $request->input('manager_note'),
+            'manager_note' => $validated['manager_note'],
         ]);
         $this->notifier->managerRejected($hostelChangeRequest->fresh(['student', 'requestedHostel', 'currentHostel']), $manager);
 

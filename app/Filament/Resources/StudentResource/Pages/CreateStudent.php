@@ -13,6 +13,7 @@ class CreateStudent extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['role'] = 'student';
+        $data['name'] = trim((string) ($data['first_name'] ?? '') . ' ' . (string) ($data['last_name'] ?? ''));
         return $data;
     }
 }

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostel Management System Documentation</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="toc">
+      <h2>Table of Contents</h2>
+      <nav>
+        <a href="#overview">1. Overview</a>
+        <a href="#requirements">2. Requirements</a>
+        <a href="#installation-options">3. Installation Options</a>
+        <a href="#layman-setup">4. Beginner Setup (Layman Guide)</a>
+        <a href="#installer-flow">5. First-Time Installer Flow</a>
+        <a href="#manual-setup">6. Manual Setup (CLI)</a>
+        <a href="#deployment">7. Deployment by Server Type</a>
+        <a href="#configuration">8. Configuration & Settings</a>
+        <a href="#roles">9. User Roles & Access</a>
+        <a href="#admin-module">10. Admin Module</a>
+        <a href="#manager-module">11. Manager Module</a>
+        <a href="#student-module">12. Student Module</a>
+        <a href="#notifications">13. Notification System</a>
+        <a href="#payments">14. Payment System</a>
+        <a href="#data-model">15. Data Model (Core Entities)</a>
+        <a href="#routes">16. Important Routes</a>
+        <a href="#security">17. Security Notes</a>
+        <a href="#troubleshooting">18. Troubleshooting</a>
+        <a href="#maintenance">19. Maintenance Checklist</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header>
+        <div class="header-row">
+          <div>
+            <h1>Hostel Management System Documentation</h1>
+            <p>Complete setup and module guide for Admin, Manager, and Student workflows.</p>
+          </div>
+          <a class="print-link" href="./print.html" target="_blank" rel="noopener">Print/PDF Version</a>
+        </div>
+      </header>
+
+      <section id="overview">
+        <h2>1. Overview</h2>
+        <p>This project is a multi-role hostel management platform built with Laravel. It supports:</p>
+        <ul>
+          <li>Public room browsing and optional public welcome page</li>
+          <li>Student booking and payment flows</li>
+          <li>Manager operations for rooms, bookings, complaints, and change requests</li>
+          <li>Admin operations for global governance, settings, content, gateways, and analytics</li>
+          <li>System notifications (in-app), plus optional email/SMS notifications</li>
+        </ul>
+      </section>
+
+      <section id="requirements">
+        <h2>2. Requirements</h2>
+        <ul>
+          <li>PHP 8.2 or newer</li>
+          <li>Composer 2.x</li>
+          <li>Node.js 18+ and npm</li>
+          <li>Database: SQLite, MySQL, or PostgreSQL</li>
+          <li>Web server: Apache or Nginx (production)</li>
+          <li>Extensions commonly required by Laravel: <code>pdo</code>, <code>mbstring</code>, <code>openssl</code>, <code>tokenizer</code>, <code>xml</code>, <code>ctype</code>, <code>json</code>, <code>fileinfo</code>, <code>bcmath</code></li>
+        </ul>
+      </section>
+
+      <section id="installation-options">
+        <h2>3. Installation Options</h2>
+        <p>You can install the project in two ways:</p>
+        <ol>
+          <li><strong>Web Installer</strong>: For first-time setup when <code>.env</code> is missing.</li>
+          <li><strong>Manual CLI</strong>: Preferred for developers and DevOps workflows.</li>
+        </ol>
+        <figure class="doc-figure">
+          <img src="./assets/setup-flow.svg" alt="Setup flow placeholder diagram">
+          <figcaption>Setup flow: install requirements, configure environment, run installer, and login.</figcaption>
+        </figure>
+      </section>
+
+      <section id="layman-setup">
+        <h2>4. Beginner Setup (Layman Guide)</h2>
+        <p>If you are not technical, follow these exact steps in order. Do not skip any step.</p>
+        <h3>Step 1: Prepare your computer/server</h3>
+        <ol>
+          <li>Install PHP 8.2+, Composer, Node.js (18+), and npm.</li>
+          <li>Install one database: SQLite (easiest), MySQL, or PostgreSQL.</li>
+          <li>Make sure your server can run terminal commands.</li>
+        </ol>
+        <h3>Step 2: Put project files on the server</h3>
+        <ol>
+          <li>Upload/copy this project folder to your server.</li>
+          <li>Open terminal in the project root (same location as <code>artisan</code> file).</li>
+        </ol>
+        <h3>Step 3: Install project dependencies</h3>
+        <pre><code>composer install
+npm install</code></pre>
+        <h3>Step 4: Start first-time installation</h3>
+        <ol>
+          <li>Make sure <code>.env</code> file is not present yet (for installer mode).</li>
+          <li>Open your site URL in browser. The system sends you to <code>/install</code>.</li>
+          <li>Fill app details, database details, and admin details.</li>
+          <li>Submit form and wait for completion.</li>
+        </ol>
+        <h3>Step 5: Login and start using</h3>
+        <ol>
+          <li>Go to Login page.</li>
+          <li>Sign in with the admin account you created during installation.</li>
+          <li>Open <strong>System Settings</strong> and configure payment, sms, email, and theme options.</li>
+          <li>Create managers, hostels, rooms, and beds.</li>
+          <li>Students can now register, login, book, and pay.</li>
+        </ol>
+        <p class="note"><strong>Tip:</strong> If homepage is disabled in settings, your website starts from login directly.</p>
+      </section>
+
+      <section id="installer-flow">
+        <h2>5. First-Time Installer Flow</h2>
+        <p>If <code>.env</code> does not exist, middleware automatically redirects users to <code>/install</code>.</p>
+        <p>The installer collects:</p>
+        <ul>
+          <li>App name and app URL</li>
+          <li>Database driver and credentials</li>
+          <li>Primary admin account credentials</li>
+        </ul>
+        <p>On submit, it performs:</p>
+        <ol>
+          <li>Create/update <code>.env</code></li>
+          <li>Generate app key</li>
+          <li>Run migrations</li>
+          <li>Run seeders</li>
+          <li>Create/update initial admin user</li>
+          <li>Create install lock file: <code>storage/framework/installed.lock</code></li>
+        </ol>
+        <p>After install lock exists, installer routes are blocked and users are redirected to login.</p>
+      </section>
+
+      <section id="manual-setup">
+        <h2>6. Manual Setup (CLI)</h2>
+        <pre><code>composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+
+# Configure DB in .env, then:
+php artisan migrate
+php artisan db:seed
+
+# Build frontend assets:
+npm run build
+
+# Local development:
+php artisan serve
+npm run dev</code></pre>
+      </section>
+
+      <section id="deployment">
+        <h2>7. Deployment by Server Type</h2>
+
+        <h3>6.1 Nginx + PHP-FPM (Ubuntu VPS)</h3>
+        <ul>
+          <li>Point web root to <code>public/</code></li>
+          <li>Set permissions for <code>storage/</code> and <code>bootstrap/cache</code></li>
+          <li>Run <code>php artisan config:cache</code>, <code>route:cache</code>, <code>view:cache</code></li>
+          <li>Use supervisor/systemd for queues if enabled</li>
+        </ul>
+
+        <h3>6.2 Apache (Shared or VPS)</h3>
+        <ul>
+          <li>Set DocumentRoot to <code>public/</code></li>
+          <li>Ensure mod_rewrite is enabled</li>
+          <li>Place <code>.env</code> outside public exposure</li>
+          <li>Run migrations/seeders via SSH or deployment scripts</li>
+        </ul>
+
+        <h3>6.3 cPanel Shared Hosting</h3>
+        <ul>
+          <li>Upload project files</li>
+          <li>Map domain/subdomain to <code>public/</code></li>
+          <li>Create DB from cPanel and update <code>.env</code></li>
+          <li>Run artisan commands through SSH or terminal panel</li>
+        </ul>
+
+        <h3>6.4 SQLite-only Deployments</h3>
+        <ul>
+          <li>Create DB file path in <code>.env</code>, e.g. <code>database/database.sqlite</code></li>
+          <li>Ensure writable permissions for DB file and parent folder</li>
+        </ul>
+      </section>
+
+      <section id="configuration">
+        <h2>8. Configuration & Settings</h2>
+        <p>Admin can manage global settings from System Settings, including:</p>
+        <ul>
+          <li>General app settings and contacts</li>
+          <li>Website theme and custom CSS</li>
+          <li>Toggle welcome page on/off (root URL behavior)</li>
+          <li>Registration form fields (standard + custom dynamic fields)</li>
+          <li>Payment gateways and diagnostics</li>
+          <li>SMS and SMTP settings with test actions</li>
+          <li>Webhook and API integration settings</li>
+          <li>Notification message templates</li>
+        </ul>
+      </section>
+
+      <section id="roles">
+        <h2>9. User Roles & Access</h2>
+        <ul>
+          <li><strong>Admin</strong>: full system governance and global settings</li>
+          <li><strong>Manager</strong>: manages assigned hostels and operational workflows</li>
+          <li><strong>Student</strong>: booking, payment, profile, and request workflows</li>
+        </ul>
+        <figure class="doc-figure">
+          <img src="./assets/roles-map.svg" alt="Role map placeholder diagram">
+          <figcaption>Role map showing Admin, Manager, and Student responsibilities.</figcaption>
+        </figure>
+      </section>
+
+      <section id="admin-module">
+        <h2>10. Admin Module</h2>
+        <ul>
+          <li>Dashboard with system metrics and key widgets</li>
+          <li>Manage admins/managers and students separately</li>
+          <li>Manage hostels, rooms, beds, allocations, complaints</li>
+          <li>Oversee booking/payment records and manual approvals</li>
+          <li>Manage website content CRUD (global header/footer + welcome body)</li>
+          <li>Manage room-change and hostel-change requests centrally</li>
+          <li>Import/export students with Excel support</li>
+          <li>Generate/view API keys and webhook settings</li>
+          <li>Notification center (in-app) and notification template customization</li>
+        </ul>
+      </section>
+
+      <section id="manager-module">
+        <h2>11. Manager Module</h2>
+        <ul>
+          <li>Manager dashboard with occupancy, booking, payment, complaint insights</li>
+          <li>Manage rooms and bed spaces within assigned hostels</li>
+          <li>Approve/reject bookings for assigned hostels</li>
+          <li>Respond to complaints (hostel-scoped)</li>
+          <li>Approve/reject hostel change requests with manager comments</li>
+          <li>Approve/reject room change requests with manager comments</li>
+          <li>View in-app notifications and mark as read</li>
+        </ul>
+      </section>
+
+      <section id="student-module">
+        <h2>12. Student Module</h2>
+        <ul>
+          <li>Browse available rooms with image cards and real-time bed availability</li>
+          <li>Create bookings and complete payments</li>
+          <li>Download receipts after successful payment</li>
+          <li>Manage complaints and profile</li>
+          <li>Request hostel change (manager + admin approval flow)</li>
+          <li>Request room change (manager approval flow)</li>
+          <li>View in-app notifications and mark as read</li>
+        </ul>
+        <p>Business rule: students are restricted to one active/pending booking at a time.</p>
+        <figure class="doc-figure">
+          <img src="./assets/dashboard-overview.svg" alt="Dashboard placeholder diagram">
+          <figcaption>Dashboard overview: quick metrics, modules, and notification entry point.</figcaption>
+        </figure>
+      </section>
+
+      <section id="notifications">
+        <h2>13. Notification System</h2>
+        <p>The system supports three channels:</p>
+        <ul>
+          <li><strong>In-app system notifications</strong> (database notifications, dashboard bell + list pages)</li>
+          <li><strong>Email notifications</strong> (where configured)</li>
+          <li><strong>SMS notifications</strong> (where configured)</li>
+        </ul>
+        <p>In-app notifications are independent and do not disable email or SMS.</p>
+      </section>
+
+      <section id="payments">
+        <h2>14. Payment System</h2>
+        <p>Supported gateways include Paystack, Flutterwave, Stripe, PayPal, Razorpay, and Square. Admin can:</p>
+        <ul>
+          <li>Enable/disable each gateway</li>
+          <li>Set keys and environment settings</li>
+          <li>Run gateway health checks before go-live</li>
+        </ul>
+      </section>
+
+      <section id="data-model">
+        <h2>15. Data Model (Core Entities)</h2>
+        <ul>
+          <li>Users (admin/manager/student)</li>
+          <li>Hostels, Rooms, Beds</li>
+          <li>Bookings and Payments</li>
+          <li>Complaints</li>
+          <li>Hostel change requests</li>
+          <li>Room change requests</li>
+          <li>System settings and website content settings</li>
+          <li>Notifications</li>
+        </ul>
+      </section>
+
+      <section id="routes">
+        <h2>16. Important Routes</h2>
+        <ul>
+          <li><code>/install</code> installer (first-time setup)</li>
+          <li><code>/</code> root (welcome or login redirect based on setting)</li>
+          <li><code>/book-rooms</code> public room listing</li>
+          <li><code>/dashboard</code> role-aware dashboard redirect</li>
+          <li><code>/admin/*</code> admin routes</li>
+          <li><code>/manager/*</code> manager routes</li>
+          <li><code>/student/*</code> student routes</li>
+          <li><code>/notifications</code> in-app notification center</li>
+        </ul>
+      </section>
+
+      <section id="security">
+        <h2>17. Security Notes</h2>
+        <ul>
+          <li>Role middleware and policies enforce access boundaries</li>
+          <li>CSRF protection and framework session/auth controls are enabled</li>
+          <li>API key and webhook secret should be rotated periodically</li>
+          <li>Set <code>APP_DEBUG=false</code> in production</li>
+          <li>Use HTTPS in production for all environments</li>
+        </ul>
+      </section>
+
+      <section id="troubleshooting">
+        <h2>18. Troubleshooting</h2>
+        <ul>
+          <li><strong>Installer keeps showing:</strong> check <code>.env</code> existence and file permissions</li>
+          <li><strong>DB errors during migrate:</strong> verify DB credentials and driver extensions</li>
+          <li><strong>Assets not loading:</strong> run <code>npm run build</code> and verify Vite output</li>
+          <li><strong>Storage image issues:</strong> run <code>php artisan storage:link</code></li>
+          <li><strong>Route/cache mismatch:</strong> clear caches with <code>php artisan optimize:clear</code></li>
+        </ul>
+      </section>
+
+      <section id="maintenance">
+        <h2>19. Maintenance Checklist</h2>
+        <ul>
+          <li>Daily backups for DB and uploaded files</li>
+          <li>Monitor logs in <code>storage/logs</code></li>
+          <li>Review failed payments and pending requests regularly</li>
+          <li>Test SMTP/SMS/gateways after credential updates</li>
+          <li>Keep dependencies updated and security patches applied</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

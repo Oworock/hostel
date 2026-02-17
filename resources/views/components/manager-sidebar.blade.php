@@ -59,11 +59,25 @@
             <span class="menu-label">Complaints Queue</span>
         </a>
 
+        <a href="{{ route('notifications.index') }}" class="{{ $base }} {{ request()->routeIs('notifications.*') ? $active : $idle }}">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2a2 2 0 01-.6 1.4L4 17h5m6 0a3 3 0 11-6 0m6 0H9"></path>
+            </svg>
+            <span class="menu-label">Notifications</span>
+        </a>
+
         <a href="{{ route('manager.hostel-change.index') }}" class="{{ $base }} {{ request()->routeIs('manager.hostel-change.*') ? $active : $idle }}">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
             </svg>
             <span class="menu-label">Hostel Change</span>
+        </a>
+
+        <a href="{{ route('manager.room-change.index') }}" class="{{ $base }} {{ request()->routeIs('manager.room-change.*') ? $active : $idle }}">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12M4 12h16M8 17h12"></path>
+            </svg>
+            <span class="menu-label">Room Change</span>
         </a>
     </div>
 

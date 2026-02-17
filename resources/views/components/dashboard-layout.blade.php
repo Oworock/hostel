@@ -10,7 +10,7 @@
     <script>
         (function () {
             try {
-                var mode = localStorage.getItem('dashboard.themeMode');
+                var mode = localStorage.getItem('site.themeMode') || localStorage.getItem('dashboard.themeMode');
                 if (!mode) {
                     var legacyDark = localStorage.getItem('dashboard.darkMode');
                     if (legacyDark !== null) {
@@ -32,6 +32,20 @@
         .menu-collapsed .sidebar-menu button { justify-content: center; }
         .menu-collapsed .sidebar-menu .ml-8 { margin-left: 0 !important; }
         .sidebar-transition { transition: width .2s ease, transform .2s ease; }
+        #sidebar-desktop { display: none; }
+        @media (min-width: 1024px) {
+            #sidebar-desktop { display: flex; }
+        }
+        #sidebar-mobile {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 50;
+            width: min(22rem, 92vw);
+            transform: translateX(-100%);
+        }
+        #sidebar-mobile.is-open { transform: translateX(0); }
         .sidebar-menu .menu-card {
             border: 1px solid rgb(226 232 240);
             border-radius: 0.75rem;
@@ -146,6 +160,33 @@
             box-shadow: none;
         }
         .dark .uniform-card:hover { box-shadow: none; }
+        .dark main .bg-white { background-color: rgb(15 23 42) !important; }
+        .dark main .bg-gray-50 { background-color: rgb(30 41 59) !important; }
+        .dark main .bg-gray-100 { background-color: rgb(51 65 85) !important; }
+        .dark main .text-gray-900 { color: rgb(241 245 249) !important; }
+        .dark main .text-gray-800 { color: rgb(226 232 240) !important; }
+        .dark main .text-gray-700 { color: rgb(203 213 225) !important; }
+        .dark main .text-gray-600 { color: rgb(148 163 184) !important; }
+        .dark main .text-gray-500 { color: rgb(148 163 184) !important; }
+        .dark main .border-gray-200 { border-color: rgb(51 65 85) !important; }
+        .dark main .border-gray-300 { border-color: rgb(71 85 105) !important; }
+        .dark main input,
+        .dark main select,
+        .dark main textarea {
+            background-color: rgb(15 23 42) !important;
+            color: rgb(241 245 249) !important;
+            border-color: rgb(71 85 105) !important;
+        }
+        .dark main input::placeholder,
+        .dark main textarea::placeholder {
+            color: rgb(148 163 184) !important;
+        }
+        .dark main table thead {
+            background-color: rgb(30 41 59) !important;
+        }
+        .dark main table tbody tr:hover {
+            background-color: rgb(30 41 59) !important;
+        }
         .uniform-page a.bg-blue-600,
         .uniform-page button.bg-blue-600,
         main a.bg-blue-600,
@@ -192,6 +233,8 @@
         $headerPhone = \App\Models\SystemSetting::getSetting('global_header_contact_phone', '');
         $currentUser = auth()->user();
         $profileImage = $currentUser?->profile_image ? asset('storage/' . $currentUser->profile_image) : null;
+        $latestNotifications = $currentUser?->notifications()?->latest()->limit(8)->get() ?? collect();
+        $unreadNotificationCount = $currentUser?->unreadNotifications()?->count() ?? 0;
         $profileRoute = null;
         if ($currentUser?->isStudent()) {
             $profileRoute = route('student.profile.edit');
@@ -240,6 +283,49 @@
                     </div>
 
                     @if($currentUser)
+                        <div class="relative" id="notification-menu-root">
+                            <button id="notification-menu-button" type="button" class="relative inline-flex items-center justify-center rounded-full border border-gray-300 dark:border-slate-700 p-2 hover:bg-gray-100 dark:hover:bg-slate-800">
+                                <svg class="w-5 h-5 text-gray-700 dark:text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2a2 2 0 01-.6 1.4L4 17h5m6 0a3 3 0 11-6 0m6 0H9"></path>
+                                </svg>
+                                @if($unreadNotificationCount > 0)
+                                    <span class="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] text-[10px] font-bold rounded-full bg-red-600 text-white px-1">
+                                        {{ $unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount }}
+                                    </span>
+                                @endif
+                            </button>
+
+                            <div id="notification-menu-panel" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg z-50">
+                                <div class="px-4 py-3 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
+                                    <p class="text-sm font-semibold text-gray-800 dark:text-slate-100">Notifications</p>
+                                    <form method="POST" action="{{ route('notifications.mark-all-read') }}">
+                                        @csrf
+                                        <button type="submit" class="text-xs text-blue-600 dark:text-blue-300 hover:underline">Mark all read</button>
+                                    </form>
+                                </div>
+                                <div class="max-h-80 overflow-y-auto">
+                                    @forelse($latestNotifications as $notification)
+                                        <div class="px-4 py-3 border-b border-gray-100 dark:border-slate-800 {{ $notification->read_at ? '' : 'bg-blue-50/70 dark:bg-blue-900/10' }}">
+                                            <p class="text-sm font-semibold text-gray-800 dark:text-slate-100">{{ $notification->data['title'] ?? 'Notification' }}</p>
+                                            <p class="text-xs text-gray-600 dark:text-slate-300 mt-1">{{ $notification->data['message'] ?? '' }}</p>
+                                            <div class="mt-2 flex items-center justify-between">
+                                                <p class="text-[11px] text-gray-500 dark:text-slate-400">{{ $notification->created_at?->diffForHumans() }}</p>
+                                                @if(!$notification->read_at)
+                                                    <form method="POST" action="{{ route('notifications.read', $notification->id) }}">
+                                                        @csrf
+                                                        <button type="submit" class="text-[11px] text-blue-600 dark:text-blue-300 hover:underline">Mark read</button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <p class="px-4 py-6 text-sm text-gray-500 dark:text-slate-400">No notifications yet.</p>
+                                    @endforelse
+                                </div>
+                                <a href="{{ route('notifications.index') }}" class="block px-4 py-2 text-sm text-center text-blue-600 dark:text-blue-300 hover:bg-gray-50 dark:hover:bg-slate-800">View all notifications</a>
+                            </div>
+                        </div>
+
                         <div class="relative" id="user-menu-root">
                             <button id="user-menu-button" type="button" class="flex items-center gap-2 rounded-full border border-gray-300 dark:border-slate-700 px-2 py-1 hover:bg-gray-100 dark:hover:bg-slate-800">
                                 @if($profileImage)
@@ -300,7 +386,7 @@
         </header>
 
         <div class="flex flex-1 min-h-0">
-            <aside id="sidebar-desktop" class="hidden lg:flex lg:flex-col bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 sidebar-transition w-80 xl:w-96">
+            <aside id="sidebar-desktop" class="lg:flex lg:flex-col bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 sidebar-transition w-80 xl:w-96 sticky top-0 self-start h-[calc(100vh-4rem)]">
                 <nav class="sidebar-menu px-3 py-4 space-y-2 overflow-y-auto flex-1">
                     @if(isset($sidebar))
                         {{ $sidebar }}
@@ -312,8 +398,11 @@
                 </nav>
             </aside>
 
-            <aside id="sidebar-mobile" class="lg:hidden fixed top-16 bottom-0 left-0 z-40 w-80 max-w-[90vw] bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 shadow-lg -translate-x-full sidebar-transition">
-                <nav class="sidebar-menu px-3 py-4 space-y-2 overflow-y-auto h-full pb-16">
+            <aside id="sidebar-mobile" class="lg:hidden bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 shadow-lg sidebar-transition">
+                <div class="h-16 border-b border-gray-200 dark:border-slate-800 flex items-center px-4">
+                    <span class="font-semibold text-gray-900 dark:text-slate-100">Menu</span>
+                </div>
+                <nav class="sidebar-menu px-3 py-4 space-y-2 overflow-y-auto h-[calc(100%-4rem)] pb-16">
                     @if(isset($sidebar))
                         {{ $sidebar }}
                     @elseif(auth()->user()?->isManager())
@@ -351,6 +440,8 @@
             const mobileSidebar = document.getElementById('sidebar-mobile');
             const overlay = document.getElementById('sidebar-overlay');
             const toggle = document.getElementById('sidebar-toggle');
+            const notificationMenuButton = document.getElementById('notification-menu-button');
+            const notificationMenuPanel = document.getElementById('notification-menu-panel');
             const userMenuButton = document.getElementById('user-menu-button');
             const userMenuPanel = document.getElementById('user-menu-panel');
             const themeButtons = Array.from(document.querySelectorAll('[data-theme-mode]'));
@@ -375,9 +466,10 @@
 
             function openMobileSidebar(open) {
                 if (!mobileSidebar || !overlay) return;
-                mobileSidebar.classList.toggle('-translate-x-full', !open);
-                mobileSidebar.classList.toggle('translate-x-0', open);
+                mobileSidebar.classList.toggle('is-open', open);
                 overlay.classList.toggle('hidden', !open);
+                document.body.classList.toggle('overflow-hidden', open);
+                toggle?.setAttribute('aria-expanded', open ? 'true' : 'false');
             }
 
             function resolveIsDark(mode) {
@@ -392,7 +484,7 @@
             }
 
             function getThemeMode() {
-                const storedMode = localStorage.getItem('dashboard.themeMode');
+                const storedMode = localStorage.getItem('site.themeMode') || localStorage.getItem('dashboard.themeMode');
                 if (storedMode === 'light' || storedMode === 'dark' || storedMode === 'system') return storedMode;
                 try {
                     const legacyDark = localStorage.getItem('dashboard.darkMode');
@@ -402,6 +494,7 @@
             }
 
             function setThemeMode(mode) {
+                localStorage.setItem('site.themeMode', mode);
                 localStorage.setItem('dashboard.themeMode', mode);
                 applyTheme(mode);
                 updateThemeButtons(mode);
@@ -431,7 +524,7 @@
                 if (isDesktop()) {
                     setCollapsed(!shell.classList.contains('menu-collapsed'));
                 } else {
-                    const isOpen = mobileSidebar && mobileSidebar.classList.contains('translate-x-0');
+                    const isOpen = mobileSidebar && mobileSidebar.classList.contains('is-open');
                     openMobileSidebar(!isOpen);
                 }
             });
@@ -443,9 +536,18 @@
                 userMenuPanel?.classList.toggle('hidden');
             });
 
+            notificationMenuButton?.addEventListener('click', function (e) {
+                e.stopPropagation();
+                notificationMenuPanel?.classList.toggle('hidden');
+                userMenuPanel?.classList.add('hidden');
+            });
+
             document.addEventListener('click', function (e) {
                 if (!document.getElementById('user-menu-root')?.contains(e.target)) {
                     userMenuPanel?.classList.add('hidden');
+                }
+                if (!document.getElementById('notification-menu-root')?.contains(e.target)) {
+                    notificationMenuPanel?.classList.add('hidden');
                 }
             });
 
@@ -470,7 +572,7 @@
             }
 
             window.addEventListener('storage', function (event) {
-                if (event.key === 'dashboard.themeMode') {
+                if (event.key === 'dashboard.themeMode' || event.key === 'site.themeMode') {
                     const mode = getThemeMode();
                     applyTheme(mode);
                     updateThemeButtons(mode);
@@ -479,6 +581,12 @@
 
             window.addEventListener('resize', function () {
                 if (isDesktop()) openMobileSidebar(false);
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    openMobileSidebar(false);
+                }
             });
 
             mobileSidebar?.addEventListener('click', function (e) {

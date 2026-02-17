@@ -10,6 +10,12 @@ class EditStudent extends EditRecord
 {
     protected static string $resource = StudentResource::class;
 
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['name'] = trim((string) ($data['first_name'] ?? '') . ' ' . (string) ($data['last_name'] ?? ''));
+        return $data;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

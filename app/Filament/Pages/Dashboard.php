@@ -10,6 +10,7 @@ class Dashboard extends BaseDashboard
     {
         return [
             \App\Filament\Widgets\AdminStatsOverview::class,
+            \App\Filament\Widgets\AdminNotificationsWidget::class,
             \App\Filament\Widgets\PaymentSettingsHealthCheck::class,
             \App\Filament\Widgets\BookingChart::class,
             \App\Filament\Widgets\RevenueChart::class,

@@ -68,3 +68,70 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+@layer base {
+    .dark body {
+        background-color: rgb(2 6 23);
+        color: rgb(241 245 249);
+    }
+
+    .dark .bg-white {
+        background-color: rgb(15 23 42) !important;
+    }
+
+    .dark .bg-gray-50 {
+        background-color: rgb(30 41 59) !important;
+    }
+
+    .dark .bg-gray-100 {
+        background-color: rgb(51 65 85) !important;
+    }
+
+    .dark .text-black,
+    .dark .text-gray-900,
+    .dark .text-slate-900 {
+        color: rgb(241 245 249) !important;
+    }
+
+    .dark .text-gray-800,
+    .dark .text-slate-800 {
+        color: rgb(226 232 240) !important;
+    }
+
+    .dark .text-gray-700,
+    .dark .text-slate-700 {
+        color: rgb(203 213 225) !important;
+    }
+
+    .dark .text-gray-600,
+    .dark .text-gray-500,
+    .dark .text-slate-600,
+    .dark .text-slate-500 {
+        color: rgb(148 163 184) !important;
+    }
+
+    .dark .border-gray-100,
+    .dark .border-gray-200,
+    .dark .border-slate-200,
+    .dark .border-slate-300 {
+        border-color: rgb(51 65 85) !important;
+    }
+
+    .dark .border-gray-300,
+    .dark .border-slate-400 {
+        border-color: rgb(71 85 105) !important;
+    }
+
+    .dark input,
+    .dark select,
+    .dark textarea {
+        background-color: rgb(15 23 42) !important;
+        color: rgb(241 245 249) !important;
+        border-color: rgb(71 85 105) !important;
+    }
+
+    .dark input::placeholder,
+    .dark textarea::placeholder {
+        color: rgb(148 163 184) !important;
+    }
+}

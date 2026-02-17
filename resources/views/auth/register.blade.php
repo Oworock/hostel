@@ -20,14 +20,25 @@
             <input type="hidden" name="form_started_at" value="{{ time() }}">
             <input type="text" name="website" value="" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
             
-            <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-                <input type="text" id="name" name="name" value="{{ old('name') }}" 
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('name') border-red-500 @enderror"
-                       required>
-                @error('name')
-                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                @enderror
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+                    <input type="text" id="first_name" name="first_name" value="{{ old('first_name') }}" 
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('first_name') border-red-500 @enderror"
+                           required>
+                    @error('first_name')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
+                    <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" 
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('last_name') border-red-500 @enderror"
+                           required>
+                    @error('last_name')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
             
             <div>

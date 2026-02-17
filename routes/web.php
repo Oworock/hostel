@@ -12,12 +12,25 @@ use App\Http\Controllers\Student\HostelChangeRequestController as StudentHostelC
 use App\Http\Controllers\Student\PaymentController as StudentPaymentController;
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Manager\HostelChangeRequestController as ManagerHostelChangeRequestController;
+use App\Http\Controllers\Manager\RoomChangeRequestController as ManagerRoomChangeRequestController;
 use App\Http\Controllers\Api\ApiDocumentationController;
 use App\Http\Controllers\PublicRoomController;
+use App\Http\Controllers\InstallController;
+use App\Http\Controllers\UserNotificationController;
+use App\Http\Controllers\Student\RoomChangeRequestController as StudentRoomChangeRequestController;
+use App\Models\SystemSetting;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+Route::get('/install', [InstallController::class, 'index'])->name('install.index');
+Route::post('/install', [InstallController::class, 'store'])->name('install.store');
+
 Route::get('/', function () {
+    $homepageEnabled = filter_var(SystemSetting::getSetting('homepage_enabled', true), FILTER_VALIDATE_BOOL);
+    if (!$homepageEnabled) {
+        return redirect()->route('login');
+    }
+
     return view('welcome');
 });
 Route::get('/book-rooms', [PublicRoomController::class, 'index'])->name('public.rooms.index');
@@ -41,6 +54,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('impersonation.leave');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/notifications', [UserNotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/mark-all-read', [UserNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::post('/notifications/{notificationId}/read', [UserNotificationController::class, 'markAsRead'])->name('notifications.read');
 
     // Admin routes
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
@@ -65,6 +81,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('hostel-change-requests', [ManagerHostelChangeRequestController::class, 'index'])->name('hostel-change.index');
         Route::patch('hostel-change-requests/{hostelChangeRequest}/approve', [ManagerHostelChangeRequestController::class, 'approve'])->name('hostel-change.approve');
         Route::patch('hostel-change-requests/{hostelChangeRequest}/reject', [ManagerHostelChangeRequestController::class, 'reject'])->name('hostel-change.reject');
+        Route::get('room-change-requests', [ManagerRoomChangeRequestController::class, 'index'])->name('room-change.index');
+        Route::patch('room-change-requests/{roomChangeRequest}/approve', [ManagerRoomChangeRequestController::class, 'approve'])->name('room-change.approve');
+        Route::patch('room-change-requests/{roomChangeRequest}/reject', [ManagerRoomChangeRequestController::class, 'reject'])->name('room-change.reject');
         Route::get('profile', [ManagerProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [ManagerProfileController::class, 'update'])->name('profile.update');
     });
@@ -87,6 +106,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('payments/{booking}/{gateway}/initialize', [StudentPaymentController::class, 'initialize'])->name('payments.initialize');
         Route::get('hostel-change-requests', [StudentHostelChangeRequestController::class, 'index'])->name('hostel-change.index');
         Route::post('hostel-change-requests', [StudentHostelChangeRequestController::class, 'store'])->name('hostel-change.store');
+        Route::get('room-change-requests', [StudentRoomChangeRequestController::class, 'index'])->name('room-change.index');
+        Route::post('room-change-requests', [StudentRoomChangeRequestController::class, 'store'])->name('room-change.store');
         Route::get('profile', [StudentProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [StudentProfileController::class, 'update'])->name('profile.update');
     });

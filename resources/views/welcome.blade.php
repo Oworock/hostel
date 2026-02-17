@@ -57,19 +57,19 @@
 
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-        <article class="bg-white p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition">
-            <h3 class="text-xl font-bold mb-3">{{ $studentTitle }}</h3>
-            <div class="text-gray-600">{!! $studentDescription !!}</div>
+        <article class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition border border-transparent dark:border-slate-800">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-slate-100">{{ $studentTitle }}</h3>
+            <div class="text-gray-600 dark:text-slate-300">{!! $studentDescription !!}</div>
         </article>
 
-        <article class="bg-white p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition">
-            <h3 class="text-xl font-bold mb-3">{{ $managerTitle }}</h3>
-            <div class="text-gray-600">{!! $managerDescription !!}</div>
+        <article class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition border border-transparent dark:border-slate-800">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-slate-100">{{ $managerTitle }}</h3>
+            <div class="text-gray-600 dark:text-slate-300">{!! $managerDescription !!}</div>
         </article>
 
-        <article class="bg-white p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition">
-            <h3 class="text-xl font-bold mb-3">{{ $adminTitle }}</h3>
-            <div class="text-gray-600">{!! $adminDescription !!}</div>
+        <article class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition border border-transparent dark:border-slate-800">
+            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-slate-100">{{ $adminTitle }}</h3>
+            <div class="text-gray-600 dark:text-slate-300">{!! $adminDescription !!}</div>
         </article>
     </div>
 </section>

@@ -24,15 +24,24 @@ class BookingController extends Controller
 
     public function available()
     {
+        $blockingBooking = $this->getBlockingBooking();
+
         $rooms = Room::where('is_available', true)
             ->with(['hostel', 'beds', 'images'])
             ->paginate(12);
 
-        return view('student.bookings.available', compact('rooms'));
+        return view('student.bookings.available', compact('rooms', 'blockingBooking'));
     }
 
     public function create(Room $room)
     {
+        $blockingBooking = $this->getBlockingBooking();
+        if ($blockingBooking) {
+            return redirect()
+                ->route('student.bookings.available')
+                ->with('error', $this->bookingBlockedMessage($blockingBooking));
+        }
+
         $room->load(['images', 'hostel']);
         $availableBeds = $room->availableBeds()->get();
 
@@ -51,6 +60,13 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
+        $blockingBooking = $this->getBlockingBooking();
+        if ($blockingBooking) {
+            return redirect()
+                ->route('student.bookings.available')
+                ->with('error', $this->bookingBlockedMessage($blockingBooking));
+        }
+
         // Check if student has profile image
         if (!auth()->user()->profile_image) {
             return redirect()->route('student.bookings.available')
@@ -163,5 +179,23 @@ class BookingController extends Controller
         
         $pdf = \PDF::loadView('student.bookings.receipt', compact('booking'));
         return $pdf->download('Receipt-' . $booking->id . '.pdf');
+    }
+
+    private function getBlockingBooking(): ?Booking
+    {
+        return auth()->user()
+            ->bookings()
+            ->whereIn('status', ['pending', 'approved'])
+            ->latest()
+            ->first();
+    }
+
+    private function bookingBlockedMessage(Booking $booking): string
+    {
+        if ($booking->status === 'pending') {
+            return 'You already have a pending booking. Please pay for it or cancel it before booking another room.';
+        }
+
+        return 'You already have an active booking. Apply for hostel change or room change instead of creating another booking.';
     }
 }

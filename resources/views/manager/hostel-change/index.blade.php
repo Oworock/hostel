@@ -30,18 +30,23 @@
                         <p class="text-slate-700 dark:text-slate-200"><span class="font-medium">From:</span> {{ $request->currentHostel->name ?? 'Not Assigned' }}</p>
                         <p class="text-slate-700 dark:text-slate-200"><span class="font-medium">To:</span> {{ $request->requestedHostel->name }}</p>
                         <p class="text-slate-600 dark:text-slate-300"><span class="font-medium">Reason:</span> {{ $request->reason ?: '-' }}</p>
+                        @if($request->manager_note)
+                            <p class="text-slate-600 dark:text-slate-300"><span class="font-medium">Manager Note:</span> {{ $request->manager_note }}</p>
+                        @endif
                     </div>
 
                     @if($request->status === 'pending_manager_approval')
-                        <div class="mt-4 flex items-center gap-2">
-                            <form action="{{ route('manager.hostel-change.approve', $request) }}" method="POST">
+                        <div class="mt-4 space-y-3">
+                            <form action="{{ route('manager.hostel-change.approve', $request) }}" method="POST" class="space-y-2">
                                 @csrf
                                 @method('PATCH')
+                                <textarea name="manager_note" rows="2" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" placeholder="Optional note for approval"></textarea>
                                 <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm font-medium">Approve</button>
                             </form>
-                            <form action="{{ route('manager.hostel-change.reject', $request) }}" method="POST">
+                            <form action="{{ route('manager.hostel-change.reject', $request) }}" method="POST" class="space-y-2">
                                 @csrf
                                 @method('PATCH')
+                                <textarea name="manager_note" rows="2" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" placeholder="Reason for rejection (required)"></textarea>
                                 <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm font-medium">Reject</button>
                             </form>
                         </div>

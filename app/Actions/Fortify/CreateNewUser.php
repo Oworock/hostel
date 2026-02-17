@@ -35,7 +35,8 @@ class CreateNewUser implements CreatesNewUsers
         ];
 
         $rules = [
-            'name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
                 'string',
@@ -57,9 +58,14 @@ class CreateNewUser implements CreatesNewUsers
         }
 
         $customFieldRules = [];
+        $reservedFields = ['first_name', 'last_name', 'name', 'email', 'password', 'password_confirmation'];
         foreach ($customFields as $field) {
             $name = $field['name'] ?? null;
-            if (!$name || !preg_match('/^[a-z][a-z0-9_]*$/', $name)) {
+            if (
+                !$name ||
+                !preg_match('/^[a-z][a-z0-9_]*$/', $name) ||
+                in_array($name, $reservedFields, true)
+            ) {
                 continue;
             }
 
@@ -80,7 +86,9 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, $rules)->validate();
 
         $payload = [
-            'name' => $input['name'],
+            'first_name' => $input['first_name'],
+            'last_name' => $input['last_name'],
+            'name' => trim($input['first_name'] . ' ' . $input['last_name']),
             'email' => $input['email'],
             'password' => $input['password'],
             'role' => 'student',

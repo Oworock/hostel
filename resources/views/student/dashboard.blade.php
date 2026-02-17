@@ -44,7 +44,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <p class="text-sm text-gray-600 dark:text-slate-300">Hostel</p>
-                            <p class="font-semibold text-gray-900 dark:text-slate-100">{{ $currentBooking->room->hostel->name ?? 'N/A' }}</p>
+                            <p class="font-semibold text-gray-900 dark:text-slate-100">{{ $currentHostelName ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 dark:text-slate-300">Room / Bed</p>
@@ -86,6 +86,8 @@
                     <a href="{{ route('student.bookings.available') }}" class="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-medium">Browse Rooms</a>
                     <a href="{{ route('student.bookings.index') }}" class="block w-full text-center bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 font-medium">My Bookings</a>
                     <a href="{{ route('student.payments.index') }}" class="block w-full text-center bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 font-medium">Payment History</a>
+                    <a href="{{ route('student.room-change.index') }}" class="block w-full text-center bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 font-medium">Change Room</a>
+                    <a href="{{ route('student.hostel-change.index') }}" class="block w-full text-center bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 font-medium">Change Hostel</a>
                     <a href="{{ route('student.complaints.index') }}" class="block w-full text-center bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 font-medium">Support & Complaints</a>
                 </div>
             </div>

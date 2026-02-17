@@ -42,6 +42,7 @@
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Requested Hostel</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Status</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Reason</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Manager Feedback</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Date</th>
                         </tr>
                     </thead>
@@ -60,10 +61,13 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{{ $request->reason ?: '-' }}</td>
+                                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                    {{ $request->status === 'rejected' ? ($request->manager_note ?: '-') : '-' }}
+                                </td>
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{{ $request->created_at->format('M d, Y') }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="px-6 py-8 text-center text-slate-600 dark:text-slate-300">No requests yet.</td></tr>
+                            <tr><td colspan="6" class="px-6 py-8 text-center text-slate-600 dark:text-slate-300">No requests yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

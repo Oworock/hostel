@@ -39,10 +39,15 @@ class StudentResource extends Resource
                             ->previewable(true)
                             ->columnSpanFull(),
                         
-                        Forms\Components\TextInput::make('name')
+                        Forms\Components\TextInput::make('first_name')
                             ->required()
                             ->maxLength(255)
-                            ->label('Full Name'),
+                            ->label('First Name'),
+
+                        Forms\Components\TextInput::make('last_name')
+                            ->required()
+                            ->maxLength(255)
+                            ->label('Last Name'),
                         
                         Forms\Components\TextInput::make('email')
                             ->email()
@@ -103,7 +108,13 @@ class StudentResource extends Resource
                     ->label('Avatar')
                     ->disk('public')
                     ->circular(),
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('first_name')
+                    ->label('First Name')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('last_name')
+                    ->label('Last Name')
                     ->searchable()
                     ->sortable(),
                 

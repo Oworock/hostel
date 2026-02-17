@@ -5,19 +5,29 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('register') }}" class="flex flex-col gap-6">
             @csrf
-            <!-- Name -->
-            <flux:input
-                name="name"
-                :label="__('Name')"
-                :value="old('name')"
-                type="text"
-                required
-                autofocus
-                autocomplete="name"
-                :placeholder="__('Full name')"
-            />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <flux:input
+                    name="first_name"
+                    :label="__('First Name')"
+                    :value="old('first_name')"
+                    type="text"
+                    required
+                    autofocus
+                    autocomplete="given-name"
+                    :placeholder="__('First name')"
+                />
+                <flux:input
+                    name="last_name"
+                    :label="__('Last Name')"
+                    :value="old('last_name')"
+                    type="text"
+                    required
+                    autocomplete="family-name"
+                    :placeholder="__('Last name')"
+                />
+            </div>
 
             <!-- Email Address -->
             <flux:input
