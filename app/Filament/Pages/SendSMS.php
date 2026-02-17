@@ -26,7 +26,10 @@ class SendSMS extends Page
 
     public function mount(): void
     {
-        $this->form->fill();
+        $this->form->fill([
+            'recipient_type' => 'all',
+            'message' => '',
+        ]);
     }
 
     public function form(Forms\Form $form): Forms\Form
@@ -45,15 +48,15 @@ class SendSMS extends Page
 
                 Forms\Components\Select::make('hostel_id')
                     ->label('Hostel')
-                    ->relationship('hostel', 'name')
+                    ->options(fn() => \App\Models\Hostel::pluck('name', 'id'))
                     ->visible(fn(Forms\Get $get) => $get('recipient_type') === 'hostel')
-                    ->required(),
+                    ->required(fn(Forms\Get $get) => $get('recipient_type') === 'hostel'),
 
                 Forms\Components\Select::make('student_id')
                     ->label('Student')
-                    ->relationship('student', 'full_name')
+                    ->options(fn() => \App\Models\User::where('role', 'student')->pluck('name', 'id'))
                     ->visible(fn(Forms\Get $get) => $get('recipient_type') === 'student')
-                    ->required(),
+                    ->required(fn(Forms\Get $get) => $get('recipient_type') === 'student'),
 
                 Forms\Components\Textarea::make('message')
                     ->label('Message (Max 160 characters)')
@@ -115,8 +118,10 @@ class SendSMS extends Page
         if ($type === 'all') {
             $users = User::where('role', 'student')->pluck('phone')->filter()->toArray();
         } elseif ($type === 'hostel') {
-            $users = User::whereHas('booking', function ($query) use ($data) {
-                $query->where('hostel_id', $data['hostel_id']);
+            $users = User::whereHas('bookings', function ($query) use ($data) {
+                $query->whereHas('room', function ($q) use ($data) {
+                    $q->where('hostel_id', $data['hostel_id']);
+                });
             })->where('role', 'student')->pluck('phone')->filter()->toArray();
         } else {
             $user = User::find($data['student_id']);

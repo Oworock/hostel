@@ -24,6 +24,9 @@ class StudentStatsOverview extends BaseWidget
         $activeBooking = Booking::where('student_id', $student->id)->where('status', 'active')->first();
         $completedBookings = Booking::where('student_id', $student->id)->where('status', 'completed')->count();
         $totalSpent = \App\Models\Payment::where('student_id', $student->id)->where('status', 'completed')->sum('amount');
+        
+        $currency = config('app.currency', 'NGN');
+        $currencySymbol = $this->getCurrencySymbol($currency);
 
         return [
             Stat::make('My Bookings', $myBookings)
@@ -41,10 +44,25 @@ class StudentStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-archive-box')
                 ->color('secondary'),
             
-            Stat::make('Total Spent', '₦' . number_format($totalSpent, 2))
+            Stat::make('Total Spent', $currencySymbol . number_format($totalSpent, 2))
                 ->description('On all bookings')
                 ->descriptionIcon('heroicon-m-wallet')
                 ->color('success'),
         ];
+    }
+    
+    private function getCurrencySymbol(string $code): string
+    {
+        $symbols = [
+            'NGN' => '₦',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            'INR' => '₹',
+            'ZAR' => 'R',
+        ];
+        
+        return $symbols[$code] ?? $code;
     }
 }

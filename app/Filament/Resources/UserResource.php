@@ -25,6 +25,14 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\FileUpload::make('profile_image')
+                    ->label('Profile Picture')
+                    ->image()
+                    ->directory('profile-images')
+                    ->maxSize(5120)
+                    ->previewable(true)
+                    ->columnSpanFull(),
+                
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),

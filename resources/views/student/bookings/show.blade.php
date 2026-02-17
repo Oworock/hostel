@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-gray-600">Price Per Month</p>
-                    <p class="text-lg font-medium text-gray-900">${{ number_format($booking->room->price_per_month, 2) }}</p>
+                    <p class="text-lg font-medium text-gray-900">{{ getCurrencySymbol() }}{{ number_format($booking->room->price_per_month, 2) }}</p>
                 </div>
             </div>
         </div>
@@ -85,7 +85,7 @@
         <div class="space-y-4">
             <div class="flex items-center justify-between py-3 border-b">
                 <span class="text-gray-700">Total Amount</span>
-                <span class="text-2xl font-bold text-gray-900">${{ number_format($booking->total_amount, 2) }}</span>
+                <span class="text-2xl font-bold text-gray-900">{{ getCurrencySymbol() }}{{ number_format($booking->total_amount, 2) }}</span>
             </div>
             
             @if($booking->payments->isNotEmpty())
@@ -103,7 +103,7 @@
                                     </p>
                                 </div>
                                 <div class="text-right">
-                                    <p class="font-bold text-gray-900">${{ number_format($payment->amount, 2) }}</p>
+                                    <p class="font-bold text-gray-900">{{ getCurrencySymbol() }}{{ number_format($payment->amount, 2) }}</p>
                                     <span class="text-xs px-2 py-1 rounded {{ $payment->status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                                         {{ ucfirst($payment->status) }}
                                     </span>

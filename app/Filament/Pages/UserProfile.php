@@ -22,8 +22,15 @@ class UserProfile extends Page
 
     public ?array $data = [];
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user() && auth()->user()->role === 'admin';
+    }
+
     public function mount(): void
     {
+        abort_if(auth()->user()?->role !== 'admin', 403);
+        
         $user = auth()->user();
         
         $this->form->fill([

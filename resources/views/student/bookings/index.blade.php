@@ -45,7 +45,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">Total Amount</p>
-                        <p class="font-medium text-gray-900">${{ number_format($booking->total_amount, 2) }}</p>
+                        <p class="font-medium text-gray-900">{{ getCurrencySymbol() }}{{ number_format($booking->total_amount, 2) }}</p>
                     </div>
                 </div>
                 

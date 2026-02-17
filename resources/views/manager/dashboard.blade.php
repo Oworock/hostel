@@ -1,11 +1,11 @@
-@extends('layouts.app')
+<x-dashboard-layout title="Manager Dashboard">
+    <x-slot name="sidebar">
+        @include('components.manager-sidebar')
+    </x-slot>
 
-@section('title', 'Manager Dashboard')
-
-@section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ $hostel->name }} Dashboard</h1>
-    <p class="text-gray-600 mb-8">Manage {{ $hostel->name }} operations</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ $hostel->name }} Dashboard</h1>
+        <p class="text-gray-600 mb-8">Manage {{ $hostel->name }} operations</p>
     
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -47,7 +47,14 @@
     </div>
     
     <!-- Quick Actions -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Students</h2>
+            <a href="{{ route('manager.students.index') }}" class="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-medium">
+                View All Students
+            </a>
+        </div>
+        
         <div class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Rooms</h2>
             <a href="{{ route('manager.rooms.create') }}" class="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-medium mb-3">
@@ -111,5 +118,4 @@
             </table>
         </div>
     </div>
-</div>
-@endsection
+</x-dashboard-layout>

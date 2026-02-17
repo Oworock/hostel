@@ -9,13 +9,36 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($rooms as $room)
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+                <!-- Room Images -->
+                @if($room->images->count() > 0)
+                    <div class="relative w-full h-48 bg-gray-200 overflow-hidden">
+                        @php $firstImage = $room->images->first(); @endphp
+                        @if($firstImage && $firstImage->image_path)
+                            <img src="{{ asset('storage/' . $firstImage->image_path) }}" alt="Room Image" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-gray-300">
+                                <span class="text-gray-600">No Image</span>
+                            </div>
+                        @endif
+                        @if($room->images->count() > 1)
+                            <div class="absolute bottom-2 right-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs">
+                                {{ $room->images->count() }} images
+                            </div>
+                        @endif
+                    </div>
+                @else
+                    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                        <span class="text-gray-600">No Images Available</span>
+                    </div>
+                @endif
+                
                 <div class="p-6">
                     <div class="flex items-start justify-between mb-4">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900">{{ $room->room_number }}</h2>
                             <p class="text-gray-600">{{ ucfirst($room->type) }} Room</p>
                         </div>
-                        <span class="text-3xl font-bold text-blue-600">${{ number_format($room->price_per_month, 2) }}</span>
+                        <span class="text-3xl font-bold text-blue-600">{{ getCurrencySymbol() }}{{ number_format($room->price_per_month, 2) }}</span>
                     </div>
                     
                     @if($room->description)

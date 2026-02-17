@@ -6,9 +6,11 @@ use Illuminate\Support\ServiceProvider;
 use App\Models\Complaint;
 use App\Models\Booking;
 use App\Models\Room;
+use App\Models\Payment;
 use App\Policies\ComplaintPolicy;
 use App\Policies\BookingPolicy;
 use App\Policies\RoomPolicy;
+use App\Observers\PaymentObserver;
 use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
@@ -35,5 +37,7 @@ class AppServiceProvider extends ServiceProvider
         foreach ($this->policies as $model => $policy) {
             Gate::policy($model, $policy);
         }
+        
+        Payment::observe(PaymentObserver::class);
     }
 }

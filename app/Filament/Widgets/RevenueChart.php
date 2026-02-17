@@ -28,11 +28,13 @@ class RevenueChart extends ChartWidget
         }
 
         $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $currency = config('app.currency', 'NGN');
+        $currencySymbol = $this->getCurrencySymbol($currency);
         
         return [
             'datasets' => [
                 [
-                    'label' => 'Revenue (₦)',
+                    'label' => 'Revenue (' . $currencySymbol . ')',
                     'data' => $data->pluck('total')->toArray(),
                     'borderColor' => '#10b981',
                     'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
@@ -46,5 +48,20 @@ class RevenueChart extends ChartWidget
     protected function getType(): string
     {
         return 'line';
+    }
+    
+    private function getCurrencySymbol(string $code): string
+    {
+        $symbols = [
+            'NGN' => '₦',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            'INR' => '₹',
+            'ZAR' => 'R',
+        ];
+        
+        return $symbols[$code] ?? $code;
     }
 }

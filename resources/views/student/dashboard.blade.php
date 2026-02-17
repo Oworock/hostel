@@ -1,10 +1,55 @@
-@extends('layouts.app')
-
-@section('title', 'Student Dashboard')
-
-@section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<x-dashboard-layout title="Student Dashboard">
+    <x-slot name="sidebar">
+        @include('components.student-sidebar')
+    </x-slot>
+    
+    <div class="max-w-6xl">
     <h1 class="text-4xl font-bold text-gray-900 mb-8">My Dashboard</h1>
+    
+    <!-- Profile Section -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">My Profile</h2>
+            <a href="{{ route('student.profile.edit') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium">
+                Edit Profile
+            </a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Profile Picture -->
+            <div class="flex flex-col items-center">
+                @if(auth()->user()->profile_image)
+                    <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" alt="Profile" class="w-32 h-32 rounded-full object-cover border-4 border-blue-200 mb-4">
+                    <p class="text-sm text-green-600 font-medium">✓ Profile picture uploaded</p>
+                @else
+                    <div class="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center mb-4 border-4 border-yellow-200">
+                        <span class="text-gray-600 text-sm">No Picture</span>
+                    </div>
+                    <p class="text-sm text-yellow-600 font-medium">⚠️ Profile picture required to book</p>
+                @endif
+            </div>
+            
+            <!-- Profile Information -->
+            <div class="md:col-span-2 space-y-4">
+                <div>
+                    <p class="text-sm text-gray-600">Full Name</p>
+                    <p class="text-lg font-medium text-gray-900">{{ auth()->user()->name }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Email</p>
+                    <p class="text-lg font-medium text-gray-900">{{ auth()->user()->email }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Phone</p>
+                    <p class="text-lg font-medium text-gray-900">{{ auth()->user()->phone ?? 'Not provided' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Admission Number</p>
+                    <p class="text-lg font-medium text-gray-900">{{ auth()->user()->admission_number ?? 'Not provided' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -87,5 +132,4 @@
             </a>
         </div>
     </div>
-</div>
-@endsection
+</x-dashboard-layout>

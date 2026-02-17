@@ -21,6 +21,7 @@ class User extends Authenticatable
         'guardian_phone',
         'hostel_id',
         'is_active',
+        'profile_image',
     ];
 
     protected $hidden = [

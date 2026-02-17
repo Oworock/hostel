@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -15,6 +16,18 @@ class BookingController extends Controller
         })->with(['user', 'room', 'bed'])->paginate(15);
 
         return view('manager.bookings.index', compact('bookings'));
+    }
+
+    public function students()
+    {
+        $students = User::where('hostel_id', auth()->user()->hostel_id)
+            ->where('role', 'student')
+            ->with(['bookings' => function ($query) {
+                $query->with('room', 'bed')->latest();
+            }])
+            ->paginate(15);
+
+        return view('manager.students.index', compact('students'));
     }
 
     public function show(Booking $booking)

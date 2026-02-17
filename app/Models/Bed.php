@@ -9,6 +9,7 @@ class Bed extends Model
     protected $fillable = [
         'room_id',
         'bed_number',
+        'name',
         'is_occupied',
         'user_id',
         'occupied_from',
@@ -27,6 +28,11 @@ class Bed extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(BedImage::class)->orderBy('sort_order');
     }
 
     public function booking()

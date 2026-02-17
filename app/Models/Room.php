@@ -31,6 +31,11 @@ class Room extends Model
         return $this->hasMany(Bed::class);
     }
 
+    public function images()
+    {
+        return $this->hasMany(RoomImage::class)->orderBy('sort_order');
+    }
+
     public function bookings()
     {
         return $this->hasMany(Booking::class);
@@ -54,5 +59,14 @@ class Room extends Model
         }
         $occupiedBeds = $this->occupiedBeds()->count();
         return round(($occupiedBeds / $totalBeds) * 100, 2);
+    }
+
+    public function isBooked()
+    {
+        $totalBeds = $this->beds()->count();
+        if ($totalBeds === 1) {
+            return $this->occupiedBeds()->exists();
+        }
+        return $this->occupiedBeds()->count() === $totalBeds;
     }
 }

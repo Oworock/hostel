@@ -21,6 +21,9 @@ use App\Filament\Pages\UserProfile;
 use App\Filament\Pages\SendSMS;
 use App\Filament\Pages\SendEmail;
 use App\Filament\Pages\SystemSettings;
+use App\Filament\Pages\StudentSettings;
+use App\Filament\Pages\ManagerSettings;
+use App\Filament\Pages\StudentBookingHistory;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -42,9 +45,12 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
                 UserProfile::class,
+                StudentSettings::class,
+                ManagerSettings::class,
                 SendSMS::class,
                 SendEmail::class,
                 SystemSettings::class,
+                StudentBookingHistory::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

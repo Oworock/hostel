@@ -23,6 +23,9 @@ class ManagerStatsOverview extends BaseWidget
         $pendingBookings = \App\Models\Booking::whereIn('hostel_id', $hostels)->where('status', 'pending')->count();
         
         $totalRevenue = \App\Models\Payment::whereIn('hostel_id', $hostels)->where('status', 'completed')->sum('amount');
+        
+        $currency = config('app.currency', 'NGN');
+        $currencySymbol = $this->getCurrencySymbol($currency);
 
         return [
             Stat::make('Total Beds', $totalBeds)
@@ -45,10 +48,25 @@ class ManagerStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('secondary'),
             
-            Stat::make('Total Revenue', '₦' . number_format($totalRevenue, 2))
+            Stat::make('Total Revenue', $currencySymbol . number_format($totalRevenue, 2))
                 ->description('From all bookings')
                 ->descriptionIcon('heroicon-m-wallet')
                 ->color('success'),
         ];
+    }
+    
+    private function getCurrencySymbol(string $code): string
+    {
+        $symbols = [
+            'NGN' => '₦',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            'INR' => '₹',
+            'ZAR' => 'R',
+        ];
+        
+        return $symbols[$code] ?? $code;
     }
 }

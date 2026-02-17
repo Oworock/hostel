@@ -3,8 +3,12 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Manager\RoomController;
 use App\Http\Controllers\Manager\BookingController as ManagerBookingController;
+use App\Http\Controllers\Manager\PaymentController as ManagerPaymentController;
+use App\Http\Controllers\Manager\ProfileController as ManagerProfileController;
 use App\Http\Controllers\Student\BookingController as StudentBookingController;
 use App\Http\Controllers\Student\ComplaintController as StudentComplaintController;
+use App\Http\Controllers\Student\PaymentController as StudentPaymentController;
+use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,12 +25,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Manager routes
     Route::middleware('manager')->prefix('manager')->name('manager.')->group(function () {
+        Route::get('students', [ManagerBookingController::class, 'students'])->name('students.index');
         Route::resource('rooms', RoomController::class);
         Route::get('bookings', [ManagerBookingController::class, 'index'])->name('bookings.index');
         Route::get('bookings/{booking}', [ManagerBookingController::class, 'show'])->name('bookings.show');
         Route::patch('bookings/{booking}/approve', [ManagerBookingController::class, 'approve'])->name('bookings.approve');
         Route::patch('bookings/{booking}/reject', [ManagerBookingController::class, 'reject'])->name('bookings.reject');
         Route::delete('bookings/{booking}/cancel', [ManagerBookingController::class, 'cancel'])->name('bookings.cancel');
+        Route::get('payments', [ManagerPaymentController::class, 'index'])->name('payments.index');
+        Route::get('profile', [ManagerProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('profile', [ManagerProfileController::class, 'update'])->name('profile.update');
     });
 
     // Student routes
@@ -37,10 +45,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('bookings', [StudentBookingController::class, 'store'])->name('bookings.store');
         Route::get('bookings/{booking}', [StudentBookingController::class, 'show'])->name('bookings.show');
         Route::delete('bookings/{booking}/cancel', [StudentBookingController::class, 'cancel'])->name('bookings.cancel');
+        Route::get('bookings/{booking}/receipt', [StudentBookingController::class, 'receipt'])->name('bookings.receipt');
         
         Route::get('complaints', [StudentComplaintController::class, 'index'])->name('complaints.index');
         Route::post('complaints', [StudentComplaintController::class, 'store'])->name('complaints.store');
         Route::get('complaints/{complaint}', [StudentComplaintController::class, 'show'])->name('complaints.show');
+        
+        Route::get('payments', [StudentPaymentController::class, 'index'])->name('payments.index');
+        Route::get('profile', [StudentProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('profile', [StudentProfileController::class, 'update'])->name('profile.update');
     });
 });
 

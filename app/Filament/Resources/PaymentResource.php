@@ -37,7 +37,7 @@ class PaymentResource extends Resource
                         Forms\Components\TextInput::make('amount')
                             ->numeric()
                             ->required()
-                            ->prefix('₦')
+                            ->prefix(fn () => self::getCurrencySymbol(config('app.currency', 'NGN')))
                             ->step(0.01),
                         
                         Forms\Components\Select::make('payment_method')
@@ -83,7 +83,11 @@ class PaymentResource extends Resource
                     ->sortable(),
                 
                 Tables\Columns\TextColumn::make('amount')
-                    ->money('NGN')
+                    ->formatStateUsing(function ($state) {
+                        $currency = config('app.currency', 'NGN');
+                        $currencySymbol = self::getCurrencySymbol($currency);
+                        return $currencySymbol . number_format($state, 2);
+                    })
                     ->sortable(),
                 
                 Tables\Columns\TextColumn::make('payment_method')
@@ -141,5 +145,20 @@ class PaymentResource extends Resource
             'create' => Pages\CreatePayment::route('/create'),
             'edit' => Pages\EditPayment::route('/{record}/edit'),
         ];
+    }
+    
+    private static function getCurrencySymbol(string $code): string
+    {
+        $symbols = [
+            'NGN' => '₦',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            'INR' => '₹',
+            'ZAR' => 'R',
+        ];
+        
+        return $symbols[$code] ?? $code;
     }
 }

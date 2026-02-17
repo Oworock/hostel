@@ -19,6 +19,9 @@ class AdminStatsOverview extends BaseWidget
         $totalHostels = Hostel::count();
         $totalStudents = Student::count();
         $totalUsers = \App\Models\User::count();
+        
+        $currency = config('app.currency', 'NGN');
+        $currencySymbol = $this->getCurrencySymbol($currency);
 
         return [
             Stat::make('Total Hostels', $totalHostels)
@@ -36,7 +39,7 @@ class AdminStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color('warning'),
             
-            Stat::make('Total Revenue', '₦' . number_format($totalRevenue, 2))
+            Stat::make('Total Revenue', $currencySymbol . number_format($totalRevenue, 2))
                 ->description('From all payments')
                 ->descriptionIcon('heroicon-m-wallet')
                 ->color('success'),
@@ -51,5 +54,20 @@ class AdminStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-users')
                 ->color('secondary'),
         ];
+    }
+    
+    private function getCurrencySymbol(string $code): string
+    {
+        $symbols = [
+            'NGN' => '₦',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            'INR' => '₹',
+            'ZAR' => 'R',
+        ];
+        
+        return $symbols[$code] ?? $code;
     }
 }

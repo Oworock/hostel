@@ -49,6 +49,27 @@ class BedResource extends Resource
                             ->default(false)
                             ->label('Currently Occupied'),
                     ]),
+                
+                Forms\Components\Section::make('Bed Images')
+                    ->description('Add up to 10 images of the bed space.')
+                    ->schema([
+                        Forms\Components\Repeater::make('images')
+                            ->relationship('images')
+                            ->minItems(0)
+                            ->maxItems(10)
+                            ->reorderable(true)
+                            ->collapsible()
+                            ->collapsed()
+                            ->schema([
+                                Forms\Components\FileUpload::make('image_path')
+                                    ->label('Image')
+                                    ->image()
+                                    ->directory('bed-images')
+                                    ->maxSize(5120)
+                                    ->required(),
+                            ])
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -99,6 +120,24 @@ class BedResource extends Resource
                     ]),
             ])
             ->actions([
+                Tables\Actions\Action::make('logout')
+                    ->label('Remove Student')
+                    ->icon('heroicon-o-arrow-right-on-rectangle')
+                    ->color('warning')
+                    ->visible(fn ($record) => $record->is_occupied)
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        $record->update([
+                            'is_occupied' => false,
+                            'user_id' => null,
+                            'occupied_from' => null,
+                        ]);
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Student Removed')
+                            ->body('Student has been removed from this bed.')
+                            ->send();
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

@@ -15,3 +15,30 @@ if (! function_exists('get_setting')) {
         return SystemHelper::getSetting($key, $default);
     }
 }
+
+if (! function_exists('getCurrencySymbol')) {
+    function getCurrencySymbol()
+    {
+        $currency = SystemHelper::getSetting('system_currency', 'NGN');
+        
+        $symbols = [
+            'NGN' => '₦',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'CAD' => 'C$',
+            'AUD' => 'A$',
+            'INR' => '₹',
+            'ZAR' => 'R',
+        ];
+        
+        return $symbols[$currency] ?? $currency;
+    }
+}
+
+if (! function_exists('getBookingPeriodType')) {
+    function getBookingPeriodType()
+    {
+        return SystemHelper::getSetting('booking_period_type', 'months');
+    }
+}

@@ -12,6 +12,8 @@ class Booking extends Model
         'bed_id',
         'check_in_date',
         'check_out_date',
+        'semester_id',
+        'academic_session_id',
         'status',
         'total_amount',
         'notes',
@@ -36,6 +38,16 @@ class Booking extends Model
     public function bed()
     {
         return $this->belongsTo(Bed::class);
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
+    }
+
+    public function academicSession()
+    {
+        return $this->belongsTo(AcademicSession::class);
     }
 
     public function payments()

@@ -3,6 +3,12 @@
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center">
                 <a href="{{ url('/') }}" class="flex items-center space-x-2">
+                    @php
+                        $logo = \App\Models\SystemSetting::getSetting('app_logo', '');
+                    @endphp
+                    @if($logo)
+                        <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="h-10 w-auto">
+                    @endif
                     <span class="text-xl font-bold text-gray-800">Hostel Manager</span>
                 </a>
             </div>

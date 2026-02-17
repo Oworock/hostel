@@ -69,6 +69,27 @@ class RoomResource extends Resource
                             ->default(true)
                             ->label('Available for Booking'),
                     ]),
+                
+                Forms\Components\Section::make('Room Images')
+                    ->description('Add up to 10 images of the room. First image will be the cover image.')
+                    ->schema([
+                        Forms\Components\Repeater::make('images')
+                            ->relationship('images')
+                            ->minItems(0)
+                            ->maxItems(10)
+                            ->reorderable(true)
+                            ->collapsible()
+                            ->collapsed()
+                            ->schema([
+                                Forms\Components\FileUpload::make('image_path')
+                                    ->label('Image')
+                                    ->image()
+                                    ->directory('room-images')
+                                    ->maxSize(5120)
+                                    ->required(),
+                            ])
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -101,7 +122,11 @@ class RoomResource extends Resource
                     ->label('Beds'),
                 
                 Tables\Columns\TextColumn::make('price_per_month')
-                    ->money('NGN')
+                    ->formatStateUsing(function ($state) {
+                        $currency = config('app.currency', 'NGN');
+                        $currencySymbol = self::getCurrencySymbol($currency);
+                        return $currencySymbol . number_format($state, 2);
+                    })
                     ->sortable(),
                 
                 Tables\Columns\BadgeColumn::make('is_available')
@@ -156,5 +181,20 @@ class RoomResource extends Resource
             'create' => Pages\CreateRoom::route('/create'),
             'edit' => Pages\EditRoom::route('/{record}/edit'),
         ];
+    }
+    
+    private static function getCurrencySymbol(string $code): string
+    {
+        $symbols = [
+            'NGN' => '₦',
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            'INR' => '₹',
+            'ZAR' => 'R',
+        ];
+        
+        return $symbols[$code] ?? $code;
     }
 }
