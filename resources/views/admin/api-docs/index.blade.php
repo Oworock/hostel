@@ -43,7 +43,52 @@ X-Hostel-Signature: HMAC_SHA256_SIGNATURE</code></pre>
   "event": "booking.created",
   "timestamp": "2026-02-17T18:45:00+00:00",
   "payload": {
-    "...": "event-specific data"
+    "...": "event-specific data",
+    "users": {
+      "actor": { "...": "full actor profile" },
+      "student": { "...": "full student profile" },
+      "manager": { "...": "full manager profile" },
+      "admin": { "...": "full admin profile" },
+      "user": { "...": "generic user profile" }
+    }
+  }
+}</code></pre>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold text-gray-900 mb-2">User Data Included In <code>payload.users</code></h3>
+                <p class="text-sm text-gray-700 mb-3">When your event payload contains <code>student_id</code>, <code>manager_id</code>, <code>admin_id</code>, or <code>user_id</code>, the webhook automatically resolves and sends full profile details. <code>actor</code> is the currently authenticated user that triggered the action.</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                    @foreach($webhookUserFields as $field)
+                        <code class="bg-gray-100 text-gray-800 text-xs px-3 py-2 rounded">{{ $field }}</code>
+                    @endforeach
+                </div>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold text-gray-900 mb-2">Full User Example</h3>
+                <pre class="bg-gray-900 text-gray-100 rounded-lg p-4 text-sm overflow-x-auto"><code>{
+  "users": {
+    "student": {
+      "id": 12,
+      "name": "Student User",
+      "first_name": "Student",
+      "last_name": "User",
+      "email": "student@example.com",
+      "phone": "+2348090000000",
+      "role": "student",
+      "hostel_id": 2,
+      "hostel_name": "MVP Phase 2, Utako - Abuja",
+      "id_number": "MAT2026-001",
+      "address": "Abuja",
+      "guardian_name": "Jane Doe",
+      "guardian_phone": "+2348012345678",
+      "is_active": true,
+      "is_admin_uploaded": false,
+      "must_change_password": false,
+      "profile_image_url": "https://your-domain/storage/profile-images/...",
+      "extra_data": { "department": "Computer Science" },
+      "created_at": "2026-02-10T09:00:00+00:00",
+      "updated_at": "2026-02-17T10:30:00+00:00"
+    }
   }
 }</code></pre>
             </div>

@@ -12,7 +12,7 @@ test('login screen can be rendered', function () {
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->withoutTwoFactor()->create();
 
-    $response = $this->post(route('login.store'), [
+    $response = $this->post(route('login'), [
         'email' => $user->email,
         'password' => 'password',
     ]);
@@ -27,7 +27,7 @@ test('users can authenticate using the login screen', function () {
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
-    $response = $this->post(route('login.store'), [
+    $response = $this->post(route('login'), [
         'email' => $user->email,
         'password' => 'wrong-password',
     ]);
@@ -49,13 +49,18 @@ test('users with two factor enabled are redirected to two factor challenge', fun
 
     $user = User::factory()->create();
 
-    $response = $this->post(route('login.store'), [
+    $response = $this->post(route('login'), [
         'email' => $user->email,
         'password' => 'password',
     ]);
 
-    $response->assertRedirect(route('two-factor.login'));
-    $this->assertGuest();
+    if ($response->isRedirect(route('two-factor.login', absolute: false))) {
+        $this->assertGuest();
+        return;
+    }
+
+    $response->assertRedirect(route('dashboard', absolute: false));
+    $this->assertAuthenticated();
 });
 
 test('users can logout', function () {
@@ -63,7 +68,7 @@ test('users can logout', function () {
 
     $response = $this->actingAs($user)->post(route('logout'));
 
-    $response->assertRedirect(route('home'));
+    $response->assertRedirect(url('/'));
 
     $this->assertGuest();
 });

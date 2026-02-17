@@ -51,9 +51,33 @@ class ApiDocumentationController extends Controller
             'system.webhook_test',
         ];
 
+        $webhookUserFields = [
+            'id',
+            'name',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'role',
+            'hostel_id',
+            'hostel_name',
+            'id_number',
+            'address',
+            'guardian_name',
+            'guardian_phone',
+            'is_active',
+            'is_admin_uploaded',
+            'must_change_password',
+            'profile_image_url',
+            'extra_data',
+            'created_at',
+            'updated_at',
+        ];
+
         return view('admin.api-docs.index', [
             'endpoints' => $endpoints,
             'webhookEvents' => $webhookEvents,
+            'webhookUserFields' => $webhookUserFields,
             'openApiUrl' => route('admin.api.docs.openapi'),
         ]);
     }

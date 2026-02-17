@@ -1,6 +1,6 @@
 <x-layouts.auth>
     <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Forgot password')" :description="__('Enter your email to receive a password reset link')" />
+        <x-auth-header :title="__('Forgot password')" :description="__('Enter your email or phone number to receive a password reset link')" />
 
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
@@ -8,18 +8,18 @@
         <form method="POST" action="{{ route('password.email') }}" class="flex flex-col gap-6">
             @csrf
 
-            <!-- Email Address -->
+            <!-- Email or Phone -->
             <flux:input
-                name="email"
-                :label="__('Email Address')"
-                type="email"
+                name="identifier"
+                :label="__('Email Address or Phone Number')"
+                type="text"
                 required
                 autofocus
-                placeholder="email@example.com"
+                placeholder="email@example.com or +2348090000000"
             />
 
             <flux:button variant="primary" type="submit" class="w-full" data-test="email-password-reset-link-button">
-                {{ __('Email password reset link') }}
+                {{ __('Send password reset link') }}
             </flux:button>
         </form>
 

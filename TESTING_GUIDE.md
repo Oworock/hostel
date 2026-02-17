@@ -44,8 +44,8 @@
 **Step 1: Register/Login as Student**
 ```
 URL: http://localhost:8000/login
-Email: student1@email.com
-Password: password
+Email: student@student.com
+Password: student123
 Expected: Redirect to /dashboard
 ```
 
