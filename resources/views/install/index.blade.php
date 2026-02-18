@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Installation</title>
+    <title>Installer - Server Requirements</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-gray-100 py-8">
-    <div class="max-w-4xl mx-auto px-4">
+    <div class="max-w-5xl mx-auto px-4">
         <div class="bg-white rounded-lg shadow-md p-8">
-            <h1 class="text-3xl font-bold text-gray-900">First-Time Installation</h1>
-            <p class="text-gray-600 mt-2">Set up your system details, database, and first admin account.</p>
+            <h1 class="text-3xl font-bold text-gray-900">Installation - Step 1 of 2</h1>
+            <p class="text-gray-600 mt-2">Server requirement checks. Resolve all failed checks before continuing.</p>
 
             @if($errors->any())
                 <div class="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
@@ -22,85 +22,53 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('install.store') }}" class="mt-8 space-y-8">
-                @csrf
+            <div class="mt-8 space-y-6">
+                @foreach($requirements as $group => $checks)
+                    <section>
+                        <h2 class="text-lg font-semibold text-gray-900 capitalize">{{ $group }}</h2>
+                        <div class="mt-3 overflow-hidden rounded-lg border border-gray-200">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50 text-gray-700">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left">Check</th>
+                                        <th class="px-4 py-2 text-left">Current</th>
+                                        <th class="px-4 py-2 text-left">Required</th>
+                                        <th class="px-4 py-2 text-left">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($checks as $check)
+                                        <tr class="border-t border-gray-100">
+                                            <td class="px-4 py-2">{{ $check['label'] }}</td>
+                                            <td class="px-4 py-2">{{ $check['current'] }}</td>
+                                            <td class="px-4 py-2">{{ $check['required'] }}</td>
+                                            <td class="px-4 py-2">
+                                                @if($check['passed'])
+                                                    <span class="inline-flex items-center rounded bg-green-100 px-2 py-1 text-xs font-medium text-green-800">PASS</span>
+                                                @else
+                                                    <span class="inline-flex items-center rounded bg-red-100 px-2 py-1 text-xs font-medium text-red-800">FAIL</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                @endforeach
+            </div>
 
-                <section class="space-y-4">
-                    <h2 class="text-lg font-semibold text-gray-900">System Information</h2>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">System Name</label>
-                        <input type="text" name="app_name" value="{{ old('app_name', 'Hostel Management System') }}" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">System URL</label>
-                        <input type="url" name="app_url" value="{{ old('app_url', request()->getSchemeAndHttpHost()) }}" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
-                    </div>
-                </section>
+            <div class="mt-8 flex items-center justify-between">
+                <p class="text-sm {{ $allPassed ? 'text-green-700' : 'text-red-700' }}">
+                    {{ $allPassed ? 'All checks passed. You can continue to setup.' : 'Some checks failed. Fix them and reload this page.' }}
+                </p>
 
-                <section class="space-y-4">
-                    <h2 class="text-lg font-semibold text-gray-900">Database Configuration</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Connection</label>
-                            <select name="db_connection" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
-                                <option value="sqlite" @selected(old('db_connection', 'sqlite') === 'sqlite')>SQLite</option>
-                                <option value="mysql" @selected(old('db_connection') === 'mysql')>MySQL</option>
-                                <option value="pgsql" @selected(old('db_connection') === 'pgsql')>PostgreSQL</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Database</label>
-                            <input type="text" name="db_database" value="{{ old('db_database', 'database/database.sqlite') }}" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Host</label>
-                            <input type="text" name="db_host" value="{{ old('db_host', '127.0.0.1') }}" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Port</label>
-                            <input type="text" name="db_port" value="{{ old('db_port', '3306') }}" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Username</label>
-                            <input type="text" name="db_username" value="{{ old('db_username') }}" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
-                            <input type="password" name="db_password" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                        </div>
-                    </div>
-                </section>
-
-                <section class="space-y-4">
-                    <h2 class="text-lg font-semibold text-gray-900">Admin Account</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Admin Name</label>
-                            <input type="text" name="admin_name" value="{{ old('admin_name') }}" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Admin Email</label>
-                            <input type="email" name="admin_email" value="{{ old('admin_email') }}" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Admin Phone</label>
-                            <input type="text" name="admin_phone" value="{{ old('admin_phone') }}" class="w-full border border-gray-300 rounded-lg px-4 py-2">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
-                            <input type="password" name="admin_password" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">Confirm Password</label>
-                            <input type="password" name="admin_password_confirmation" class="w-full border border-gray-300 rounded-lg px-4 py-2" required>
-                        </div>
-                    </div>
-                </section>
-
-                <div class="flex justify-end">
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">Install System</button>
-                </div>
-            </form>
+                <a href="{{ route('install.setup') }}"
+                   class="px-6 py-2 rounded-lg font-medium {{ $allPassed ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-600 pointer-events-none' }}"
+                   @if(!$allPassed) aria-disabled="true" @endif>
+                    Continue to Setup
+                </a>
+            </div>
         </div>
     </div>
 </body>

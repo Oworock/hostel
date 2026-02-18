@@ -97,7 +97,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-    'key' => env('APP_KEY'),
+    // Allow the installer page to boot before APP_KEY exists; installer generates a real key.
+    'key' => env('APP_KEY', 'base64:mooLaKKZ8R+dsFftkWJbH1A1Y3DkeGFFoWZRMmESAz8='),
 
     'previous_keys' => [
         ...array_filter(

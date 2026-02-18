@@ -17,13 +17,42 @@ class InstallController extends Controller
             return redirect()->route('login');
         }
 
-        return view('install.index');
+        $requirements = $this->buildRequirements();
+        $allPassed = collect($requirements)->flatten(1)->every(fn (array $item) => $item['passed'] === true);
+
+        return view('install.index', compact('requirements', 'allPassed'));
+    }
+
+    public function setup()
+    {
+        if ($this->isInstalled()) {
+            return redirect()->route('login');
+        }
+
+        $requirements = $this->buildRequirements();
+        $allPassed = collect($requirements)->flatten(1)->every(fn (array $item) => $item['passed'] === true);
+
+        if (!$allPassed) {
+            return redirect()
+                ->route('install.index')
+                ->withErrors(['requirements' => 'Server requirements are not fully met. Resolve all failed checks before continuing.']);
+        }
+
+        return view('install.setup');
     }
 
     public function store(Request $request)
     {
         if ($this->isInstalled()) {
             return redirect()->route('login');
+        }
+
+        $requirements = $this->buildRequirements();
+        $allPassed = collect($requirements)->flatten(1)->every(fn (array $item) => $item['passed'] === true);
+        if (!$allPassed) {
+            return redirect()
+                ->route('install.index')
+                ->withErrors(['requirements' => 'Server requirements are not fully met. Resolve all failed checks before running installation.']);
         }
 
         $data = $request->validate([
@@ -179,5 +208,80 @@ class InstallController extends Controller
         } catch (\Throwable $e) {
             return false;
         }
+    }
+
+    private function buildRequirements(): array
+    {
+        $requiredExtensions = [
+            'bcmath',
+            'ctype',
+            'curl',
+            'dom',
+            'fileinfo',
+            'filter',
+            'gd',
+            'iconv',
+            'intl',
+            'json',
+            'mbstring',
+            'openssl',
+            'pdo',
+            'session',
+            'tokenizer',
+            'xml',
+            'zip',
+        ];
+
+        $extensions = [];
+        foreach ($requiredExtensions as $ext) {
+            $loaded = extension_loaded($ext);
+            $extensions[] = [
+                'label' => "PHP extension: {$ext}",
+                'passed' => $loaded,
+                'current' => $loaded ? 'Loaded' : 'Missing',
+                'required' => 'Loaded',
+            ];
+        }
+
+        $paths = [
+            base_path(),
+            base_path('bootstrap/cache'),
+            storage_path(),
+            storage_path('framework'),
+            storage_path('logs'),
+        ];
+
+        $permissions = [];
+        foreach ($paths as $path) {
+            $permissions[] = [
+                'label' => "Writable: {$path}",
+                'passed' => is_dir($path) && is_writable($path),
+                'current' => (is_dir($path) && is_writable($path)) ? 'Writable' : 'Not writable',
+                'required' => 'Writable',
+            ];
+        }
+
+        $envPath = base_path('.env');
+        $permissions[] = [
+            'label' => '.env file or project root writable',
+            'passed' => file_exists($envPath) ? is_writable($envPath) : is_writable(base_path()),
+            'current' => file_exists($envPath)
+                ? (is_writable($envPath) ? '.env writable' : '.env not writable')
+                : (is_writable(base_path()) ? '.env missing, root writable' : '.env missing, root not writable'),
+            'required' => '.env writable or project root writable',
+        ];
+
+        return [
+            'core' => [
+                [
+                    'label' => 'PHP version',
+                    'passed' => version_compare(PHP_VERSION, '8.2.0', '>='),
+                    'current' => PHP_VERSION,
+                    'required' => '>= 8.2.0',
+                ],
+            ],
+            'extensions' => $extensions,
+            'permissions' => $permissions,
+        ];
     }
 }

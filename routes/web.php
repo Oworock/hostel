@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/install', [InstallController::class, 'index'])->name('install.index');
+Route::get('/install/setup', [InstallController::class, 'setup'])->name('install.setup');
 Route::post('/install', [InstallController::class, 'store'])->name('install.store');
 
 Route::get('/', function () {
