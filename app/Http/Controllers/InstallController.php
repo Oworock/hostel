@@ -42,10 +42,23 @@ class InstallController extends Controller
         ]);
 
         $this->createEnvFile($data);
+        $this->applyRuntimeDatabaseConfig($data);
 
-        Artisan::call('key:generate', ['--force' => true]);
-        Artisan::call('migrate', ['--force' => true]);
-        Artisan::call('db:seed', ['--force' => true]);
+        if (!$this->canConnectToDatabase()) {
+            return back()
+                ->withInput($request->except(['db_password', 'admin_password', 'admin_password_confirmation']))
+                ->withErrors(['db_database' => 'Unable to connect to the configured database. Verify host, port, database name, username and password.']);
+        }
+
+        try {
+            Artisan::call('key:generate', ['--force' => true]);
+            Artisan::call('migrate', ['--force' => true]);
+            Artisan::call('db:seed', ['--force' => true]);
+        } catch (\Throwable $e) {
+            return back()
+                ->withInput($request->except(['db_password', 'admin_password', 'admin_password_confirmation']))
+                ->withErrors(['install' => 'Installation failed while running migrations/seeds: ' . $e->getMessage()]);
+        }
 
         DB::reconnect();
 
@@ -135,6 +148,36 @@ class InstallController extends Controller
             if (!file_exists($dbFile)) {
                 touch($dbFile);
             }
+        }
+    }
+
+    private function applyRuntimeDatabaseConfig(array $data): void
+    {
+        $connection = (string) ($data['db_connection'] ?? 'sqlite');
+        config(['database.default' => $connection]);
+        config(["database.connections.{$connection}.driver" => $connection]);
+
+        if ($connection === 'sqlite') {
+            config(["database.connections.{$connection}.database" => base_path((string) $data['db_database'])]);
+        } else {
+            config(["database.connections.{$connection}.host" => (string) ($data['db_host'] ?? '127.0.0.1')]);
+            config(["database.connections.{$connection}.port" => (string) ($data['db_port'] ?? ($connection === 'pgsql' ? '5432' : '3306'))]);
+            config(["database.connections.{$connection}.database" => (string) ($data['db_database'] ?? '')]);
+            config(["database.connections.{$connection}.username" => (string) ($data['db_username'] ?? '')]);
+            config(["database.connections.{$connection}.password" => (string) ($data['db_password'] ?? '')]);
+        }
+
+        DB::purge($connection);
+        DB::setDefaultConnection($connection);
+    }
+
+    private function canConnectToDatabase(): bool
+    {
+        try {
+            DB::connection()->getPdo();
+            return true;
+        } catch (\Throwable $e) {
+            return false;
         }
     }
 }

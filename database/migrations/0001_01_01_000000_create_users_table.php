@@ -23,7 +23,8 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('guardian_name')->nullable();
             $table->string('guardian_phone')->nullable();
-            $table->foreignId('hostel_id')->nullable()->constrained()->cascadeOnDelete();
+            // FK is added later after hostels table exists.
+            $table->unsignedBigInteger('hostel_id')->nullable()->index();
             $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();

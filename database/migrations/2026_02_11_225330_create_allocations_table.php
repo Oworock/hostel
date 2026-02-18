@@ -14,7 +14,7 @@ public function up(): void
 {
     Schema::create('allocations', function (Blueprint $table) {
         $table->id();
-        $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+        $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
         $table->foreignId('bed_id')->constrained()->cascadeOnDelete();
         $table->date('start_date');
         $table->date('end_date')->nullable();

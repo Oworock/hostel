@@ -88,6 +88,11 @@ class User extends Authenticatable
         return $this->hasMany(Booking::class);
     }
 
+    public function allocations()
+    {
+        return $this->hasMany(Allocation::class, 'student_id');
+    }
+
     public function hostelChangeRequests()
     {
         return $this->hasMany(HostelChangeRequest::class, 'student_id');

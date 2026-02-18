@@ -27,7 +27,11 @@ class AllocationResource extends Resource
                 Forms\Components\Section::make('Allocation Details')
                     ->schema([
                         Forms\Components\Select::make('student_id')
-                            ->relationship('student', 'name')
+                            ->relationship(
+                                name: 'student',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (Builder $query) => $query->where('role', 'student')
+                            )
                             ->searchable()
                             ->preload()
                             ->required()
@@ -129,4 +133,3 @@ class AllocationResource extends Resource
         ];
     }
 }
-
