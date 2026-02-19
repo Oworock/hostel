@@ -10,7 +10,7 @@
     <div class="max-w-4xl mx-auto px-4">
         <div class="bg-white rounded-lg shadow-md p-8">
             <h1 class="text-3xl font-bold text-gray-900">Installation - Step 2 of 2</h1>
-            <p class="text-gray-600 mt-2">Set up your system details, database, and first admin account.</p>
+            <p class="text-gray-600 mt-2">Set up your system details, database, and first admin account. The installer will then run all required setup commands automatically.</p>
 
             @if($errors->any())
                 <div class="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
@@ -99,7 +99,7 @@
 
                 <div class="flex justify-between">
                     <a href="{{ route('install.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 font-medium">Back</a>
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">Install System</button>
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium">Install System Automatically</button>
                 </div>
             </form>
         </div>

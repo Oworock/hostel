@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\Process\Process;
 
 class InstallController extends Controller
 {
@@ -81,13 +82,17 @@ class InstallController extends Controller
         }
 
         try {
-            Artisan::call('key:generate', ['--force' => true]);
-            Artisan::call('migrate', ['--force' => true]);
-            Artisan::call('db:seed', ['--force' => true]);
+            $steps = $this->runSystemPreparationCommands();
+            $failedStep = collect($steps)->firstWhere('passed', false);
+            if ($failedStep) {
+                return back()
+                    ->withInput($request->except(['db_password', 'admin_password', 'admin_password_confirmation']))
+                    ->withErrors(['install' => 'Installation failed: ' . $failedStep['label'] . ' - ' . $failedStep['message']]);
+            }
         } catch (\Throwable $e) {
             return back()
                 ->withInput($request->except(['db_password', 'admin_password', 'admin_password_confirmation']))
-                ->withErrors(['install' => 'Installation failed while running migrations/seeds: ' . $e->getMessage()]);
+                ->withErrors(['install' => 'Installation failed while preparing the system: ' . $e->getMessage()]);
         }
 
         DB::reconnect();
@@ -113,6 +118,10 @@ class InstallController extends Controller
         SystemSetting::setSetting('app_phone', $data['admin_phone'] ?? '');
         $this->writeInstallLock($data['app_name'], $data['admin_email']);
         $this->markInstalledInEnv();
+        Artisan::call('optimize:clear');
+        Artisan::call('config:cache');
+        Artisan::call('route:cache');
+        Artisan::call('view:cache');
 
         return redirect()->route('login')->with('success', 'Installation completed successfully. Please sign in.');
     }
@@ -296,6 +305,17 @@ class InstallController extends Controller
             'required' => '.env writable or project root writable',
         ];
 
+        $commands = [];
+        foreach (['composer', 'npm', 'node'] as $binary) {
+            $path = $this->findBinary($binary);
+            $commands[] = [
+                'label' => "Command available: {$binary}",
+                'passed' => $path !== null,
+                'current' => $path ?? 'Not found in PATH',
+                'required' => 'Available in PATH',
+            ];
+        }
+
         return [
             'core' => [
                 [
@@ -307,6 +327,124 @@ class InstallController extends Controller
             ],
             'extensions' => $extensions,
             'permissions' => $permissions,
+            'commands' => $commands,
         ];
+    }
+
+    /**
+     * @return array<int, array{label: string, passed: bool, message: string}>
+     */
+    private function runSystemPreparationCommands(): array
+    {
+        $steps = [];
+
+        $steps[] = $this->runShellCommand(
+            ['composer', 'install', '--no-dev', '--optimize-autoloader', '--no-interaction'],
+            'Install PHP dependencies (composer)'
+        );
+        if (!$steps[array_key_last($steps)]['passed']) {
+            return $steps;
+        }
+
+        if (file_exists(base_path('package.json'))) {
+            $steps[] = $this->runShellCommand(
+                ['npm', 'install', '--no-audit', '--no-fund'],
+                'Install frontend dependencies (npm)'
+            );
+            if (!$steps[array_key_last($steps)]['passed']) {
+                return $steps;
+            }
+
+            $steps[] = $this->runShellCommand(
+                ['npm', 'run', 'build'],
+                'Build frontend assets (npm run build)'
+            );
+            if (!$steps[array_key_last($steps)]['passed']) {
+                return $steps;
+            }
+        }
+
+        $artisanCommands = [
+            ['key:generate', ['--force' => true]],
+            ['storage:link', ['--force' => true]],
+            ['migrate', ['--force' => true]],
+            ['db:seed', ['--force' => true]],
+        ];
+
+        foreach ($artisanCommands as [$command, $args]) {
+            try {
+                Artisan::call($command, $args);
+                $steps[] = [
+                    'label' => "Run artisan {$command}",
+                    'passed' => true,
+                    'message' => trim((string) Artisan::output()),
+                ];
+            } catch (\Throwable $e) {
+                $steps[] = [
+                    'label' => "Run artisan {$command}",
+                    'passed' => false,
+                    'message' => $e->getMessage(),
+                ];
+
+                return $steps;
+            }
+        }
+
+        return $steps;
+    }
+
+    /**
+     * @param array<int, string> $command
+     * @return array{label: string, passed: bool, message: string}
+     */
+    private function runShellCommand(array $command, string $label): array
+    {
+        $binary = $command[0] ?? '';
+        if ($binary === '' || $this->findBinary($binary) === null) {
+            return [
+                'label' => $label,
+                'passed' => false,
+                'message' => "Command not found: {$binary}",
+            ];
+        }
+
+        $process = new Process($command, base_path());
+        $process->setTimeout(1800);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            $error = trim($process->getErrorOutput()) ?: trim($process->getOutput());
+
+            return [
+                'label' => $label,
+                'passed' => false,
+                'message' => $error !== '' ? $error : 'Unknown command error',
+            ];
+        }
+
+        $output = trim($process->getOutput());
+
+        return [
+            'label' => $label,
+            'passed' => true,
+            'message' => $output !== '' ? $output : 'Completed successfully',
+        ];
+    }
+
+    private function findBinary(string $binary): ?string
+    {
+        $command = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'
+            ? ['where', $binary]
+            : ['which', $binary];
+
+        $process = new Process($command, base_path());
+        $process->run();
+        if (!$process->isSuccessful()) {
+            return null;
+        }
+
+        $path = trim($process->getOutput());
+
+        return $path !== '' ? strtok($path, PHP_EOL) ?: null : null;
     }
 }
