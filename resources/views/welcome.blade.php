@@ -4,7 +4,7 @@
 
 @section('content')
 @php
-    $appName = \App\Models\SystemSetting::getSetting('app_name', 'Hostel Manager');
+    $appName = \App\Models\SystemSetting::getSetting('app_name', 'Universal Hostel Manager');
 
     $heroTitle = \App\Models\SystemSetting::getSetting('global_header_hero_title', 'Welcome to ' . $appName);
     $heroSubtitle = \App\Models\SystemSetting::getSetting('global_header_hero_subtitle', 'Your complete solution for hostel room booking and management');
@@ -15,14 +15,19 @@
     $guestSecondaryUrl = \App\Models\SystemSetting::getSetting('global_header_secondary_button_url', route('register'));
     $authPrimaryText = \App\Models\SystemSetting::getSetting('global_header_authenticated_cta_text', 'Go to Dashboard');
 
-    $studentTitle = \App\Models\SystemSetting::getSetting('welcome_body_student_title', 'For Students');
-    $studentDescription = \App\Models\SystemSetting::getSetting('welcome_body_student_description', 'Browse available rooms, create bookings, and manage your accommodation with ease.');
+    $studentTitle = 'For Students';
+    $studentDescription = '<p>Browse available rooms, create bookings, and manage your accommodation with ease.</p>';
 
-    $managerTitle = \App\Models\SystemSetting::getSetting('welcome_body_manager_title', 'For Managers');
-    $managerDescription = \App\Models\SystemSetting::getSetting('welcome_body_manager_description', 'Manage rooms, approve bookings, and monitor occupancy rates efficiently.');
+    $managerTitle = 'For Managers';
+    $managerDescription = '<p>Manage rooms, approve bookings, and monitor occupancy rates efficiently.</p>';
 
-    $adminTitle = \App\Models\SystemSetting::getSetting('welcome_body_admin_title', 'For Admins');
-    $adminDescription = \App\Models\SystemSetting::getSetting('welcome_body_admin_description', 'Oversee multiple hostels, assign managers, and track system-wide statistics.');
+    $adminTitle = 'For Admins';
+    $adminDescription = '<p>Oversee multiple hostels, assign managers, and track system-wide statistics.</p>';
+    $dynamicSections = \App\Models\WelcomeSection::query()
+        ->where('is_active', true)
+        ->orderBy('display_order')
+        ->orderBy('id')
+        ->get();
 
     $toUrl = function (string $value): string {
         if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
@@ -55,22 +60,42 @@
     </div>
 </section>
 
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-        <article class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition border border-transparent dark:border-slate-800">
-            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-slate-100">{{ $studentTitle }}</h3>
-            <div class="text-gray-600 dark:text-slate-300">{!! $studentDescription !!}</div>
-        </article>
+@if($dynamicSections->isNotEmpty())
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        @foreach($dynamicSections as $section)
+            <article class="bg-white dark:bg-slate-900 p-5 md:p-6 rounded-xl shadow-md border border-transparent dark:border-slate-800 h-full flex flex-col">
+                @if(!empty($section->image_path))
+                    <div class="mb-4">
+                        <img src="{{ asset('storage/' . $section->image_path) }}" alt="{{ $section->title }}" class="w-full h-48 sm:h-56 object-cover rounded-lg">
+                    </div>
+                @endif
+                <div class="space-y-4 flex-1">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-slate-100">{{ $section->title }}</h3>
+                    <div class="text-gray-600 dark:text-slate-300">{!! $section->content !!}</div>
+                </div>
+            </article>
+        @endforeach
+        </div>
+    </section>
+@else
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            <article class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition border border-transparent dark:border-slate-800">
+                <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-slate-100">{{ $studentTitle }}</h3>
+                <div class="text-gray-600 dark:text-slate-300">{!! $studentDescription !!}</div>
+            </article>
 
-        <article class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition border border-transparent dark:border-slate-800">
-            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-slate-100">{{ $managerTitle }}</h3>
-            <div class="text-gray-600 dark:text-slate-300">{!! $managerDescription !!}</div>
-        </article>
+            <article class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition border border-transparent dark:border-slate-800">
+                <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-slate-100">{{ $managerTitle }}</h3>
+                <div class="text-gray-600 dark:text-slate-300">{!! $managerDescription !!}</div>
+            </article>
 
-        <article class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition border border-transparent dark:border-slate-800">
-            <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-slate-100">{{ $adminTitle }}</h3>
-            <div class="text-gray-600 dark:text-slate-300">{!! $adminDescription !!}</div>
-        </article>
-    </div>
-</section>
+            <article class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-lg shadow-md hover:shadow-lg transition border border-transparent dark:border-slate-800">
+                <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-slate-100">{{ $adminTitle }}</h3>
+                <div class="text-gray-600 dark:text-slate-300">{!! $adminDescription !!}</div>
+            </article>
+        </div>
+    </section>
+@endif
 @endsection

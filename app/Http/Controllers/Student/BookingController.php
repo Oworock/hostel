@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\PaymentGateway;
 use App\Models\Room;
 use App\Models\AcademicSession;
+use App\Models\Hostel;
 use App\Models\Semester;
 use App\Services\OutboundWebhookService;
 use Illuminate\Http\Request;
@@ -22,15 +23,42 @@ class BookingController extends Controller
         return view('student.bookings.index', compact('bookings'));
     }
 
-    public function available()
+    public function available(Request $request)
     {
         $blockingBooking = $this->getBlockingBooking();
 
-        $rooms = Room::where('is_available', true)
-            ->with(['hostel', 'beds', 'images'])
-            ->paginate(12);
+        $query = Room::query()
+            ->where('is_available', true)
+            ->with(['hostel', 'beds', 'images']);
 
-        return view('student.bookings.available', compact('rooms', 'blockingBooking'));
+        if ($request->filled('hostel_id')) {
+            $query->where('hostel_id', $request->integer('hostel_id'));
+        }
+
+        if ($request->filled('q')) {
+            $search = trim((string) $request->input('q'));
+            $query->where(function ($q) use ($search) {
+                $q->where('room_number', 'like', '%' . $search . '%')
+                    ->orWhere('type', 'like', '%' . $search . '%')
+                    ->orWhereHas('hostel', fn ($h) => $h->where('name', 'like', '%' . $search . '%')->orWhere('city', 'like', '%' . $search . '%'));
+            });
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price_per_month', '<=', (float) $request->input('max_price'));
+        }
+
+        $sort = $request->input('sort', 'price_asc');
+        match ($sort) {
+            'price_desc' => $query->orderByDesc('price_per_month'),
+            'recent' => $query->latest(),
+            default => $query->orderBy('price_per_month'),
+        };
+
+        $rooms = $query->paginate(12)->withQueryString();
+        $hostels = Hostel::where('is_active', true)->orderBy('name')->get();
+
+        return view('student.bookings.available', compact('rooms', 'blockingBooking', 'hostels', 'sort'));
     }
 
     public function create(Room $room)

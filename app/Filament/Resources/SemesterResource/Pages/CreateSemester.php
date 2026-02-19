@@ -4,7 +4,7 @@ namespace App\Filament\Resources\SemesterResource\Pages;
 
 use App\Filament\Resources\SemesterResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Pages\BaseCreateRecord as CreateRecord;
 
 class CreateSemester extends CreateRecord
 {

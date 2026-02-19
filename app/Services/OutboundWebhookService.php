@@ -11,18 +11,17 @@ use Throwable;
 
 class OutboundWebhookService
 {
-    public function dispatch(string $event, array $payload = []): bool
+    public function dispatch(string $event, array $payload = [], bool $ignoreEventFilter = false): bool
     {
         $enabled = filter_var(get_setting('webhook_enabled', false), FILTER_VALIDATE_BOOL);
         $url = trim((string) get_setting('webhook_url', ''));
-        $secret = (string) get_setting('webhook_secret', '');
 
         if (!$enabled || $url === '') {
             return false;
         }
 
         $allowedEvents = json_decode((string) get_setting('webhook_events_json', '[]'), true);
-        if (is_array($allowedEvents) && !empty($allowedEvents) && !in_array($event, $allowedEvents, true)) {
+        if (!$ignoreEventFilter && is_array($allowedEvents) && !empty($allowedEvents) && !in_array($event, $allowedEvents, true)) {
             return false;
         }
 
@@ -33,9 +32,6 @@ class OutboundWebhookService
             'payload' => $this->enrichPayloadWithUsers($payload),
         ];
 
-        $bodyJson = json_encode($body, JSON_UNESCAPED_SLASHES);
-        $signature = $secret !== '' ? hash_hmac('sha256', (string) $bodyJson, $secret) : '';
-
         try {
             $response = Http::acceptJson()
                 ->timeout(15)
@@ -43,7 +39,6 @@ class OutboundWebhookService
                 ->withHeaders([
                     'Content-Type' => 'application/json',
                     'X-Hostel-Event' => $event,
-                    'X-Hostel-Signature' => $signature,
                 ])
                 ->post($url, $body);
 
@@ -133,8 +128,18 @@ class OutboundWebhookService
                 continue;
             }
 
-            if (preg_match('/^(user|student|manager|admin)_id$/', $key, $matches) === 1) {
-                $pairs[$matches[1]] = (int) $value;
+            if (preg_match('/^(user|student|manager|admin|requested_by|created_by|reported_by|receiving_manager)_id$/', $key, $matches) === 1) {
+                $role = $matches[1];
+                if ($role === 'requested_by') {
+                    $role = 'requester';
+                } elseif ($role === 'created_by') {
+                    $role = 'creator';
+                } elseif ($role === 'reported_by') {
+                    $role = 'reporter';
+                } elseif ($role === 'receiving_manager') {
+                    $role = 'receiving_manager';
+                }
+                $pairs[$role] = (int) $value;
             }
         }
     }

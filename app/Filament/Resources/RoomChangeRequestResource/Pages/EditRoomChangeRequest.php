@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\RoomChangeRequestResource\Pages;
 
 use App\Filament\Resources\RoomChangeRequestResource;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\Pages\BaseEditRecord as EditRecord;
 
 class EditRoomChangeRequest extends EditRecord
 {

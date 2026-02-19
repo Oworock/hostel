@@ -23,6 +23,11 @@ Route::prefix('v1')
         Route::patch('students/{student}', [ManagementApiController::class, 'updateStudent']);
         Route::delete('students/{student}', [ManagementApiController::class, 'deleteStudent']);
 
+        Route::get('managers', [ManagementApiController::class, 'listManagers']);
+        Route::post('managers', [ManagementApiController::class, 'createManager']);
+        Route::patch('managers/{manager}', [ManagementApiController::class, 'updateManager']);
+        Route::delete('managers/{manager}', [ManagementApiController::class, 'deleteManager']);
+
         Route::get('bookings', [ManagementApiController::class, 'listBookings']);
         Route::post('bookings', [ManagementApiController::class, 'createBooking']);
         Route::patch('bookings/{booking}', [ManagementApiController::class, 'updateBooking']);
@@ -33,4 +38,20 @@ Route::prefix('v1')
 
         Route::get('complaints', [ManagementApiController::class, 'listComplaints']);
         Route::patch('complaints/{complaint}', [ManagementApiController::class, 'updateComplaint']);
+
+        Route::get('assets', [ManagementApiController::class, 'listAssets']);
+        Route::post('assets', [ManagementApiController::class, 'createAsset']);
+        Route::patch('assets/{asset}', [ManagementApiController::class, 'updateAsset']);
+        Route::delete('assets/{asset}', [ManagementApiController::class, 'deleteAsset']);
+
+        Route::get('asset-issues', [ManagementApiController::class, 'listAssetIssues']);
+        Route::patch('asset-issues/{assetIssue}', [ManagementApiController::class, 'updateAssetIssue']);
+
+        Route::get('asset-movements', [ManagementApiController::class, 'listAssetMovements']);
+        Route::patch('asset-movements/{assetMovement}', [ManagementApiController::class, 'updateAssetMovement']);
+
+        Route::get('asset-subscriptions', [ManagementApiController::class, 'listAssetSubscriptions']);
+        Route::post('asset-subscriptions', [ManagementApiController::class, 'createAssetSubscription']);
+        Route::patch('asset-subscriptions/{assetSubscription}', [ManagementApiController::class, 'updateAssetSubscription']);
+        Route::delete('asset-subscriptions/{assetSubscription}', [ManagementApiController::class, 'deleteAssetSubscription']);
     });

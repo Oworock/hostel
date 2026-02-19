@@ -65,7 +65,7 @@ class StudentBookingHistory extends Page implements Tables\Contracts\HasTable
                 
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('Amount')
-                    ->formatStateUsing(fn ($state) => getCurrencySymbol() . number_format($state, 2))
+                    ->formatStateUsing(fn ($state) => formatCurrency((float) $state))
                     ->sortable(),
                 
                 Tables\Columns\BadgeColumn::make('status')

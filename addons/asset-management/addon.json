@@ -1,0 +1,15 @@
+{
+  "name": "Asset Management",
+  "slug": "asset-management",
+  "version": "1.0.0",
+  "description": "Manage hostel assets, issue reporting, and maintenance tracking.",
+  "requires": {
+    "php": ">=8.2",
+    "laravel": ">=12"
+  },
+  "features": [
+    "hostel_asset_registry",
+    "manager_issue_reporting",
+    "admin_issue_dashboard_widget"
+  ]
+}

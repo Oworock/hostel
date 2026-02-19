@@ -54,6 +54,10 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'installed' => env('APP_INSTALLED', false),
+
+    'installed_at' => env('APP_INSTALLED_AT'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

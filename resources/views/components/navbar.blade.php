@@ -1,12 +1,47 @@
 @php
-    $logo = \App\Models\SystemSetting::getSetting('global_header_logo', '');
+    $logoLight = \App\Models\SystemSetting::getSetting('global_header_logo_light', \App\Models\SystemSetting::getSetting('global_header_logo', \App\Models\SystemSetting::getSetting('app_logo', '')));
+    $logoDark = \App\Models\SystemSetting::getSetting('global_header_logo_dark', $logoLight);
     $brandName = \App\Models\SystemSetting::getSetting('global_header_brand', \App\Models\SystemSetting::getSetting('app_name', 'Hostel Manager'));
     $headerNotice = \App\Models\SystemSetting::getSetting('global_header_notice_html', '');
     $headerEmail = \App\Models\SystemSetting::getSetting('global_header_contact_email', '');
     $headerPhone = \App\Models\SystemSetting::getSetting('global_header_contact_phone', '');
+    $toLogoUrl = function (?string $path): string {
+        $path = trim((string) $path);
+        if ($path === '') {
+            return '';
+        }
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:')) {
+            return $path;
+        }
+
+        $path = ltrim($path, '/');
+        $path = preg_replace('/^(storage\/|public\/)/', '', $path);
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+            return '';
+        }
+
+        return asset('storage/' . $path);
+    };
+    $resolvedLogoLight = $toLogoUrl($logoLight);
+    $resolvedLogoDark = $toLogoUrl($logoDark ?: $logoLight);
 @endphp
 
-<nav x-data="{ open: false }" class="bg-white dark:bg-slate-900 shadow-lg border-b border-transparent dark:border-slate-800">
+<nav
+    x-data="{
+        open: false,
+        isDark() {
+            return document.documentElement.classList.contains('dark');
+        },
+        toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            html.classList.toggle('dark', !isDark);
+            localStorage.setItem('site.themeMode', isDark ? 'light' : 'dark');
+            localStorage.setItem('dashboard.themeMode', isDark ? 'light' : 'dark');
+        }
+    }"
+    class="bg-white dark:bg-slate-900 shadow-lg border-b border-transparent dark:border-slate-800"
+>
     @if($headerNotice || $headerEmail || $headerPhone)
         <div class="bg-gray-900 dark:bg-slate-950 text-gray-100 text-xs">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
@@ -22,10 +57,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
             <a href="{{ url('/') }}" class="flex items-center space-x-2">
-                @if($logo)
-                    <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="max-h-10 sm:max-h-11 w-auto object-contain">
+                @if($resolvedLogoLight)
+                    <img src="{{ $resolvedLogoLight }}" alt="Logo" class="max-h-10 sm:max-h-11 w-auto object-contain dark:hidden">
+                    <img src="{{ $resolvedLogoDark ?: $resolvedLogoLight }}" alt="Logo" class="max-h-10 sm:max-h-11 w-auto object-contain hidden dark:inline">
+                @else
+                    <span class="text-xl font-bold text-gray-800 dark:text-slate-100">{{ $brandName }}</span>
                 @endif
-                <span class="text-xl font-bold text-gray-800 dark:text-slate-100">{{ $brandName }}</span>
             </a>
 
             <div class="hidden md:flex items-center space-x-8">
@@ -71,6 +108,13 @@
                 @else
                     <a href="{{ route('login') }}" class="text-gray-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400">Login</a>
                     <a href="{{ route('register') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Register</a>
+                    <button type="button" @click="toggleTheme()" class="inline-flex items-center gap-2 rounded-full border border-gray-300 dark:border-slate-700 px-2 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800" title="Toggle dark mode">
+                        <span class="text-amber-500">☀</span>
+                        <span class="relative inline-flex h-5 w-10 items-center rounded-full bg-slate-300 dark:bg-slate-700">
+                            <span class="inline-block h-4 w-4 transform rounded-full bg-white transition" :class="isDark() ? 'translate-x-5' : 'translate-x-1'"></span>
+                        </span>
+                        <span class="text-slate-600 dark:text-slate-300">🌙</span>
+                    </button>
                 @endif
             </div>
 
@@ -115,6 +159,7 @@
                 <a href="{{ route('public.rooms.index') }}" class="block text-gray-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400">Book Rooms</a>
                 <a href="{{ route('login') }}" class="block text-gray-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400">Login</a>
                 <a href="{{ route('register') }}" class="block text-gray-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400">Register</a>
+                <button type="button" @click="toggleTheme()" class="block w-full text-left text-gray-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400">Theme: <span x-text="isDark() ? 'Dark' : 'Light'"></span></button>
             @endif
         </div>
     </div>

@@ -7,6 +7,8 @@ use App\Models\Booking;
 use App\Models\Complaint;
 use App\Models\Hostel;
 use App\Models\Payment;
+use App\Models\Addon;
+use App\Models\AssetSubscription;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 
@@ -24,7 +26,7 @@ class DashboardController extends Controller
             return $this->studentDashboard();
         }
 
-        return redirect('/');
+        return $this->studentDashboard();
     }
 
     public function adminDashboard()
@@ -113,9 +115,28 @@ class DashboardController extends Controller
             ? ($hostels->first()->name ?? 'Assigned Hostel')
             : $hostels->pluck('name')->join(', ');
 
+        $subscriptionAlerts = collect();
+        $expiredSubscriptionsCount = 0;
+        if (Addon::isActive('asset-management') && Schema::hasTable('asset_subscriptions')) {
+            $subscriptionAlerts = AssetSubscription::query()
+                ->whereIn('hostel_id', $hostelIds)
+                ->where('status', 'active')
+                ->whereDate('expires_at', '<=', now()->addDays(7)->toDateString())
+                ->orderBy('expires_at')
+                ->with('hostel')
+                ->limit(10)
+                ->get();
+
+            $expiredSubscriptionsCount = AssetSubscription::query()
+                ->whereIn('hostel_id', $hostelIds)
+                ->where('status', 'active')
+                ->whereDate('expires_at', '<', now()->toDateString())
+                ->count();
+        }
+
         return view(
             'manager.dashboard',
-            compact('stats', 'recentBookings', 'recentPayments', 'recentComplaints', 'roomSnapshot', 'hostelLabel', 'manualAdminPayments')
+            compact('stats', 'recentBookings', 'recentPayments', 'recentComplaints', 'roomSnapshot', 'hostelLabel', 'manualAdminPayments', 'subscriptionAlerts', 'expiredSubscriptionsCount')
         );
     }
 

@@ -57,8 +57,8 @@
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
                                 <td class="px-6 py-4 text-sm text-slate-900 dark:text-slate-100 font-medium">{{ $payment->user->name }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-900 dark:text-slate-100">{{ $payment->room->name ?? $payment->room->room_number ?? 'N/A' }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-900 dark:text-slate-100">₦{{ number_format($payment->total_amount, 2) }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-900 dark:text-slate-100">₦{{ number_format($payment->amount_paid, 2) }}</td>
+                                <td class="px-6 py-4 text-sm text-slate-900 dark:text-slate-100">{{ formatCurrency($payment->total_amount) }}</td>
+                                <td class="px-6 py-4 text-sm text-slate-900 dark:text-slate-100">{{ formatCurrency($payment->amount_paid) }}</td>
                                 <td class="px-6 py-4 text-sm">
                                     @if($payment->payment_status === 'paid_full')
                                         <span class="px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 rounded-full text-xs font-semibold">Paid Full</span>

@@ -4,7 +4,7 @@ namespace App\Filament\Resources\HostelResource\Pages;
 
 use App\Filament\Resources\HostelResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\Pages\BaseEditRecord as EditRecord;
 
 class EditHostel extends EditRecord
 {

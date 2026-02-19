@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     protected $fillable = [
         'name',
@@ -108,19 +111,55 @@ class User extends Authenticatable
         return $this->hasMany(Bed::class);
     }
 
+    public function uploadedFiles()
+    {
+        return $this->hasMany(UploadedFile::class, 'uploader_id');
+    }
+
+    public function uploadedAddons()
+    {
+        return $this->hasMany(Addon::class, 'uploaded_by');
+    }
+
+    public function createdAssets()
+    {
+        return $this->hasMany(Asset::class, 'created_by');
+    }
+
+    public function requestedAssetMovements()
+    {
+        return $this->hasMany(AssetMovement::class, 'requested_by');
+    }
+
+    public function createdAssetSubscriptions()
+    {
+        return $this->hasMany(AssetSubscription::class, 'created_by');
+    }
+
     public function isStudent()
     {
-        return $this->role === 'student';
+        return strtolower(trim((string) $this->role)) === 'student';
     }
 
     public function isManager()
     {
-        return $this->role === 'manager';
+        return strtolower(trim((string) $this->role)) === 'manager';
     }
 
     public function isAdmin()
     {
-        return $this->role === 'admin';
+        $role = strtolower(trim((string) $this->role));
+
+        return in_array($role, ['admin', 'super_admin'], true);
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if ($panel->getId() === 'admin') {
+            return $this->isAdmin();
+        }
+
+        return true;
     }
 
     public function managedHostelIds(): Collection
@@ -135,5 +174,22 @@ class User extends Authenticatable
         }
 
         return $ids->unique()->values();
+    }
+
+    public function initials(): string
+    {
+        $name = trim((string) ($this->name ?? ''));
+        if ($name === '') {
+            return 'U';
+        }
+
+        $parts = preg_split('/\s+/', $name) ?: [];
+        $initials = collect($parts)
+            ->filter(fn ($part) => $part !== '')
+            ->take(2)
+            ->map(fn ($part) => strtoupper(substr($part, 0, 1)))
+            ->implode('');
+
+        return $initials !== '' ? $initials : 'U';
     }
 }

@@ -13,9 +13,13 @@
 @endphp
 <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+        <div class="mb-6">
+            <x-system-auth-logo />
+        </div>
+
         <h2 class="text-center text-3xl font-bold text-gray-900 mb-6">Create account</h2>
         
-        <form method="POST" action="{{ route('register') }}" class="space-y-4">
+        <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data" class="space-y-4">
             @csrf
             <input type="hidden" name="form_started_at" value="{{ time() }}">
             <input type="text" name="website" value="" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
@@ -124,10 +128,17 @@
                         <label for="{{ $fieldName }}" class="block text-sm font-medium text-gray-700">
                             {{ $fieldLabel }} @if(!$fieldRequired)(optional)@endif
                         </label>
-                        <input type="{{ $fieldType }}" id="{{ $fieldName }}" name="{{ $fieldName }}" value="{{ old($fieldName) }}"
-                               placeholder="{{ $fieldPlaceholder }}"
-                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error($fieldName) border-red-500 @enderror"
-                               @if($fieldRequired) required @endif>
+                        @if($fieldType === 'upload')
+                            <input type="file" id="{{ $fieldName }}" name="{{ $fieldName }}" accept="image/*"
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error($fieldName) border-red-500 @enderror"
+                                   @if($fieldRequired) required @endif>
+                            <p class="mt-1 text-xs text-gray-500">Image files only.</p>
+                        @else
+                            <input type="{{ $fieldType }}" id="{{ $fieldName }}" name="{{ $fieldName }}" value="{{ old($fieldName) }}"
+                                   placeholder="{{ $fieldPlaceholder }}"
+                                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error($fieldName) border-red-500 @enderror"
+                                   @if($fieldRequired) required @endif>
+                        @endif
                         @error($fieldName)
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror

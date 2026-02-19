@@ -54,7 +54,11 @@ test('users with two factor enabled are redirected to two factor challenge', fun
         'password' => 'password',
     ]);
 
-    if ($response->isRedirect(route('two-factor.login', absolute: false))) {
+    $twoFactorLocation = (string) $response->headers->get('Location', '');
+    if (
+        $response->isRedirect(route('two-factor.login')) ||
+        str_contains($twoFactorLocation, '/two-factor-challenge')
+    ) {
         $this->assertGuest();
         return;
     }

@@ -61,4 +61,24 @@ class Hostel extends Model
     {
         return $this->hasMany(HostelChangeRequest::class, 'requested_hostel_id');
     }
+
+    public function assets()
+    {
+        return $this->hasMany(Asset::class);
+    }
+
+    public function incomingAssetMovements()
+    {
+        return $this->hasMany(AssetMovement::class, 'to_hostel_id');
+    }
+
+    public function outgoingAssetMovements()
+    {
+        return $this->hasMany(AssetMovement::class, 'from_hostel_id');
+    }
+
+    public function assetSubscriptions()
+    {
+        return $this->hasMany(AssetSubscription::class);
+    }
 }

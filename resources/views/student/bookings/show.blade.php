@@ -13,7 +13,7 @@
                     <div><dt class="text-sm text-slate-500 dark:text-slate-400">Room Number</dt><dd class="font-semibold text-slate-900 dark:text-slate-100">{{ $booking->room->room_number }}</dd></div>
                     <div><dt class="text-sm text-slate-500 dark:text-slate-400">Room Type</dt><dd class="font-semibold text-slate-900 dark:text-slate-100">{{ ucfirst($booking->room->type) }}</dd></div>
                     <div><dt class="text-sm text-slate-500 dark:text-slate-400">Hostel</dt><dd class="font-semibold text-slate-900 dark:text-slate-100">{{ $booking->room->hostel->name }}</dd></div>
-                    <div><dt class="text-sm text-slate-500 dark:text-slate-400">Price Per {{ ucfirst(getBookingPeriodLabel()) }}</dt><dd class="font-semibold text-slate-900 dark:text-slate-100">{{ getCurrencySymbol() }}{{ number_format($booking->room->price_per_month, 2) }}</dd></div>
+                    <div><dt class="text-sm text-slate-500 dark:text-slate-400">Price Per {{ ucfirst(getBookingPeriodLabel()) }}</dt><dd class="font-semibold text-slate-900 dark:text-slate-100">{{ formatCurrency($booking->room->price_per_month) }}</dd></div>
                 </dl>
             </section>
 
@@ -71,16 +71,16 @@
             <div class="space-y-3">
                 <div class="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700">
                     <span class="text-slate-600 dark:text-slate-300">Total Amount</span>
-                    <span class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ getCurrencySymbol() }}{{ number_format($booking->total_amount, 2) }}</span>
+                    <span class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ formatCurrency($booking->total_amount) }}</span>
                 </div>
                 <div class="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700">
                     <span class="text-slate-600 dark:text-slate-300">Paid Amount</span>
-                    <span class="font-semibold text-green-700 dark:text-green-400">{{ getCurrencySymbol() }}{{ number_format($paidAmount, 2) }}</span>
+                    <span class="font-semibold text-green-700 dark:text-green-400">{{ formatCurrency($paidAmount) }}</span>
                 </div>
                 <div class="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700">
                     <span class="text-slate-600 dark:text-slate-300">Outstanding Amount</span>
                     <span class="font-semibold {{ $outstandingAmount > 0 ? 'text-red-700 dark:text-red-400' : 'text-green-700 dark:text-green-400' }}">
-                        {{ getCurrencySymbol() }}{{ number_format($outstandingAmount, 2) }}
+                        {{ formatCurrency($outstandingAmount) }}
                     </span>
                 </div>
 
@@ -95,7 +95,7 @@
                                         <p class="text-sm text-slate-600 dark:text-slate-300">{{ $payment->payment_date?->format('M d, Y') ?? 'Pending' }}</p>
                                     </div>
                                 <div class="text-right">
-                                    <p class="font-semibold text-slate-900 dark:text-slate-100">{{ getCurrencySymbol() }}{{ number_format($payment->amount, 2) }}</p>
+                                    <p class="font-semibold text-slate-900 dark:text-slate-100">{{ formatCurrency($payment->amount) }}</p>
                                     <span class="text-xs px-2 py-1 rounded-full {{ $payment->status === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' }}">{{ ucfirst($payment->status) }}</span>
                                     @if($payment->is_manual && $payment->status === 'paid')
                                         <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Addon;
 use App\Models\SystemSetting;
 
 class NotificationTemplateService
@@ -11,7 +12,39 @@ class NotificationTemplateService
      */
     public function defaults(): array
     {
-        return [
+        $base = [
+            'booking.created' => [
+                'title' => 'Booking Submitted',
+                'message' => '{student_name} submitted a booking request.',
+            ],
+            'booking.cancelled' => [
+                'title' => 'Booking Cancelled',
+                'message' => '{student_name} cancelled a booking.',
+            ],
+            'booking.manager_approved' => [
+                'title' => 'Booking Approved',
+                'message' => '{actor_name} approved booking for {student_name}.',
+            ],
+            'booking.manager_rejected' => [
+                'title' => 'Booking Rejected',
+                'message' => '{actor_name} rejected booking for {student_name}.',
+            ],
+            'booking.manager_cancelled' => [
+                'title' => 'Booking Cancelled by Manager',
+                'message' => '{actor_name} cancelled booking for {student_name}.',
+            ],
+            'payment.completed' => [
+                'title' => 'Payment Completed',
+                'message' => 'Payment was completed by {student_name}.',
+            ],
+            'complaint.created' => [
+                'title' => 'Complaint Submitted',
+                'message' => '{student_name} submitted a complaint.',
+            ],
+            'complaint.responded' => [
+                'title' => 'Complaint Responded',
+                'message' => '{actor_name} responded to complaint from {student_name}.',
+            ],
             'hostel_change.submitted' => [
                 'title' => 'Hostel Change Request Submitted',
                 'message' => 'A hostel change request by {student_name} was submitted and is awaiting manager review.',
@@ -45,6 +78,55 @@ class NotificationTemplateService
                 'message' => '{actor_name} rejected room change request to {requested_room}.',
             ],
         ];
+
+        $addon = [
+            'asset.created' => [
+                'title' => 'Asset Added',
+                'message' => 'A new asset {asset_name} was added to {hostel_name}.',
+            ],
+            'asset.issue_reported' => [
+                'title' => 'Asset Issue Reported',
+                'message' => '{actor_name} reported an issue for asset {asset_name}.',
+            ],
+            'asset.movement_requested' => [
+                'title' => 'Asset Movement Requested',
+                'message' => '{actor_name} requested movement for asset {asset_name}.',
+            ],
+            'asset.movement_receiving_decision' => [
+                'title' => 'Receiving Manager Decision',
+                'message' => '{actor_name} responded to a movement request for {asset_name}.',
+            ],
+            'asset.movement_approved' => [
+                'title' => 'Asset Movement Approved',
+                'message' => 'Admin approved movement for asset {asset_name}.',
+            ],
+            'asset.movement_rejected' => [
+                'title' => 'Asset Movement Rejected',
+                'message' => 'Admin rejected movement for asset {asset_name}.',
+            ],
+            'asset.subscription.created' => [
+                'title' => 'Subscription Added',
+                'message' => 'Subscription {subscription_name} was added for {hostel_name}.',
+            ],
+            'asset.subscription.updated' => [
+                'title' => 'Subscription Updated',
+                'message' => 'Subscription {subscription_name} was updated.',
+            ],
+            'asset.subscription.deleted' => [
+                'title' => 'Subscription Removed',
+                'message' => 'Subscription {subscription_name} was removed.',
+            ],
+            'asset.subscription.expiry_alert' => [
+                'title' => 'Subscription Expiry Alert',
+                'message' => '{subscription_name} for {hostel_name} expires in {days_left} day(s).',
+            ],
+        ];
+
+        if (Addon::isActive('asset-management')) {
+            return array_merge($base, $addon);
+        }
+
+        return $base;
     }
 
     /**
@@ -115,4 +197,3 @@ class NotificationTemplateService
             ->all();
     }
 }
-

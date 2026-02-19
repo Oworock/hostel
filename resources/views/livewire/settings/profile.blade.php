@@ -41,6 +41,12 @@ new class extends Component {
 
         $user->fill($validated);
 
+        $parts = preg_split('/\s+/', trim((string) $validated['name'])) ?: [];
+        $user->first_name = (string) ($parts[0] ?? $user->first_name);
+        $user->last_name = count($parts) > 1
+            ? trim(implode(' ', array_slice($parts, 1)))
+            : (string) ($parts[0] ?? $user->last_name);
+
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }

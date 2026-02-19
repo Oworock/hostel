@@ -7,6 +7,11 @@
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100">Profile Settings</h1>
             <p class="text-gray-600 dark:text-slate-300 mt-1">Update your profile information and profile photo.</p>
+            <div class="mt-3">
+                <a href="{{ route('manager.files.index') }}" class="inline-flex items-center rounded-lg border border-blue-300 text-blue-700 dark:text-blue-300 dark:border-blue-700 px-4 py-2 text-sm font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                    Open File Manager
+                </a>
+            </div>
         </div>
 
         <div class="bg-white dark:bg-slate-900 rounded-lg shadow-md p-8">

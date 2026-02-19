@@ -27,10 +27,15 @@
     @endif
     @include('components.website-theme-style')
     @php
-        $favicon = \App\Models\SystemSetting::getSetting('global_header_favicon', \App\Models\SystemSetting::getSetting('global_header_logo', ''));
+        $logoLight = \App\Models\SystemSetting::getSetting('global_header_logo_light', \App\Models\SystemSetting::getSetting('global_header_logo', \App\Models\SystemSetting::getSetting('app_logo', '')));
+        $favicon = \App\Models\SystemSetting::getSetting('global_header_favicon', $logoLight);
     @endphp
     @if(!empty($favicon))
-        <link rel="icon" type="image/png" href="{{ asset('storage/' . $favicon) }}">
+        @php
+            $faviconPath = ltrim((string) $favicon, '/');
+            $faviconPath = preg_replace('/^(storage\/|public\/)/', '', $faviconPath);
+        @endphp
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $faviconPath) }}">
     @endif
     <style>
         .site-footer { display: block !important; visibility: visible !important; width: 100% !important; }

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\SystemSetting;
 use App\Models\PaymentGateway;
 use App\Models\SmsProvider;
+use App\Models\WelcomeSection;
 use Illuminate\Database\Seeder;
 
 class SettingsSeeder extends Seeder
@@ -188,6 +189,35 @@ CSS;
             SystemSetting::firstOrCreate(
                 ['key' => $key],
                 ['value' => $value, 'type' => $type]
+            );
+        }
+
+        $defaultSections = [
+            [
+                'title' => 'Student Booking Experience',
+                'content' => '<p>Students can browse room inventory, compare pricing, and complete bookings in a guided flow.</p>',
+                'display_order' => 1,
+            ],
+            [
+                'title' => 'Manager Operations',
+                'content' => '<p>Managers can supervise occupancy, process approvals, and respond to operational issues quickly.</p>',
+                'display_order' => 2,
+            ],
+            [
+                'title' => 'Admin Oversight',
+                'content' => '<p>Admins can monitor all hostels, configure the system, and prepare upcoming addon modules.</p>',
+                'display_order' => 3,
+            ],
+        ];
+
+        foreach ($defaultSections as $section) {
+            WelcomeSection::firstOrCreate(
+                ['title' => $section['title']],
+                [
+                    'content' => $section['content'],
+                    'display_order' => $section['display_order'],
+                    'is_active' => true,
+                ]
             );
         }
 

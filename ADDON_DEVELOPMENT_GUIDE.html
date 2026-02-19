@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Addon Development Guide</title>
+  <style>
+    :root {
+      --bg: #f5f8fc;
+      --card: #ffffff;
+      --text: #10233a;
+      --muted: #51657d;
+      --line: #d8e3ef;
+      --primary: #0b6db7;
+      --accent: #0f9d78;
+      --warn: #c77d10;
+      --danger: #b23a3a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #fbfdff 0%, var(--bg) 100%);
+    }
+    .wrap { width: min(1160px, 95vw); margin: 20px auto 40px; }
+    .hero {
+      background: radial-gradient(circle at top right, #e6f2ff, #f8fbff 55%);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+    h1 { margin: 0 0 8px; font-size: 1.8rem; }
+    p { color: var(--muted); line-height: 1.55; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .card {
+      grid-column: span 12;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .card h2 { margin: 0 0 10px; color: var(--primary); font-size: 1.15rem; }
+    .cols-6 { grid-column: span 6; }
+    .cols-4 { grid-column: span 4; }
+    ul, ol { margin: 0; padding-left: 20px; }
+    li { margin: 4px 0; color: var(--muted); }
+    code {
+      background: #eef5fd;
+      border: 1px solid #d4e4f6;
+      border-radius: 6px;
+      padding: 1px 6px;
+      color: #0f3f67;
+    }
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      font-size: 12px;
+      padding: 3px 10px;
+      border: 1px solid var(--line);
+      background: #f8fbff;
+      color: #21415f;
+      margin-right: 6px;
+    }
+    .flow-note {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 0; }
+    .legend span { font-size: 12px; padding: 3px 8px; border-radius: 6px; color: #fff; }
+    .l1 { background: #0b6db7; }
+    .l2 { background: #0f9d78; }
+    .l3 { background: #c77d10; }
+    .l4 { background: #b23a3a; }
+    @media (max-width: 900px) {
+      .cols-6, .cols-4 { grid-column: span 12; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Addon Development Guide</h1>
+      <p>Graphical guide for developers who want to improve the current addon or build their own addon for this system.</p>
+      <div>
+        <span class="badge">Upload requires <code>addon.json</code> at ZIP root</span>
+        <span class="badge">Runtime gated by <code>Addon::isActive('slug')</code></span>
+        <span class="badge">Lifecycle in <code>AddonLifecycleService</code></span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>1. System Flow (Architecture)</h2>
+        <svg viewBox="0 0 1120 280" width="100%" role="img" aria-label="Addon architecture flow diagram">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="#3d5f7f"/>
+            </marker>
+          </defs>
+
+          <rect x="20" y="40" rx="10" ry="10" width="180" height="70" fill="#e9f3ff" stroke="#9fc2e6"/>
+          <text x="110" y="70" text-anchor="middle" font-size="13" fill="#0f3f67">Admin Upload ZIP</text>
+          <text x="110" y="90" text-anchor="middle" font-size="12" fill="#355a7a">AddonResource</text>
+
+          <rect x="260" y="40" rx="10" ry="10" width="210" height="70" fill="#e8fbf5" stroke="#9bdcc7"/>
+          <text x="365" y="70" text-anchor="middle" font-size="13" fill="#0d5a46">AddonPackageService</text>
+          <text x="365" y="90" text-anchor="middle" font-size="12" fill="#2f6d5e">validate + extract</text>
+
+          <rect x="530" y="40" rx="10" ry="10" width="170" height="70" fill="#fff6e9" stroke="#e8cfa3"/>
+          <text x="615" y="70" text-anchor="middle" font-size="13" fill="#7b4f0b">Addon DB Record</text>
+          <text x="615" y="90" text-anchor="middle" font-size="12" fill="#8d661f">model: Addon</text>
+
+          <rect x="760" y="40" rx="10" ry="10" width="180" height="70" fill="#f0f4ff" stroke="#b9c8ef"/>
+          <text x="850" y="70" text-anchor="middle" font-size="13" fill="#294a9c">Activate/Deactivate</text>
+          <text x="850" y="90" text-anchor="middle" font-size="12" fill="#4862a8">AddonLifecycleService</text>
+
+          <rect x="960" y="40" rx="10" ry="10" width="140" height="70" fill="#ffeef0" stroke="#e7afb8"/>
+          <text x="1030" y="70" text-anchor="middle" font-size="13" fill="#8b1f2f">Runtime Gates</text>
+          <text x="1030" y="90" text-anchor="middle" font-size="12" fill="#9a3e4d">routes/resources</text>
+
+          <line x1="200" y1="75" x2="260" y2="75" stroke="#3d5f7f" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="470" y1="75" x2="530" y2="75" stroke="#3d5f7f" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="700" y1="75" x2="760" y2="75" stroke="#3d5f7f" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="940" y1="75" x2="960" y2="75" stroke="#3d5f7f" stroke-width="2" marker-end="url(#arrow)"/>
+
+          <rect x="260" y="165" rx="10" ry="10" width="250" height="80" fill="#eef7ff" stroke="#bdd3eb"/>
+          <text x="385" y="195" text-anchor="middle" font-size="13" fill="#18466e">AddonDiscoveryService</text>
+          <text x="385" y="215" text-anchor="middle" font-size="12" fill="#476d8f">discovers addon.json</text>
+          <text x="385" y="233" text-anchor="middle" font-size="12" fill="#476d8f">from built-in + storage</text>
+
+          <rect x="560" y="165" rx="10" ry="10" width="320" height="80" fill="#ecfff7" stroke="#bfe7d5"/>
+          <text x="720" y="193" text-anchor="middle" font-size="13" fill="#165f49">Feature Surfaces</text>
+          <text x="720" y="213" text-anchor="middle" font-size="12" fill="#2f6d5e">Filament resources, pages, widgets</text>
+          <text x="720" y="231" text-anchor="middle" font-size="12" fill="#2f6d5e">and addon-gated web/api routes</text>
+
+          <line x1="615" y1="110" x2="430" y2="165" stroke="#3d5f7f" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="850" y1="110" x2="700" y2="165" stroke="#3d5f7f" stroke-width="2" marker-end="url(#arrow)"/>
+        </svg>
+        <p class="flow-note">Upload -> validate/extract -> DB registration -> activation lifecycle -> runtime gating. Discovery refreshes addon records from manifests.</p>
+        <div class="legend">
+          <span class="l1">Upload/Registry</span>
+          <span class="l2">Services</span>
+          <span class="l3">Lifecycle</span>
+          <span class="l4">Runtime Access Control</span>
+        </div>
+      </section>
+
+      <section class="card cols-6">
+        <h2>2. Required ZIP Layout</h2>
+        <pre><code>my-addon.zip
+├── addon.json            (required at root)
+├── README.md
+├── database/
+│   └── addons/
+│       └── my-addon/
+│           └── migrations/
+└── Documentation/
+    ├── index.html
+    └── styles.css</code></pre>
+        <p>Uploader rejects packages without <code>addon.json</code> at the archive root.</p>
+      </section>
+
+      <section class="card cols-6">
+        <h2>3. Addon Manifest Example</h2>
+        <pre><code>{
+  "name": "My Addon",
+  "slug": "my-addon",
+  "version": "1.0.0",
+  "description": "Feature summary",
+  "requires": { "php": ">=8.2", "laravel": ">=12" },
+  "features": ["feature_a", "feature_b"]
+}</code></pre>
+      </section>
+
+      <section class="card cols-4">
+        <h2>4. Activation Rules</h2>
+        <ol>
+          <li>Register manifest in addon table.</li>
+          <li>Activate via admin addon action.</li>
+          <li>Run addon migrations.</li>
+          <li>Expose menus/routes/resources.</li>
+        </ol>
+      </section>
+
+      <section class="card cols-4">
+        <h2>5. Deactivation Rules</h2>
+        <ol>
+          <li>Set addon inactive.</li>
+          <li>Hide routes/resources/widgets.</li>
+          <li>Keep data by default.</li>
+        </ol>
+      </section>
+
+      <section class="card cols-4">
+        <h2>6. Delete Rules</h2>
+        <ol>
+          <li>Require confirmation.</li>
+          <li>Run purge logic explicitly.</li>
+          <li>Delete package + extracted files.</li>
+        </ol>
+      </section>
+
+      <section class="card cols-6">
+        <h2>7. Where Addon Runtime Code Lives</h2>
+        <ul>
+          <li><code>app/Models</code> (addon entities)</li>
+          <li><code>app/Services</code> (addon logic/workflows)</li>
+          <li><code>app/Http/Controllers</code> (web/api endpoints)</li>
+          <li><code>app/Filament/*</code> (admin resources/pages/widgets)</li>
+          <li><code>resources/views/*</code> (addon UI)</li>
+          <li><code>routes/web.php</code>, <code>routes/api.php</code>, <code>routes/console.php</code></li>
+          <li><code>database/addons/&lt;slug&gt;/migrations</code></li>
+        </ul>
+      </section>
+
+      <section class="card cols-6">
+        <h2>8. Runtime Gating Checklist</h2>
+        <ul>
+          <li>Route middleware: <code>addon.active:my-addon</code></li>
+          <li>Filament visibility: <code>Addon::isActive('my-addon')</code></li>
+          <li>Schema checks for optional tables</li>
+          <li>Role checks for admin/manager/student access</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>9. Lifecycle Diagram (Developer Mental Model)</h2>
+        <svg viewBox="0 0 1100 210" width="100%" role="img" aria-label="Addon lifecycle diagram">
+          <defs>
+            <marker id="arr2" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="#4e6881"/>
+            </marker>
+          </defs>
+          <rect x="20" y="70" width="170" height="60" rx="10" fill="#eef5ff" stroke="#bfd3eb"/>
+          <text x="105" y="104" text-anchor="middle" font-size="13" fill="#18466e">Upload</text>
+
+          <rect x="240" y="70" width="170" height="60" rx="10" fill="#e9fbf5" stroke="#bde6d4"/>
+          <text x="325" y="104" text-anchor="middle" font-size="13" fill="#175f49">Installed</text>
+
+          <rect x="460" y="70" width="170" height="60" rx="10" fill="#fff9ed" stroke="#ecd9b8"/>
+          <text x="545" y="104" text-anchor="middle" font-size="13" fill="#7c5718">Activated</text>
+
+          <rect x="680" y="70" width="170" height="60" rx="10" fill="#f0f4ff" stroke="#c8d3f0"/>
+          <text x="765" y="104" text-anchor="middle" font-size="13" fill="#33529a">Deactivated</text>
+
+          <rect x="900" y="70" width="170" height="60" rx="10" fill="#fff0f2" stroke="#edc2c8"/>
+          <text x="985" y="104" text-anchor="middle" font-size="13" fill="#8b1f2f">Deleted</text>
+
+          <line x1="190" y1="100" x2="240" y2="100" stroke="#4e6881" stroke-width="2" marker-end="url(#arr2)"/>
+          <line x1="410" y1="100" x2="460" y2="100" stroke="#4e6881" stroke-width="2" marker-end="url(#arr2)"/>
+          <line x1="630" y1="100" x2="680" y2="100" stroke="#4e6881" stroke-width="2" marker-end="url(#arr2)"/>
+          <line x1="850" y1="100" x2="900" y2="100" stroke="#4e6881" stroke-width="2" marker-end="url(#arr2)"/>
+
+          <line x1="765" y1="70" x2="545" y2="52" stroke="#4e6881" stroke-width="2" marker-end="url(#arr2)"/>
+          <text x="650" y="44" text-anchor="middle" font-size="12" fill="#51657d">reactivate</text>
+        </svg>
+      </section>
+
+      <section class="card cols-6">
+        <h2>10. New Addon Build Checklist</h2>
+        <ol>
+          <li>Create slug + <code>addon.json</code>.</li>
+          <li>Add migrations under <code>database/addons/&lt;slug&gt;/migrations</code>.</li>
+          <li>Add lifecycle hooks in <code>AddonLifecycleService</code>.</li>
+          <li>Implement models/services/controllers/views/resources.</li>
+          <li>Gate all functionality by active state + role.</li>
+          <li>Add API/webhook/docs updates where needed.</li>
+          <li>Package upload zip with manifest at root.</li>
+        </ol>
+      </section>
+
+      <section class="card cols-6">
+        <h2>11. Common Mistakes</h2>
+        <ul>
+          <li>Missing root-level <code>addon.json</code> in ZIP.</li>
+          <li>Querying addon tables without schema checks.</li>
+          <li>Showing addon menus when inactive.</li>
+          <li>Dropping data on deactivate (should happen on delete/purge only).</li>
+          <li>Not documenting activation/deletion impact for admins.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

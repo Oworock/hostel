@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SystemSetting;
 use App\Models\User;
+use App\Support\InstallState;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -111,13 +112,14 @@ class InstallController extends Controller
         SystemSetting::setSetting('app_email', $data['admin_email']);
         SystemSetting::setSetting('app_phone', $data['admin_phone'] ?? '');
         $this->writeInstallLock($data['app_name'], $data['admin_email']);
+        $this->markInstalledInEnv();
 
         return redirect()->route('login')->with('success', 'Installation completed successfully. Please sign in.');
     }
 
     private function isInstalled(): bool
     {
-        return file_exists(storage_path('framework/installed.lock'));
+        return !InstallState::needsInstallation();
     }
 
     private function writeInstallLock(string $appName, string $adminEmail): void
@@ -150,6 +152,8 @@ class InstallController extends Controller
             'APP_ENV' => 'production',
             'APP_DEBUG' => 'false',
             'APP_URL' => $data['app_url'],
+            'APP_INSTALLED' => 'false',
+            'APP_INSTALLED_AT' => '',
             'DB_CONNECTION' => $data['db_connection'],
             'DB_HOST' => (string) ($data['db_host'] ?? '127.0.0.1'),
             'DB_PORT' => (string) ($data['db_port'] ?? ($data['db_connection'] === 'pgsql' ? '5432' : '3306')),
@@ -178,6 +182,27 @@ class InstallController extends Controller
                 touch($dbFile);
             }
         }
+    }
+
+    private function markInstalledInEnv(): void
+    {
+        $envPath = base_path('.env');
+        $content = file_exists($envPath) ? file_get_contents($envPath) : '';
+
+        $map = [
+            'APP_INSTALLED' => 'true',
+            'APP_INSTALLED_AT' => now()->toIso8601String(),
+        ];
+
+        foreach ($map as $key => $value) {
+            if (preg_match('/^' . preg_quote($key, '/') . '=/m', (string) $content)) {
+                $content = preg_replace('/^' . preg_quote($key, '/') . '=.*/m', $key . '=' . $value, (string) $content);
+            } else {
+                $content .= PHP_EOL . $key . '=' . $value;
+            }
+        }
+
+        file_put_contents($envPath, (string) $content);
     }
 
     private function applyRuntimeDatabaseConfig(array $data): void

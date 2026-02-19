@@ -4,7 +4,7 @@ namespace App\Filament\Resources\AllocationResource\Pages;
 
 use App\Filament\Resources\AllocationResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\Pages\BaseEditRecord as EditRecord;
 
 class EditAllocation extends EditRecord
 {

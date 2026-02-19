@@ -5,6 +5,10 @@
 @section('content')
 <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+        <div class="mb-6">
+            <x-system-auth-logo />
+        </div>
+
         <h2 class="text-center text-3xl font-bold text-gray-900 mb-6">Sign in to your account</h2>
         
         <form method="POST" action="{{ route('login') }}" class="space-y-4">

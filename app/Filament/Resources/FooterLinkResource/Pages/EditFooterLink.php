@@ -4,7 +4,7 @@ namespace App\Filament\Resources\FooterLinkResource\Pages;
 
 use App\Filament\Resources\FooterLinkResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\Pages\BaseEditRecord as EditRecord;
 
 class EditFooterLink extends EditRecord
 {

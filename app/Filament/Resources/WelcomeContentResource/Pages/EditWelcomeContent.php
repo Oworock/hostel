@@ -4,7 +4,7 @@ namespace App\Filament\Resources\WelcomeContentResource\Pages;
 
 use App\Filament\Resources\WelcomeContentResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\Pages\BaseEditRecord as EditRecord;
 use Illuminate\Support\Facades\Storage;
 
 class EditWelcomeContent extends EditRecord

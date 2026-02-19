@@ -31,6 +31,23 @@
             </div>
         @endif
 
+        <form action="{{ route('student.bookings.available') }}" method="GET" class="uniform-card p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <select name="hostel_id" class="px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                <option value="">All hostels</option>
+                @foreach($hostels as $hostel)
+                    <option value="{{ $hostel->id }}" @selected(request('hostel_id') == $hostel->id)>{{ $hostel->name }}</option>
+                @endforeach
+            </select>
+            <input type="text" name="q" value="{{ request('q') }}" placeholder="Hostel, room, city" class="px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+            <input type="number" name="max_price" value="{{ request('max_price') }}" min="0" step="0.01" placeholder="Max price" class="px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+            <select name="sort" class="px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                <option value="price_asc" @selected($sort === 'price_asc')>Price: Low to high</option>
+                <option value="price_desc" @selected($sort === 'price_desc')>Price: High to low</option>
+                <option value="recent" @selected($sort === 'recent')>Newest</option>
+            </select>
+            <button type="submit" class="bg-blue-600 text-white rounded-lg px-4 py-2.5 font-semibold hover:bg-blue-700">Search</button>
+        </form>
+
         <div class="uniform-grid-3">
             @forelse($rooms as $room)
                 <x-room-listing-card

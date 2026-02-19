@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\HostelChangeRequestResource\Pages;
 
 use App\Filament\Resources\HostelChangeRequestResource;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\Pages\BaseEditRecord as EditRecord;
 
 class EditHostelChangeRequest extends EditRecord
 {

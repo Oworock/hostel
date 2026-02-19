@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Room extends Model
 {
@@ -21,6 +22,29 @@ class Room extends Model
         'is_available' => 'boolean',
         'price_per_month' => 'decimal:2',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Room $room): void {
+            if (!empty($room->cover_image)) {
+                Storage::disk('public')->delete($room->cover_image);
+            }
+
+            $room->images()->get()->each(function ($image): void {
+                if (!empty($image->image_path)) {
+                    Storage::disk('public')->delete($image->image_path);
+                }
+            });
+
+            $room->beds()->with('images')->get()->each(function ($bed): void {
+                $bed->images->each(function ($image): void {
+                    if (!empty($image->image_path)) {
+                        Storage::disk('public')->delete($image->image_path);
+                    }
+                });
+            });
+        });
+    }
 
     public function hostel()
     {

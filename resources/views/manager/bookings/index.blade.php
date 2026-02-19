@@ -37,7 +37,7 @@
                                         {{ ucfirst($booking->status) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-slate-100">{{ getCurrencySymbol() }}{{ number_format($booking->total_amount, 2) }}</td>
+                                <td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-slate-100">{{ formatCurrency($booking->total_amount) }}</td>
                                 <td class="px-6 py-4 text-sm">
                                     <a href="{{ route('manager.bookings.show', $booking) }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">View</a>
                                 </td>

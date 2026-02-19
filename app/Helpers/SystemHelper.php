@@ -40,7 +40,6 @@ class SystemHelper
             'square_environment' => SystemSetting::getSetting('square_environment', 'live'),
             'webhook_enabled' => SystemSetting::getSetting('webhook_enabled', false),
             'webhook_url' => SystemSetting::getSetting('webhook_url', ''),
-            'webhook_secret' => SystemSetting::getSetting('webhook_secret', ''),
             'webhook_events_json' => SystemSetting::getSetting('webhook_events_json', '[]'),
             'api_enabled' => SystemSetting::getSetting('api_enabled', false),
             'api_access_key' => SystemSetting::getSetting('api_access_key', ''),

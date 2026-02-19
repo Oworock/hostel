@@ -23,11 +23,16 @@ class PaymentSettingsHealthCheck extends BaseWidget
             ->get()
             ->keyBy('name');
 
-        $gatewayReadiness = collect($gateways)->mapWithKeys(function ($gateway, $name) {
-            return [$name => (bool) ($gateway?->is_active && !empty($gateway->public_key) && !empty($gateway->secret_key))];
-        });
+        $gatewayReadiness = collect(['Paystack', 'Flutterwave', 'Stripe', 'PayPal', 'Razorpay', 'Square'])
+            ->mapWithKeys(function (string $name) use ($gateways) {
+                $gateway = $gateways->get($name);
+
+                return [$name => (bool) ($gateway?->is_active && !empty($gateway->public_key) && !empty($gateway->secret_key))];
+            });
 
         $activeConfiguredCount = $gatewayReadiness->filter()->count();
+        $working = $gatewayReadiness->filter()->keys()->values();
+        $notWorking = $gatewayReadiness->filter(fn (bool $ready) => !$ready)->keys()->values();
 
         $smsProvider = SystemSetting::getSetting('sms_provider', 'none');
         $smsReady = $smsProvider === 'none'
@@ -43,25 +48,21 @@ class PaymentSettingsHealthCheck extends BaseWidget
                 ->descriptionIcon($overallReady ? 'heroicon-m-check-circle' : 'heroicon-m-exclamation-triangle')
                 ->color($overallReady ? 'success' : 'danger'),
 
-            Stat::make('Active Payment Gateways', (string) $activeConfiguredCount)
-                ->description('Configured + enabled')
+            Stat::make('Working Gateways', (string) $activeConfiguredCount)
+                ->description($working->isNotEmpty() ? $working->implode(', ') : 'None')
                 ->descriptionIcon('heroicon-m-credit-card')
                 ->color($activeConfiguredCount > 0 ? 'success' : 'warning'),
+
+            Stat::make('Gateways Needing Setup', (string) $notWorking->count())
+                ->description($notWorking->isNotEmpty() ? $notWorking->implode(', ') : 'None')
+                ->descriptionIcon('heroicon-m-wrench-screwdriver')
+                ->color($notWorking->isEmpty() ? 'success' : 'warning'),
 
             Stat::make('SMS Gateway', $smsReady ? 'Configured' : 'Missing Setup')
                 ->description('Provider: ' . strtoupper($smsProvider))
                 ->descriptionIcon($smsReady ? 'heroicon-m-check' : 'heroicon-m-x-mark')
                 ->color($smsReady ? 'success' : 'warning'),
         ];
-
-        foreach (['Paystack', 'Flutterwave', 'Stripe', 'PayPal', 'Razorpay', 'Square'] as $gatewayName) {
-            $gateway = $gateways->get($gatewayName);
-            $ready = (bool) ($gatewayReadiness->get($gatewayName) ?? false);
-            $stats[] = Stat::make($gatewayName, $ready ? 'Configured' : 'Missing Setup')
-                ->description($gateway?->is_active ? 'Active gateway' : 'Inactive gateway')
-                ->descriptionIcon($ready ? 'heroicon-m-check' : 'heroicon-m-x-mark')
-                ->color($ready ? 'success' : 'warning');
-        }
 
         return $stats;
     }

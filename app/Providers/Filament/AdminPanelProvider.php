@@ -2,11 +2,12 @@
 
 namespace App\Providers\Filament;
 
+use App\Models\SystemSetting;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
+use Filament\View\PanelsRenderHook;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -20,7 +21,9 @@ use App\Filament\Pages\UserProfile;
 use App\Filament\Pages\SendSMS;
 use App\Filament\Pages\SendEmail;
 use App\Filament\Pages\SystemSettings;
-use App\Http\Middleware\AdminMiddleware;
+use App\Filament\Pages\FileManagerPage;
+use App\Filament\Pages\BackupManagerPage;
+use App\Filament\Pages\Dashboard as AdminDashboard;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -31,6 +34,57 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName(fn () => (string) SystemSetting::getSetting('global_header_brand', SystemSetting::getSetting('app_name', config('app.name', 'Hostel Manager'))))
+            ->brandLogo(function () {
+                $logoLight = (string) SystemSetting::getSetting('global_header_logo_light', SystemSetting::getSetting('global_header_logo', SystemSetting::getSetting('app_logo', '')));
+                $fallback = (string) SystemSetting::getSetting('global_header_favicon', $logoLight);
+                $toUrl = static function (string $path): string {
+                    $path = trim($path);
+                    if ($path === '') {
+                        return '';
+                    }
+                    if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:')) {
+                        return $path;
+                    }
+
+                    $path = ltrim($path, '/');
+                    $path = preg_replace('/^(storage\/|public\/)/', '', $path);
+
+                    return asset('storage/' . $path);
+                };
+
+                if ($logoLight === '' && $fallback !== '') {
+                    $logoLight = $fallback;
+                }
+                if ($logoLight === '') {
+                    return null;
+                }
+
+                return $toUrl($logoLight);
+            })
+            ->darkModeBrandLogo(function () {
+                $logoLight = (string) SystemSetting::getSetting('global_header_logo_light', SystemSetting::getSetting('global_header_logo', SystemSetting::getSetting('app_logo', '')));
+                $logoDark = (string) SystemSetting::getSetting('global_header_logo_dark', $logoLight);
+                $fallback = (string) SystemSetting::getSetting('global_header_favicon', $logoLight);
+                $path = trim($logoDark !== '' ? $logoDark : ($logoLight !== '' ? $logoLight : $fallback));
+
+                if ($path === '') {
+                    return null;
+                }
+
+                if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:')) {
+                    return $path;
+                }
+
+                $path = ltrim($path, '/');
+                $path = preg_replace('/^(storage\/|public\/)/', '', $path);
+
+                return asset('storage/' . $path);
+            })
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn () => view('filament.partials.topbar-notifications')
+            )
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -40,11 +94,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             // Keep explicit pages to avoid duplicates from legacy pages.
             ->pages([
-                Pages\Dashboard::class,
+                AdminDashboard::class,
                 UserProfile::class,
                 SendSMS::class,
                 SendEmail::class,
                 SystemSettings::class,
+                FileManagerPage::class,
+                BackupManagerPage::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([])
@@ -61,7 +117,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                AdminMiddleware::class,
             ]);
     }
 }

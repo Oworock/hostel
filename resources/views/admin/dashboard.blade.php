@@ -39,7 +39,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600 text-sm">Total Revenue</p>
-                    <p class="text-3xl font-bold text-green-600">${{ number_format($stats['total_revenue'], 2) }}</p>
+                    <p class="text-3xl font-bold text-green-600">{{ formatCurrency($stats['total_revenue']) }}</p>
                 </div>
             </div>
         </div>
@@ -71,7 +71,7 @@
                             <p class="text-sm text-gray-600">{{ $payment->payment_date?->format('M d, Y') ?? 'Pending' }}</p>
                         </div>
                         <div class="text-right">
-                            <p class="font-bold text-green-600">${{ number_format($payment->amount, 2) }}</p>
+                            <p class="font-bold text-green-600">{{ formatCurrency($payment->amount) }}</p>
                             <span class="text-xs px-2 py-1 rounded {{ $payment->status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                                 {{ ucfirst($payment->status) }}
                             </span>
@@ -114,7 +114,7 @@
                                     {{ ucfirst($booking->status) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm font-medium text-gray-900">${{ number_format($booking->total_amount, 2) }}</td>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ formatCurrency($booking->total_amount) }}</td>
                         </tr>
                     @empty
                         <tr>

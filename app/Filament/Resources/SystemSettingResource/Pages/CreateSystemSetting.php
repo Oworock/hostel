@@ -4,7 +4,7 @@ namespace App\Filament\Resources\SystemSettingResource\Pages;
 
 use App\Filament\Resources\SystemSettingResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Pages\BaseCreateRecord as CreateRecord;
 
 class CreateSystemSetting extends CreateRecord
 {

@@ -17,7 +17,7 @@ new class extends Component {
     {
         try {
             $validated = $this->validate([
-                'current_password' => ['required', 'string', 'current_password'],
+                'current_password' => ['required', 'string'],
                 'password' => ['required', 'string', Password::defaults(), 'confirmed'],
             ]);
         } catch (ValidationException $e) {
@@ -26,8 +26,16 @@ new class extends Component {
             throw $e;
         }
 
+        if (!password_verify($validated['current_password'], (string) Auth::user()->password)) {
+            $this->reset('current_password', 'password', 'password_confirmation');
+
+            throw ValidationException::withMessages([
+                'current_password' => __('The provided password is incorrect.'),
+            ]);
+        }
+
         Auth::user()->update([
-            'password' => $validated['password'],
+            'password' => bcrypt($validated['password']),
         ]);
 
         $this->reset('current_password', 'password', 'password_confirmation');

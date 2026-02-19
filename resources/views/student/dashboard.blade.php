@@ -29,7 +29,7 @@
             </div>
             <div class="uniform-card p-6">
                 <p class="text-gray-600 dark:text-slate-300 text-sm">Total Paid</p>
-                <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ getCurrencySymbol() }}{{ number_format($stats['total_paid'], 2) }}</p>
+                <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ formatCurrency($stats['total_paid']) }}</p>
             </div>
             <div class="uniform-card p-6">
                 <p class="text-gray-600 dark:text-slate-300 text-sm">Open Complaints</p>
@@ -62,7 +62,7 @@
                     <div class="mt-4 pt-4 border-t border-gray-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <p class="text-sm text-gray-600 dark:text-slate-300">Outstanding Balance</p>
-                            <p class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ getCurrencySymbol() }}{{ number_format($stats['current_booking_balance'], 2) }}</p>
+                            <p class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ formatCurrency($stats['current_booking_balance']) }}</p>
                             @if($stats['current_booking_balance'] > 0)
                                 <a href="{{ route('student.bookings.show', $currentBooking) }}" class="inline-flex mt-2 items-center bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
                                     Pay Outstanding
@@ -123,7 +123,7 @@
                 <div class="space-y-3">
                     @forelse($recentPayments as $payment)
                         <div class="p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
-                            <p class="font-semibold text-gray-900 dark:text-slate-100">{{ getCurrencySymbol() }}{{ number_format($payment->amount, 2) }}</p>
+                            <p class="font-semibold text-gray-900 dark:text-slate-100">{{ formatCurrency($payment->amount) }}</p>
                             <p class="text-sm text-gray-600 dark:text-slate-300">{{ ucfirst($payment->payment_method ?? 'N/A') }} • {{ $payment->created_at->format('M d, Y') }}</p>
                         </div>
                     @empty

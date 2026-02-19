@@ -30,22 +30,43 @@
         .menu-collapsed .menu-subitem { display: none !important; }
         .menu-collapsed .sidebar-menu a,
         .menu-collapsed .sidebar-menu button { justify-content: center; }
+        .menu-collapsed .sidebar-menu .menu-card svg { display: block !important; opacity: 1 !important; }
+        .menu-collapsed .sidebar-menu .menu-card { padding: 0.625rem !important; }
         .menu-collapsed .sidebar-menu .ml-8 { margin-left: 0 !important; }
-        .sidebar-transition { transition: width .2s ease, transform .2s ease; }
+        .sidebar-transition { transition: width .2s ease, transform .2s ease, opacity .18s ease; }
         #sidebar-desktop { display: none; }
         @media (min-width: 1024px) {
             #sidebar-desktop { display: flex; }
         }
         #sidebar-mobile {
+            display: block;
             position: fixed;
             left: 0;
             top: 0;
             bottom: 0;
-            z-index: 50;
+            z-index: 70;
             width: min(22rem, 92vw);
-            transform: translateX(-100%);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(-105%);
         }
-        #sidebar-mobile.is-open { transform: translateX(0); }
+        @media (min-width: 1024px) {
+            #sidebar-mobile { display: none !important; }
+        }
+        html.mobile-sidebar-open #sidebar-mobile {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0) !important;
+        }
+        #sidebar-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .18s ease;
+        }
+        html.mobile-sidebar-open #sidebar-overlay {
+            opacity: 1;
+            pointer-events: auto;
+        }
         .sidebar-menu .menu-card {
             border: 1px solid rgb(226 232 240);
             border-radius: 0.75rem;
@@ -76,6 +97,17 @@
             box-shadow: inset 0 0 0 1px rgb(59 130 246 / .35);
         }
         .site-footer { display: block !important; visibility: visible !important; width: 100% !important; }
+        .dashboard-sidebar-scroll {
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-gutter: stable;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgb(148 163 184 / .55) transparent;
+        }
+        .dashboard-sidebar-scroll::-webkit-scrollbar { width: 8px; }
+        .dashboard-sidebar-scroll::-webkit-scrollbar-thumb { background: rgb(148 163 184 / .55); border-radius: 999px; }
+        .menu-collapsed .menu-section-title { display: none !important; }
         .uniform-page {
             max-width: 80rem;
             margin: 0 auto;
@@ -211,26 +243,66 @@
             .uniform-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .uniform-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
         }
+        @media (max-width: 375px) {
+            #sidebar-mobile { width: min(18.5rem, 95vw); }
+            .sidebar-brand { padding: 0.625rem 0.75rem !important; }
+            .sidebar-menu { padding: 0.5rem !important; }
+            .sidebar-menu .menu-card {
+                padding: 0.55rem 0.65rem;
+                margin-bottom: 0.35rem;
+                border-radius: 0.625rem;
+            }
+            .sidebar-menu .menu-card svg { width: 1.1rem; height: 1.1rem; }
+            .uniform-page { gap: 1rem; }
+        }
     </style>
     @php
         $customCss = \App\Models\SystemSetting::getSetting('custom_css', '');
-        $favicon = \App\Models\SystemSetting::getSetting('global_header_favicon', \App\Models\SystemSetting::getSetting('global_header_logo', ''));
+        $logoLight = \App\Models\SystemSetting::getSetting('global_header_logo_light', \App\Models\SystemSetting::getSetting('global_header_logo', \App\Models\SystemSetting::getSetting('app_logo', '')));
+        $logoDark = \App\Models\SystemSetting::getSetting('global_header_logo_dark', $logoLight);
+        $favicon = \App\Models\SystemSetting::getSetting('global_header_favicon', $logoLight);
     @endphp
     @if(!empty($customCss))
         <style>{!! $customCss !!}</style>
     @endif
     @include('components.website-theme-style')
     @if(!empty($favicon))
-        <link rel="icon" type="image/png" href="{{ asset('storage/' . $favicon) }}">
+        @php
+            $faviconPath = ltrim((string) $favicon, '/');
+            $faviconPath = preg_replace('/^(storage\/|public\/)/', '', $faviconPath);
+        @endphp
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $faviconPath) }}">
     @endif
 </head>
 <body class="h-full bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-slate-100 antialiased">
     @php
-        $logo = \App\Models\SystemSetting::getSetting('global_header_logo', '');
+        $logoLight = \App\Models\SystemSetting::getSetting('global_header_logo_light', \App\Models\SystemSetting::getSetting('global_header_logo', \App\Models\SystemSetting::getSetting('app_logo', '')));
+        $logoDark = \App\Models\SystemSetting::getSetting('global_header_logo_dark', $logoLight);
+        $logo = $logoLight;
         $brandName = \App\Models\SystemSetting::getSetting('global_header_brand', \App\Models\SystemSetting::getSetting('app_name', 'Hostel Manager'));
         $headerNotice = \App\Models\SystemSetting::getSetting('global_header_notice_html', '');
         $headerEmail = \App\Models\SystemSetting::getSetting('global_header_contact_email', '');
         $headerPhone = \App\Models\SystemSetting::getSetting('global_header_contact_phone', '');
+        $toLogoUrl = function (?string $path): string {
+            $path = trim((string) $path);
+            if ($path === '') {
+                return '';
+            }
+            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:')) {
+                return $path;
+            }
+
+            $path = ltrim($path, '/');
+            $path = preg_replace('/^(storage\/|public\/)/', '', $path);
+            if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+                return '';
+            }
+
+            return asset('storage/' . $path);
+        };
+        $resolvedLogoLight = $toLogoUrl($logoLight);
+        $resolvedLogoDark = $toLogoUrl($logoDark ?: $logoLight);
+        $resolvedFavicon = $toLogoUrl($favicon);
         $currentUser = auth()->user();
         $profileImage = $currentUser?->profile_image ? asset('storage/' . $currentUser->profile_image) : null;
         $latestNotifications = $currentUser?->notifications()?->latest()->limit(8)->get() ?? collect();
@@ -245,41 +317,49 @@
         }
     @endphp
 
-    <div id="dashboard-shell" class="min-h-screen flex flex-col overflow-x-hidden">
+        <div id="dashboard-shell" class="min-h-screen flex flex-col overflow-x-hidden">
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-30 hidden lg:hidden"></div>
 
-        <header class="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-40">
+        <div class="sticky top-0 z-50">
+            @if($headerNotice || $headerEmail || $headerPhone)
+                <div class="bg-gray-900 dark:bg-slate-950 text-gray-100 text-xs">
+                    <div class="px-4 sm:px-6 py-2 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+                        <div>{!! $headerNotice !!}</div>
+                        <div class="flex items-center gap-3">
+                            @if($headerEmail)<span>{{ $headerEmail }}</span>@endif
+                            @if($headerPhone)<span>{{ $headerPhone }}</span>@endif
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <header class="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 relative z-30">
             <div class="px-4 sm:px-6 py-3 flex items-center justify-between">
                 <div class="flex items-center gap-3 min-w-0">
-                    <button id="sidebar-toggle" type="button" class="inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-slate-700 p-2 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800">
+                    <a href="{{ url('/') }}" class="flex items-center gap-2 min-w-0">
+                        @if($resolvedLogoLight)
+                            <img src="{{ $resolvedLogoLight }}" alt="Logo" class="h-8 w-auto object-contain dark:hidden">
+                            <img src="{{ $resolvedLogoDark ?: $resolvedLogoLight }}" alt="Logo" class="h-8 w-auto object-contain hidden dark:inline">
+                        @elseif($resolvedFavicon)
+                            <img src="{{ $resolvedFavicon }}" alt="Favicon" class="h-8 w-8 object-contain">
+                        @else
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">HMS</div>
+                        @endif
+                        <span class="text-sm font-semibold text-gray-700 dark:text-slate-200 truncate max-w-[11rem] sm:max-w-[14rem]">{{ $brandName }}</span>
+                    </a>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button data-sidebar-toggle type="button" class="lg:hidden inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 p-2 text-gray-700 dark:text-slate-200 shadow hover:bg-gray-100 dark:hover:bg-slate-800">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 7h16M4 12h16M4 17h16"></path>
                         </svg>
                     </button>
-                    <a href="{{ url('/') }}" class="flex items-center gap-3 min-w-0">
-                        @if($logo)
-                            <img src="{{ asset('storage/' . $logo) }}" alt="Logo" class="max-h-9 w-auto object-contain">
-                        @elseif($favicon)
-                            <img src="{{ asset('storage/' . $favicon) }}" alt="Favicon" class="h-8 w-8 object-contain">
-                        @else
-                            <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
-                                <span class="text-white font-bold text-xs">HMS</span>
-                            </div>
-                        @endif
-                        @if(!$logo)
-                            <span class="hidden sm:inline text-base font-bold text-gray-900 dark:text-slate-100 truncate">{{ $brandName }}</span>
-                        @endif
-                    </a>
-                    <span class="hidden md:inline text-sm text-gray-500 dark:text-slate-400 truncate">/ {{ $title }}</span>
-                </div>
 
-                <div class="flex items-center gap-3">
                     <div class="text-xs sm:text-sm text-gray-600 dark:text-slate-300 text-right hidden sm:block">
                         @if(session('impersonator_id'))
                             <p><a href="{{ route('impersonation.leave') }}" class="text-blue-600 hover:text-blue-700 font-semibold">Return to Admin</a></p>
                         @endif
-                        @if($headerEmail)<p>{{ $headerEmail }}</p>@endif
-                        @if($headerPhone)<p>{{ $headerPhone }}</p>@endif
                     </div>
 
                     @if($currentUser)
@@ -377,17 +457,21 @@
                     @endif
                 </div>
             </div>
-
-            @if($headerNotice)
-                <div class="px-4 sm:px-6 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 text-sm">
-                    {!! $headerNotice !!}
-                </div>
-            @endif
-        </header>
+            </header>
+        </div>
 
         <div class="flex flex-1 min-h-0">
-            <aside id="sidebar-desktop" class="lg:flex lg:flex-col bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 sidebar-transition w-80 xl:w-96 sticky top-0 self-start h-[calc(100vh-4rem)]">
-                <nav class="sidebar-menu px-3 py-4 space-y-2 overflow-y-auto flex-1">
+            <aside id="sidebar-desktop" class="lg:flex lg:flex-col bg-transparent sidebar-transition w-80 xl:w-96 lg:sticky lg:top-0 lg:self-start lg:h-screen p-3">
+                <div class="rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden flex flex-col h-full min-h-0">
+                <div class="sidebar-brand px-3 py-3 border-b border-gray-200 dark:border-slate-800 flex items-center gap-2">
+                    <div class="menu-section-title text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">Navigation Menu</div>
+                    <button data-sidebar-toggle type="button" class="ml-auto inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-slate-700 p-2 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 7h16M4 12h16M4 17h16"></path>
+                        </svg>
+                    </button>
+                </div>
+                <nav class="sidebar-menu dashboard-sidebar-scroll px-3 py-4 space-y-2 flex-1 min-h-0 max-h-full">
                     @if(isset($sidebar))
                         {{ $sidebar }}
                     @elseif(auth()->user()?->isManager())
@@ -396,13 +480,19 @@
                         @include('components.student-sidebar')
                     @endif
                 </nav>
+                </div>
             </aside>
 
-            <aside id="sidebar-mobile" class="lg:hidden bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 shadow-lg sidebar-transition">
+            <aside id="sidebar-mobile" class="lg:hidden bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 shadow-lg sidebar-transition z-[70]">
                 <div class="h-16 border-b border-gray-200 dark:border-slate-800 flex items-center px-4">
                     <span class="font-semibold text-gray-900 dark:text-slate-100">Menu</span>
+                    <button data-sidebar-toggle type="button" class="ml-auto inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-slate-700 p-2 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 7h16M4 12h16M4 17h16"></path>
+                        </svg>
+                    </button>
                 </div>
-                <nav class="sidebar-menu px-3 py-4 space-y-2 overflow-y-auto h-[calc(100%-4rem)] pb-16">
+                <nav class="sidebar-menu dashboard-sidebar-scroll px-3 py-4 space-y-2 overflow-y-auto h-[calc(100%-4rem)] pb-16">
                     @if(isset($sidebar))
                         {{ $sidebar }}
                     @elseif(auth()->user()?->isManager())
@@ -413,8 +503,8 @@
                 </nav>
             </aside>
 
-            <div class="flex-1 min-w-0 bg-gray-50 dark:bg-slate-950">
-                <main class="p-4 sm:p-6 lg:p-8">
+            <div class="flex-1 min-w-0 min-h-0 bg-gray-50 dark:bg-slate-950 flex flex-col">
+                <main class="p-3 sm:p-6 lg:p-8 flex-1 min-h-0">
                     @if(session('success'))
                         @include('components.alert', ['type' => 'success', 'message' => session('success')])
                     @endif
@@ -439,7 +529,7 @@
             const desktopSidebar = document.getElementById('sidebar-desktop');
             const mobileSidebar = document.getElementById('sidebar-mobile');
             const overlay = document.getElementById('sidebar-overlay');
-            const toggle = document.getElementById('sidebar-toggle');
+            const toggles = Array.from(document.querySelectorAll('[data-sidebar-toggle]'));
             const notificationMenuButton = document.getElementById('notification-menu-button');
             const notificationMenuPanel = document.getElementById('notification-menu-panel');
             const userMenuButton = document.getElementById('user-menu-button');
@@ -447,6 +537,14 @@
             const themeButtons = Array.from(document.querySelectorAll('[data-theme-mode]'));
             const themeModeLabel = document.getElementById('theme-mode-label');
             const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            const storage = {
+                get(key) {
+                    try { return window.localStorage.getItem(key); } catch (e) { return null; }
+                },
+                set(key, value) {
+                    try { window.localStorage.setItem(key, value); } catch (e) {}
+                },
+            };
 
             const isDesktop = () => window.matchMedia('(min-width: 1024px)').matches;
 
@@ -455,47 +553,51 @@
                 if (desktopSidebar) {
                     desktopSidebar.classList.toggle('w-80', !collapsed);
                     desktopSidebar.classList.toggle('xl:w-96', !collapsed);
-                    desktopSidebar.classList.toggle('w-24', collapsed);
+                    desktopSidebar.classList.toggle('w-28', collapsed);
                 }
-                localStorage.setItem('dashboard.sidebarCollapsed', JSON.stringify(collapsed));
+                storage.set('dashboard.sidebarCollapsed', JSON.stringify(collapsed));
             }
 
             function getCollapsed() {
-                try { return JSON.parse(localStorage.getItem('dashboard.sidebarCollapsed') || 'false') === true; } catch (e) { return false; }
+                try { return JSON.parse(storage.get('dashboard.sidebarCollapsed') || 'false') === true; } catch (e) { return false; }
             }
 
             function openMobileSidebar(open) {
                 if (!mobileSidebar || !overlay) return;
+                document.documentElement.classList.toggle('mobile-sidebar-open', open);
                 mobileSidebar.classList.toggle('is-open', open);
+                mobileSidebar.style.setProperty('display', 'block', 'important');
+                mobileSidebar.style.setProperty('transform', open ? 'translateX(0)' : 'translateX(-105%)', 'important');
+                mobileSidebar.style.setProperty('opacity', open ? '1' : '0', 'important');
+                mobileSidebar.style.setProperty('pointer-events', open ? 'auto' : 'none', 'important');
                 overlay.classList.toggle('hidden', !open);
+                overlay.style.setProperty('display', open ? 'block' : 'none', 'important');
                 document.body.classList.toggle('overflow-hidden', open);
-                toggle?.setAttribute('aria-expanded', open ? 'true' : 'false');
-            }
-
-            function resolveIsDark(mode) {
-                return mode === 'dark' || (mode === 'system' && mediaQuery.matches);
+                toggles.forEach((toggle) => toggle.setAttribute('aria-expanded', open ? 'true' : 'false'));
             }
 
             function applyTheme(mode) {
                 const root = document.documentElement;
-                const useDark = resolveIsDark(mode);
+                const useDark = mode === 'dark' || (mode === 'system' && mediaQuery.matches);
                 root.classList.toggle('dark', useDark);
                 document.body.classList.toggle('dark', useDark);
             }
 
             function getThemeMode() {
-                const storedMode = localStorage.getItem('site.themeMode') || localStorage.getItem('dashboard.themeMode');
-                if (storedMode === 'light' || storedMode === 'dark' || storedMode === 'system') return storedMode;
+                const storedMode = storage.get('site.themeMode') || storage.get('dashboard.themeMode');
+                if (storedMode === 'light' || storedMode === 'dark' || storedMode === 'system') {
+                    return storedMode;
+                }
                 try {
-                    const legacyDark = localStorage.getItem('dashboard.darkMode');
+                    const legacyDark = storage.get('dashboard.darkMode');
                     if (legacyDark !== null) return JSON.parse(legacyDark) === true ? 'dark' : 'light';
                 } catch (e) {}
                 return 'system';
             }
 
             function setThemeMode(mode) {
-                localStorage.setItem('site.themeMode', mode);
-                localStorage.setItem('dashboard.themeMode', mode);
+                storage.set('site.themeMode', mode);
+                storage.set('dashboard.themeMode', mode);
                 applyTheme(mode);
                 updateThemeButtons(mode);
             }
@@ -516,17 +618,21 @@
             }
 
             setCollapsed(getCollapsed());
+            openMobileSidebar(false);
             const currentThemeMode = getThemeMode();
             applyTheme(currentThemeMode);
             updateThemeButtons(currentThemeMode);
 
-            toggle?.addEventListener('click', function () {
-                if (isDesktop()) {
-                    setCollapsed(!shell.classList.contains('menu-collapsed'));
-                } else {
-                    const isOpen = mobileSidebar && mobileSidebar.classList.contains('is-open');
-                    openMobileSidebar(!isOpen);
-                }
+            toggles.forEach((toggle) => {
+                const onToggle = function () {
+                    if (isDesktop()) {
+                        setCollapsed(!shell.classList.contains('menu-collapsed'));
+                    } else {
+                        const isOpen = document.documentElement.classList.contains('mobile-sidebar-open');
+                        openMobileSidebar(!isOpen);
+                    }
+                };
+                toggle.addEventListener('click', onToggle);
             });
 
             overlay?.addEventListener('click', function () { openMobileSidebar(false); });

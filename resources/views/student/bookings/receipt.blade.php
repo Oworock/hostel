@@ -204,7 +204,7 @@
                     <tbody>
                         @foreach ($booking->payments as $payment)
                             <tr>
-                                <td>{{ getCurrencySymbol() }}{{ number_format($payment->amount, 2) }}</td>
+                                <td>{{ formatCurrency($payment->amount) }}</td>
                                 <td>{{ ucfirst(str_replace('_', ' ', $payment->payment_method ?? 'N/A')) }}</td>
                                 <td>{{ ucfirst($payment->status) }}</td>
                                 <td>{{ $payment->payment_date ? $payment->payment_date->format('d M Y') : 'N/A' }}</td>
@@ -229,7 +229,7 @@
         <div class="section">
             <div class="total-row">
                 <label>Total Amount:</label>
-                <div>{{ getCurrencySymbol() }}{{ number_format($booking->total_amount, 2) }}</div>
+                <div>{{ formatCurrency($booking->total_amount) }}</div>
             </div>
             @php
                 $paidTotal = (float) $booking->payments->where('status', 'paid')->sum('amount');
@@ -237,11 +237,11 @@
             @endphp
             <div class="info-row">
                 <label>Total Paid:</label>
-                <div class="value">{{ getCurrencySymbol() }}{{ number_format($paidTotal, 2) }}</div>
+                <div class="value">{{ formatCurrency($paidTotal) }}</div>
             </div>
             <div class="info-row">
                 <label>Outstanding:</label>
-                <div class="value">{{ getCurrencySymbol() }}{{ number_format($balance, 2) }}</div>
+                <div class="value">{{ formatCurrency($balance) }}</div>
             </div>
         </div>
 

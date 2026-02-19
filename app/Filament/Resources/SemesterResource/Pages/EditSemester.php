@@ -4,7 +4,7 @@ namespace App\Filament\Resources\SemesterResource\Pages;
 
 use App\Filament\Resources\SemesterResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\Pages\BaseEditRecord as EditRecord;
 
 class EditSemester extends EditRecord
 {

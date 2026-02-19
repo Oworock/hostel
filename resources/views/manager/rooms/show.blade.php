@@ -26,7 +26,7 @@
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-lg shadow-md border border-transparent dark:border-slate-800 p-5">
                 <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Price Per {{ ucfirst(getBookingPeriodLabel()) }}</p>
-                <p class="text-3xl font-bold text-green-700 dark:text-green-400">{{ getCurrencySymbol() }}{{ number_format($room->price_per_month, 2) }}</p>
+                <p class="text-3xl font-bold text-green-700 dark:text-green-400">{{ formatCurrency($room->price_per_month) }}</p>
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-lg shadow-md border border-transparent dark:border-slate-800 p-5">
                 <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Occupancy</p>

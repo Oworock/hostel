@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -45,9 +46,35 @@ class BedResource extends Resource
                             ->label('Bed Label (Optional)'),
                         
                         Forms\Components\Toggle::make('is_occupied')
-                            ->disabled()
                             ->default(false)
+                            ->live()
+                            ->afterStateUpdated(function (Forms\Set $set, bool $state): void {
+                                if (!$state) {
+                                    $set('user_id', null);
+                                    $set('occupied_from', null);
+                                    return;
+                                }
+
+                                $set('occupied_from', now());
+                            })
                             ->label('Currently Occupied'),
+
+                        Forms\Components\Select::make('user_id')
+                            ->relationship(
+                                name: 'user',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (Builder $query) => $query->where('role', 'student')
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn (Forms\Get $get): bool => (bool) $get('is_occupied'))
+                            ->required(fn (Forms\Get $get): bool => (bool) $get('is_occupied'))
+                            ->label('Occupying Student'),
+
+                        Forms\Components\DateTimePicker::make('occupied_from')
+                            ->visible(fn (Forms\Get $get): bool => (bool) $get('is_occupied'))
+                            ->seconds(false)
+                            ->label('Occupied From'),
 
                         Forms\Components\Toggle::make('is_approved')
                             ->label('Approved for Student Booking')
@@ -99,12 +126,21 @@ class BedResource extends Resource
                     ->searchable()
                     ->label('Label'),
                 
-                Tables\Columns\BadgeColumn::make('is_occupied')
-                    ->getStateUsing(fn ($record) => $record->is_occupied ? 'Occupied' : 'Available')
-                    ->colors([
-                        'success' => 'Available',
-                        'danger' => 'Occupied',
-                    ]),
+                ToggleColumn::make('is_occupied')
+                    ->label('Occupied')
+                    ->afterStateUpdated(function (Bed $record, bool $state): void {
+                        if (!$state) {
+                            $record->update([
+                                'user_id' => null,
+                                'occupied_from' => null,
+                            ]);
+                            return;
+                        }
+
+                        if (!$record->occupied_from) {
+                            $record->update(['occupied_from' => now()]);
+                        }
+                    }),
 
                 Tables\Columns\BadgeColumn::make('is_approved')
                     ->getStateUsing(fn ($record) => $record->is_approved ? 'Approved' : 'Pending Approval')

@@ -39,7 +39,7 @@
                                 </div>
                                 <div class="text-right">
                                     <p class="text-xs text-gray-500 dark:text-slate-400">Outstanding</p>
-                                    <p class="text-lg font-bold text-red-700 dark:text-red-300">{{ getCurrencySymbol() }}{{ number_format($booking->outstandingAmount(), 2) }}</p>
+                                    <p class="text-lg font-bold text-red-700 dark:text-red-300">{{ formatCurrency($booking->outstandingAmount()) }}</p>
                                 </div>
                             </div>
 
@@ -80,7 +80,7 @@
                                     <td class="px-6 py-4 text-sm">
                                         <a href="{{ route('student.bookings.show', $payment->booking_id) }}" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">#{{ $payment->booking_id }}</a>
                                     </td>
-                                    <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-slate-100">{{ getCurrencySymbol() }}{{ number_format($payment->amount, 2) }}</td>
+                                    <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-slate-100">{{ formatCurrency($payment->amount) }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-slate-300 capitalize">{{ $payment->payment_method }}</td>
                                     <td class="px-6 py-4 text-sm">
                                         <div class="space-y-1">

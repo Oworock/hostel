@@ -21,7 +21,7 @@
                 <dl class="space-y-3">
                     <div><dt class="text-sm text-slate-500 dark:text-slate-400">Room Number</dt><dd class="font-semibold text-slate-900 dark:text-slate-100">{{ $booking->room->room_number }}</dd></div>
                     <div><dt class="text-sm text-slate-500 dark:text-slate-400">Room Type</dt><dd class="font-semibold text-slate-900 dark:text-slate-100">{{ ucfirst($booking->room->type) }}</dd></div>
-                    <div><dt class="text-sm text-slate-500 dark:text-slate-400">Price Per {{ ucfirst(getBookingPeriodLabel()) }}</dt><dd class="font-semibold text-slate-900 dark:text-slate-100">{{ getCurrencySymbol() }}{{ number_format($booking->room->price_per_month, 2) }}</dd></div>
+                    <div><dt class="text-sm text-slate-500 dark:text-slate-400">Price Per {{ ucfirst(getBookingPeriodLabel()) }}</dt><dd class="font-semibold text-slate-900 dark:text-slate-100">{{ formatCurrency($booking->room->price_per_month) }}</dd></div>
                 </dl>
             </section>
         </div>
@@ -40,7 +40,7 @@
                 </div>
                 <div class="rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3">
                     <p class="text-xs text-slate-500 dark:text-slate-400">Total Amount</p>
-                    <p class="font-semibold text-slate-900 dark:text-slate-100">{{ getCurrencySymbol() }}{{ number_format($booking->total_amount, 2) }}</p>
+                    <p class="font-semibold text-slate-900 dark:text-slate-100">{{ formatCurrency($booking->total_amount) }}</p>
                 </div>
             </div>
 

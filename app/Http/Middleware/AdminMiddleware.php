@@ -10,8 +10,23 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
-            abort(403, 'Unauthorized access');
+        $user = $request->user() ?? auth('web')->user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $role = strtolower(trim((string) $user->role));
+        if (!in_array($role, ['admin', 'super_admin'], true)) {
+            if ($user->isManager()) {
+                return redirect()->route('manager.bookings.index');
+            }
+
+            if ($user->isStudent()) {
+                return redirect()->route('student.bookings.index');
+            }
+
+            return redirect()->route('dashboard');
         }
 
         return $next($request);

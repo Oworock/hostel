@@ -42,8 +42,8 @@
             </div>
             <div class="uniform-card p-6">
                 <p class="text-gray-600 dark:text-slate-300 text-sm">Monthly Revenue</p>
-                <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ getCurrencySymbol() }}{{ number_format($stats['monthly_revenue'], 2) }}</p>
-                <p class="text-sm text-gray-500 dark:text-slate-400 mt-1">Total {{ getCurrencySymbol() }}{{ number_format($stats['total_revenue'], 2) }}</p>
+                <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ formatCurrency($stats['monthly_revenue']) }}</p>
+                <p class="text-sm text-gray-500 dark:text-slate-400 mt-1">Total {{ formatCurrency($stats['total_revenue']) }}</p>
             </div>
         </section>
 
@@ -59,7 +59,29 @@
             </div>
 
             <div class="uniform-card p-6">
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-4">Room Occupancy Snapshot</h2>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-4">Subscription Expiry Alerts</h2>
+                <p class="text-sm text-gray-600 dark:text-slate-300 mb-3">Expired: {{ $expiredSubscriptionsCount ?? 0 }}</p>
+                <div class="space-y-3">
+                    @forelse(($subscriptionAlerts ?? collect()) as $subscription)
+                        @php
+                            $daysRemaining = now()->startOfDay()->diffInDays($subscription->expires_at, false);
+                        @endphp
+                        <div class="p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+                            <p class="font-medium text-gray-900 dark:text-slate-100">{{ $subscription->name }}</p>
+                            <p class="text-sm text-gray-600 dark:text-slate-300">{{ $subscription->hostel?->name }} • Expires {{ $subscription->expires_at?->format('M d, Y') }}</p>
+                            <p class="text-sm {{ $daysRemaining < 0 ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400' }}">
+                                {{ $daysRemaining < 0 ? 'Expired' : $daysRemaining . ' day(s) remaining' }}
+                            </p>
+                        </div>
+                    @empty
+                        <p class="text-gray-600 dark:text-slate-300">No subscriptions expiring within 7 days.</p>
+                    @endforelse
+                </div>
+            </div>
+        </section>
+
+        <section class="uniform-card p-6">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-4">Room Occupancy Snapshot</h2>
                 <div class="space-y-3">
                     @forelse($roomSnapshot as $room)
                         @php
@@ -78,7 +100,6 @@
                         <p class="text-gray-600 dark:text-slate-300">No rooms available for snapshot.</p>
                     @endforelse
                 </div>
-            </div>
         </section>
 
         <section class="uniform-grid-2">
@@ -115,9 +136,12 @@
                             <div>
                                 <p class="font-medium text-gray-900 dark:text-slate-100">{{ $payment->user->name }}</p>
                                 <p class="text-sm text-gray-600 dark:text-slate-300">Room {{ $payment->booking?->room?->room_number ?? 'N/A' }} • {{ ucfirst($payment->payment_method ?? 'N/A') }}</p>
+                                @if($payment->is_manual && $payment->createdByAdmin)
+                                    <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">Approved by admin: {{ $payment->createdByAdmin->name }}</p>
+                                @endif
                             </div>
                             <div class="text-right">
-                                <p class="font-semibold text-gray-900 dark:text-slate-100">{{ getCurrencySymbol() }}{{ number_format($payment->amount, 2) }}</p>
+                                <p class="font-semibold text-gray-900 dark:text-slate-100">{{ formatCurrency($payment->amount) }}</p>
                                 <p class="text-xs text-gray-500 dark:text-slate-400">{{ $payment->created_at->format('M d, Y') }}</p>
                             </div>
                         </div>
@@ -142,7 +166,7 @@
                                 <span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">Approved by Admin</span>
                             </div>
                             <p class="text-sm text-gray-600 dark:text-slate-300 mt-1">
-                                {{ getCurrencySymbol() }}{{ number_format($payment->amount, 2) }}
+                                {{ formatCurrency($payment->amount) }}
                                 @if($payment->createdByAdmin)
                                     • by {{ $payment->createdByAdmin->name }}
                                 @endif

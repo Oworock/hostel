@@ -3,14 +3,22 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Addon;
+use App\Models\Asset;
+use App\Models\AssetIssue;
+use App\Models\AssetMovement;
+use App\Models\AssetSubscription;
 use App\Models\Booking;
 use App\Models\Complaint;
 use App\Models\Hostel;
 use App\Models\Payment;
 use App\Models\Room;
 use App\Models\User;
+use App\Services\AssetNotificationService;
+use App\Services\OutboundWebhookService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class ManagementApiController extends Controller
@@ -45,6 +53,10 @@ class ManagementApiController extends Controller
         ]);
 
         $hostel = Hostel::create($data);
+        app(OutboundWebhookService::class)->dispatch('hostel.created', [
+            'hostel_id' => $hostel->id,
+            'name' => $hostel->name,
+        ]);
 
         return response()->json($hostel, 201);
     }
@@ -66,13 +78,21 @@ class ManagementApiController extends Controller
         ]);
 
         $hostel->update($data);
+        app(OutboundWebhookService::class)->dispatch('hostel.updated', [
+            'hostel_id' => $hostel->id,
+            'name' => $hostel->name,
+        ]);
 
         return response()->json($hostel->fresh());
     }
 
     public function deleteHostel(Hostel $hostel)
     {
+        $id = $hostel->id;
         $hostel->delete();
+        app(OutboundWebhookService::class)->dispatch('hostel.deleted', [
+            'hostel_id' => $id,
+        ]);
 
         return response()->json(['message' => 'Hostel deleted.']);
     }
@@ -95,6 +115,11 @@ class ManagementApiController extends Controller
         ]);
 
         $room = Room::create($data);
+        app(OutboundWebhookService::class)->dispatch('room.created', [
+            'room_id' => $room->id,
+            'hostel_id' => $room->hostel_id,
+            'room_number' => $room->room_number,
+        ]);
 
         return response()->json($room->fresh('hostel'), 201);
     }
@@ -112,13 +137,22 @@ class ManagementApiController extends Controller
         ]);
 
         $room->update($data);
+        app(OutboundWebhookService::class)->dispatch('room.updated', [
+            'room_id' => $room->id,
+            'hostel_id' => $room->hostel_id,
+            'room_number' => $room->room_number,
+        ]);
 
         return response()->json($room->fresh('hostel'));
     }
 
     public function deleteRoom(Room $room)
     {
+        $id = $room->id;
         $room->delete();
+        app(OutboundWebhookService::class)->dispatch('room.deleted', [
+            'room_id' => $id,
+        ]);
 
         return response()->json(['message' => 'Room deleted.']);
     }
@@ -281,5 +315,236 @@ class ManagementApiController extends Controller
         $complaint->update($data);
 
         return response()->json($complaint->fresh(['user', 'booking.room.hostel']));
+    }
+
+    public function listManagers()
+    {
+        return response()->json(
+            User::query()
+                ->where('role', 'manager')
+                ->with('hostel')
+                ->latest()
+                ->paginate(20)
+        );
+    }
+
+    public function createManager(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
+            'password' => ['nullable', 'string', 'min:8'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'hostel_id' => ['nullable', 'exists:hostels,id'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        $manager = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password'] ?? str()->random(16)),
+            'role' => 'manager',
+            'phone' => $data['phone'] ?? null,
+            'hostel_id' => $data['hostel_id'] ?? null,
+            'is_active' => $data['is_active'] ?? true,
+        ]);
+
+        return response()->json($manager, 201);
+    }
+
+    public function updateManager(Request $request, User $manager)
+    {
+        abort_unless($manager->role === 'manager', 404);
+
+        $data = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255'],
+            'email' => ['sometimes', 'email', 'max:255', Rule::unique('users', 'email')->ignore($manager->id)],
+            'password' => ['sometimes', 'nullable', 'string', 'min:8'],
+            'phone' => ['sometimes', 'nullable', 'string', 'max:20'],
+            'hostel_id' => ['sometimes', 'nullable', 'exists:hostels,id'],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        if (array_key_exists('password', $data) && !empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        $manager->update($data);
+
+        return response()->json($manager->fresh());
+    }
+
+    public function deleteManager(User $manager)
+    {
+        abort_unless($manager->role === 'manager', 404);
+        $manager->delete();
+
+        return response()->json(['message' => 'Manager deleted.']);
+    }
+
+    public function listAssets()
+    {
+        $this->ensureAssetAddonEnabled();
+
+        return response()->json(Asset::query()->with('hostel')->latest()->paginate(20));
+    }
+
+    public function createAsset(Request $request)
+    {
+        $this->ensureAssetAddonEnabled();
+
+        $data = $request->validate([
+            'hostel_id' => ['required', 'exists:hostels,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'asset_number' => ['nullable', 'string', 'max:255'],
+            'asset_code' => ['nullable', 'string', 'max:255'],
+            'category' => ['nullable', 'string', 'max:255'],
+            'serial_number' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'string', 'max:50'],
+            'condition' => ['nullable', 'string', 'max:50'],
+            'acquisition_cost' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
+        $asset = Asset::create($data + ['status' => $data['status'] ?? 'active', 'condition' => $data['condition'] ?? 'good']);
+
+        app(AssetNotificationService::class)->notifyManagersAssetCreated($asset, $request->user());
+
+        return response()->json($asset->fresh('hostel'), 201);
+    }
+
+    public function updateAsset(Request $request, Asset $asset)
+    {
+        $this->ensureAssetAddonEnabled();
+
+        $data = $request->validate([
+            'hostel_id' => ['sometimes', 'exists:hostels,id'],
+            'name' => ['sometimes', 'string', 'max:255'],
+            'asset_number' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'asset_code' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'category' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'serial_number' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'status' => ['sometimes', 'nullable', 'string', 'max:50'],
+            'condition' => ['sometimes', 'nullable', 'string', 'max:50'],
+            'acquisition_cost' => ['sometimes', 'nullable', 'numeric', 'min:0'],
+        ]);
+
+        $asset->update($data);
+
+        return response()->json($asset->fresh('hostel'));
+    }
+
+    public function deleteAsset(Asset $asset)
+    {
+        $this->ensureAssetAddonEnabled();
+        $asset->delete();
+        return response()->json(['message' => 'Asset deleted.']);
+    }
+
+    public function listAssetIssues()
+    {
+        $this->ensureAssetAddonEnabled();
+
+        return response()->json(AssetIssue::query()->with(['asset', 'hostel'])->latest()->paginate(20));
+    }
+
+    public function updateAssetIssue(Request $request, AssetIssue $assetIssue)
+    {
+        $this->ensureAssetAddonEnabled();
+
+        $data = $request->validate([
+            'status' => ['sometimes', 'in:open,in_progress,resolved'],
+            'priority' => ['sometimes', 'in:low,medium,high,critical'],
+            'resolution_note' => ['sometimes', 'nullable', 'string', 'max:5000'],
+        ]);
+
+        $assetIssue->update($data);
+
+        return response()->json($assetIssue->fresh(['asset', 'hostel']));
+    }
+
+    public function listAssetMovements()
+    {
+        $this->ensureAssetAddonEnabled();
+
+        return response()->json(AssetMovement::query()->with(['asset', 'fromHostel', 'toHostel'])->latest()->paginate(20));
+    }
+
+    public function updateAssetMovement(Request $request, AssetMovement $assetMovement)
+    {
+        $this->ensureAssetAddonEnabled();
+
+        $data = $request->validate([
+            'status' => ['required', 'in:pending_receiving_manager,pending_admin,approved,rejected_by_admin,rejected_by_receiving_manager'],
+            'admin_note' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $assetMovement->update($data);
+
+        return response()->json($assetMovement->fresh(['asset', 'fromHostel', 'toHostel']));
+    }
+
+    public function listAssetSubscriptions()
+    {
+        $this->ensureAssetAddonEnabled();
+
+        return response()->json(AssetSubscription::query()->with('hostel')->latest()->paginate(20));
+    }
+
+    public function createAssetSubscription(Request $request)
+    {
+        $this->ensureAssetAddonEnabled();
+
+        $data = $request->validate([
+            'hostel_id' => ['required', 'exists:hostels,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'service_type' => ['nullable', 'string', 'max:255'],
+            'expires_at' => ['required', 'date'],
+            'cost' => ['nullable', 'numeric', 'min:0'],
+            'status' => ['nullable', 'in:active,inactive,expired'],
+        ]);
+
+        $subscription = AssetSubscription::create($data + ['status' => $data['status'] ?? 'active']);
+
+        return response()->json($subscription->fresh('hostel'), 201);
+    }
+
+    public function updateAssetSubscription(Request $request, AssetSubscription $assetSubscription)
+    {
+        $this->ensureAssetAddonEnabled();
+
+        $data = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255'],
+            'service_type' => ['sometimes', 'string', 'max:255'],
+            'expires_at' => ['sometimes', 'date'],
+            'cost' => ['sometimes', 'nullable', 'numeric', 'min:0'],
+            'status' => ['sometimes', 'in:active,inactive,expired'],
+        ]);
+
+        $assetSubscription->update($data);
+
+        return response()->json($assetSubscription->fresh('hostel'));
+    }
+
+    public function deleteAssetSubscription(AssetSubscription $assetSubscription)
+    {
+        $this->ensureAssetAddonEnabled();
+        $assetSubscription->delete();
+
+        return response()->json(['message' => 'Asset subscription deleted.']);
+    }
+
+    private function ensureAssetAddonEnabled(): void
+    {
+        abort_unless(
+            Addon::isActive('asset-management')
+            && Schema::hasTable('assets')
+            && Schema::hasTable('asset_issues')
+            && Schema::hasTable('asset_movements')
+            && Schema::hasTable('asset_subscriptions'),
+            404,
+            'Asset addon is not active.'
+        );
     }
 }

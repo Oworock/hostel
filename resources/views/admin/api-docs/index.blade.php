@@ -6,6 +6,12 @@
 <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="mb-4">
+                <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700">
+                    <span>&larr;</span>
+                    <span>Back to Dashboard</span>
+                </a>
+            </div>
             <h1 class="text-3xl font-bold text-gray-900">API Documentation</h1>
             <p class="text-gray-600 mt-2">Use this API to manage hostels, rooms, students, bookings, payments and complaints.</p>
         </div>
@@ -33,8 +39,7 @@
             <div>
                 <h3 class="text-sm font-semibold text-gray-900 mb-2">Headers Sent</h3>
                 <pre class="bg-gray-900 text-gray-100 rounded-lg p-4 text-sm overflow-x-auto"><code>Content-Type: application/json
-X-Hostel-Event: EVENT_NAME
-X-Hostel-Signature: HMAC_SHA256_SIGNATURE</code></pre>
+X-Hostel-Event: EVENT_NAME</code></pre>
             </div>
             <div>
                 <h3 class="text-sm font-semibold text-gray-900 mb-2">Payload Shape</h3>
@@ -91,13 +96,6 @@ X-Hostel-Signature: HMAC_SHA256_SIGNATURE</code></pre>
     }
   }
 }</code></pre>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-gray-900 mb-2">Signature Verification (PHP)</h3>
-                <pre class="bg-gray-900 text-gray-100 rounded-lg p-4 text-sm overflow-x-auto"><code>$rawBody = file_get_contents('php://input');
-$incoming = $_SERVER['HTTP_X_HOSTEL_SIGNATURE'] ?? '';
-$expected = hash_hmac('sha256', $rawBody, $yourWebhookSecret);
-$isValid = hash_equals($expected, $incoming);</code></pre>
             </div>
             <div>
                 <h3 class="text-sm font-semibold text-gray-900 mb-2">Available Webhook Events</h3>

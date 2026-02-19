@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\User;
 use App\Models\SystemSetting;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -40,7 +41,7 @@ class CreateNewUser implements CreatesNewUsers
             'email' => [
                 'required',
                 'string',
-                'email:rfc,dns',
+                'email',
                 'max:255',
                 Rule::unique(User::class),
             ],
@@ -76,6 +77,7 @@ class CreateNewUser implements CreatesNewUsers
                 'tel' => ['string', 'max:20'],
                 'number' => ['numeric'],
                 'date' => ['date'],
+                'upload' => ['image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
                 default => ['string', 'max:255'],
             };
 
@@ -102,8 +104,19 @@ class CreateNewUser implements CreatesNewUsers
         }
 
         $extraData = [];
+        $customFieldMeta = collect($customFields)
+            ->filter(fn ($field) => isset($field['name']) && is_string($field['name']))
+            ->keyBy(fn ($field) => (string) $field['name']);
+
         foreach (array_keys($customFieldRules) as $fieldName) {
-            $extraData[$fieldName] = $input[$fieldName] ?? null;
+            $type = (string) ($customFieldMeta->get($fieldName)['type'] ?? 'text');
+            $value = $input[$fieldName] ?? null;
+
+            if ($type === 'upload' && $value instanceof UploadedFile) {
+                $value = $value->store('registration-uploads/' . now()->format('Y/m'), 'public');
+            }
+
+            $extraData[$fieldName] = $value;
         }
         if (!empty($extraData)) {
             $payload['extra_data'] = $extraData;

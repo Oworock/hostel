@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'manager' => \App\Http\Middleware\ManagerMiddleware::class,
             'student' => \App\Http\Middleware\StudentMiddleware::class,
+            'addon.active' => \App\Http\Middleware\EnsureAddonActive::class,
             'api.key' => \App\Http\Middleware\EnsureApiAccessKey::class,
             'prevent.spam.registration' => \App\Http\Middleware\PreventSpamRegistration::class,
         ]);

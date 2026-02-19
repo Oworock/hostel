@@ -44,7 +44,7 @@
                                     <td class="px-6 py-4 text-sm">
                                         <a href="{{ route('manager.bookings.show', $payment->booking_id) }}" class="text-blue-600 dark:text-blue-400 hover:underline">#{{ $payment->booking_id }}</a>
                                     </td>
-                                    <td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-slate-100">{{ getCurrencySymbol() }}{{ number_format($payment->amount, 2) }}</td>
+                                    <td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-slate-100">{{ formatCurrency($payment->amount) }}</td>
                                     <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 capitalize">
                                         {{ $payment->payment_method === 'manual_admin' ? 'Manual (Admin)' : $payment->payment_method }}
                                         @if($payment->is_manual && $payment->createdByAdmin)

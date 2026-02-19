@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\PaymentGateway;
+use App\Models\Addon;
 use App\Services\PaymentGatewayDiagnosticsService;
 use App\Services\NotificationTemplateService;
 use App\Support\CurrencyCatalog;
@@ -92,11 +93,14 @@ class SystemSettings extends Page
             'sms_custom_headers' => is_array($smsCustomHeaders) ? $smsCustomHeaders : [],
             'test_phone' => '',
             'smtp_test_email' => SystemSetting::getSetting('app_email', config('mail.from.address')),
+            'mail_mailer' => SystemSetting::getSetting('mail_mailer', config('mail.default', 'smtp')),
             'smtp_host' => SystemSetting::getSetting('smtp_host', config('mail.mailers.smtp.host')),
             'smtp_port' => SystemSetting::getSetting('smtp_port', config('mail.mailers.smtp.port')),
             'smtp_username' => SystemSetting::getSetting('smtp_username', config('mail.mailers.smtp.username')),
             'smtp_password' => SystemSetting::getSetting('smtp_password', config('mail.mailers.smtp.password')),
             'smtp_encryption' => SystemSetting::getSetting('smtp_encryption', config('mail.mailers.smtp.encryption')),
+            'smtp_from_email' => SystemSetting::getSetting('smtp_from_email', ''),
+            'smtp_from_name' => SystemSetting::getSetting('smtp_from_name', ''),
             'paystack_enabled' => $paystackGateway?->is_active ?? false,
             'paystack_public_key' => $paystackGateway?->public_key ?? SystemSetting::getSetting('paystack_public_key', ''),
             'paystack_secret_key' => $paystackGateway?->secret_key ?? SystemSetting::getSetting('paystack_secret_key', ''),
@@ -120,7 +124,6 @@ class SystemSettings extends Page
             'square_environment' => SystemSetting::getSetting('square_environment', 'live'),
             'webhook_enabled' => filter_var(SystemSetting::getSetting('webhook_enabled', false), FILTER_VALIDATE_BOOL),
             'webhook_url' => SystemSetting::getSetting('webhook_url', ''),
-            'webhook_secret' => SystemSetting::getSetting('webhook_secret', ''),
             'webhook_events' => is_array($webhookEvents) ? $webhookEvents : [],
             'api_enabled' => filter_var(SystemSetting::getSetting('api_enabled', false), FILTER_VALIDATE_BOOL),
             'api_access_key' => SystemSetting::getSetting('api_access_key', ''),
@@ -251,6 +254,7 @@ class SystemSettings extends Page
                                                         'tel' => 'Phone',
                                                         'number' => 'Number',
                                                         'date' => 'Date',
+                                                        'upload' => 'Image Upload',
                                                     ])
                                                     ->default('text'),
                                                 Forms\Components\TextInput::make('placeholder')
@@ -273,9 +277,11 @@ class SystemSettings extends Page
                                 Forms\Components\Section::make('Header, Footer, Welcome Page Content')
                                     ->schema([
                                         Forms\Components\Placeholder::make('website_content_note')
-                                            ->content('Manage logo, header/footer content, and welcome-page body in Website Content manager.'),
+                                            ->content('Manage logo, header/footer content, and welcome-page sections from one place.'),
                                         Forms\Components\Placeholder::make('website_content_link')
                                             ->content(new HtmlString('<a href="' . route('filament.admin.resources.welcome-contents.index') . '" class="text-primary-600 underline">Open Website Content Manager</a>')),
+                                        Forms\Components\Placeholder::make('file_manager_link')
+                                            ->content(new HtmlString('<a href="' . route('filament.admin.pages.system.file-manager') . '" class="text-primary-600 underline">Open File Manager</a>')),
                                     ]),
                             ]),
                         
@@ -356,29 +362,42 @@ class SystemSettings extends Page
                                     ]),
                             ]),
                         
-                        Forms\Components\Tabs\Tab::make('SMTP Configuration')
+                        Forms\Components\Tabs\Tab::make('Email Configuration')
                             ->icon('heroicon-m-envelope')
                             ->schema([
                                 Forms\Components\Section::make('SMTP Mail Settings')
                                     ->description('Configure SMTP for sending emails')
                                     ->schema([
+                                        Forms\Components\Select::make('mail_mailer')
+                                            ->label('Email Driver')
+                                            ->options([
+                                                'smtp' => 'SMTP',
+                                                'sendmail' => 'PHP Mail (sendmail/mail())',
+                                            ])
+                                            ->default('smtp')
+                                            ->live()
+                                            ->required(),
                                         Forms\Components\TextInput::make('smtp_host')
                                             ->label('SMTP Host')
-                                            ->placeholder('smtp.gmail.com'),
+                                            ->placeholder('smtp.gmail.com')
+                                            ->visible(fn (Forms\Get $get) => ($get('mail_mailer') ?? 'smtp') === 'smtp'),
                                         
                                         Forms\Components\TextInput::make('smtp_port')
                                             ->label('SMTP Port')
                                             ->numeric()
-                                            ->placeholder('587'),
+                                            ->placeholder('587')
+                                            ->visible(fn (Forms\Get $get) => ($get('mail_mailer') ?? 'smtp') === 'smtp'),
                                         
                                         Forms\Components\TextInput::make('smtp_username')
                                             ->label('Username/Email')
-                                            ->placeholder('your-email@example.com'),
+                                            ->placeholder('your-email@example.com')
+                                            ->visible(fn (Forms\Get $get) => ($get('mail_mailer') ?? 'smtp') === 'smtp'),
                                         
                                         Forms\Components\TextInput::make('smtp_password')
                                             ->label('Password')
                                             ->password()
-                                            ->placeholder('••••••••'),
+                                            ->placeholder('••••••••')
+                                            ->visible(fn (Forms\Get $get) => ($get('mail_mailer') ?? 'smtp') === 'smtp'),
                                         
                                         Forms\Components\Select::make('smtp_encryption')
                                             ->label('Encryption')
@@ -386,7 +405,17 @@ class SystemSettings extends Page
                                                 'tls' => 'TLS',
                                                 'ssl' => 'SSL',
                                             ])
-                                            ->default('tls'),
+                                            ->default('tls')
+                                            ->visible(fn (Forms\Get $get) => ($get('mail_mailer') ?? 'smtp') === 'smtp'),
+                                        Forms\Components\TextInput::make('smtp_from_email')
+                                            ->label('From Email (Override)')
+                                            ->email()
+                                            ->placeholder('noreply@example.com')
+                                            ->helperText('Optional. If empty, system email is used.'),
+                                        Forms\Components\TextInput::make('smtp_from_name')
+                                            ->label('From Name (Override)')
+                                            ->placeholder('Hostel Management')
+                                            ->helperText('Optional. If empty, system name is used.'),
                                         Forms\Components\TextInput::make('smtp_test_email')
                                             ->label('Test Recipient Email')
                                             ->email()
@@ -525,13 +554,15 @@ class SystemSettings extends Page
                                             ->label('Webhook URL')
                                             ->url()
                                             ->placeholder('https://hooks.zapier.com/...'),
-                                        Forms\Components\TextInput::make('webhook_secret')
-                                            ->label('Signing Secret')
-                                            ->password()
-                                            ->helperText('Requests include X-Hostel-Signature (HMAC SHA256).'),
                                         Forms\Components\CheckboxList::make('webhook_events')
                                             ->label('Events to Send')
                                             ->options([
+                                                'hostel.created' => 'Hostel Created',
+                                                'hostel.updated' => 'Hostel Updated',
+                                                'hostel.deleted' => 'Hostel Deleted',
+                                                'room.created' => 'Room Created',
+                                                'room.updated' => 'Room Updated',
+                                                'room.deleted' => 'Room Deleted',
                                                 'booking.created' => 'Booking Created',
                                                 'booking.cancelled' => 'Booking Cancelled',
                                                 'booking.manager_approved' => 'Manager Approved Booking',
@@ -540,11 +571,24 @@ class SystemSettings extends Page
                                                 'payment.completed' => 'Payment Completed',
                                                 'complaint.created' => 'Complaint Created',
                                                 'complaint.responded' => 'Complaint Responded',
+                                                'notification.read' => 'Notification Read',
                                                 'hostel_change.submitted' => 'Hostel Change Submitted',
                                                 'hostel_change.manager_approved' => 'Hostel Change Manager Approved',
                                                 'hostel_change.manager_rejected' => 'Hostel Change Manager Rejected',
                                                 'hostel_change.admin_approved' => 'Hostel Change Admin Approved',
                                                 'hostel_change.admin_rejected' => 'Hostel Change Admin Rejected',
+                                                'asset.created' => 'Addon: Asset Created',
+                                                'asset.issue_reported' => 'Addon: Asset Issue Reported',
+                                                'asset.movement_requested' => 'Addon: Movement Requested',
+                                                'asset.movement_receiving_decision' => 'Addon: Receiving Manager Decision',
+                                                'asset.movement_approved' => 'Addon: Admin Approved Movement',
+                                                'asset.movement_rejected' => 'Addon: Admin Rejected Movement',
+                                                'asset.subscription.created' => 'Addon: Subscription Created',
+                                                'asset.subscription.updated' => 'Addon: Subscription Updated',
+                                                'asset.subscription.deleted' => 'Addon: Subscription Deleted',
+                                                'asset.subscription.expiry_alert' => 'Addon: Subscription Expiry Alert',
+                                                'addon.activated' => 'Addon Activated',
+                                                'addon.deactivated' => 'Addon Deactivated',
                                                 'system.webhook_test' => 'Webhook Test Event',
                                             ])
                                             ->columns(2),
@@ -564,6 +608,33 @@ class SystemSettings extends Page
                                         Forms\Components\Placeholder::make('api_access_key_copy')
                                             ->label('Quick Copy')
                                             ->content(new HtmlString('<button type="button" onclick="(function(){const i=document.querySelector(\'input[name=&quot;data[api_access_key]&quot;]\'); if(!i||!i.value){alert(\'No API key available.\');return;} navigator.clipboard.writeText(i.value).then(()=>alert(\'API key copied.\')).catch(()=>alert(\'Copy failed. Please copy manually.\'));})();" class="fi-btn fi-btn-size-sm fi-color-primary fi-btn-color-primary fi-ac-action fi-ac-btn-action">Copy API Key</button>')),
+                                    ]),
+                            ]),
+                        Forms\Components\Tabs\Tab::make('Cron / Scheduler')
+                            ->icon('heroicon-m-clock')
+                            ->visible(fn (): bool => Addon::isActive('asset-management'))
+                            ->schema([
+                                Forms\Components\Section::make('Addon Scheduler Setup')
+                                    ->description('Use these cron entries on any hosting provider to keep addon notifications and scheduled tasks running.')
+                                    ->schema([
+                                        Forms\Components\Placeholder::make('cron_status')
+                                            ->label('Addon Status')
+                                            ->content('Asset Management addon is active. Scheduler setup is available.'),
+                                        Forms\Components\Placeholder::make('cron_command_every_minute')
+                                            ->label('Recommended Cron (every minute)')
+                                            ->content(new HtmlString('<code>* * * * * ' . $this->cronPhpBinary() . ' ' . base_path('artisan') . ' schedule:run >> /dev/null 2>&1</code>')),
+                                        Forms\Components\Placeholder::make('cron_command_direct_daily')
+                                            ->label('Fallback Direct Cron (daily 8AM)')
+                                            ->content(new HtmlString('<code>0 8 * * * ' . $this->cronPhpBinary() . ' ' . base_path('artisan') . ' subscriptions:notify-expiring >> /dev/null 2>&1</code>')),
+                                        Forms\Components\Placeholder::make('cron_help')
+                                            ->content(new HtmlString(
+                                                '<ul style="margin-left:1rem; list-style:disc;">'
+                                                . '<li><strong>cPanel:</strong> Cron Jobs > add the recommended command.</li>'
+                                                . '<li><strong>Plesk:</strong> Scheduled Tasks > Run a command.</li>'
+                                                . '<li><strong>VPS/Dedicated:</strong> add entry via <code>crontab -e</code>.</li>'
+                                                . '<li><strong>Windows Task Scheduler:</strong> run <code>php artisan schedule:run</code> every minute.</li>'
+                                                . '</ul>'
+                                            )),
                                     ]),
                             ]),
 
@@ -641,7 +712,7 @@ class SystemSettings extends Page
                     return null;
                 }
 
-                if (!in_array($type, ['text', 'email', 'tel', 'number', 'date'], true)) {
+                if (!in_array($type, ['text', 'email', 'tel', 'number', 'date', 'upload'], true)) {
                     $type = 'text';
                 }
 
@@ -735,6 +806,12 @@ class SystemSettings extends Page
             ->send();
     }
 
+    private function cronPhpBinary(): string
+    {
+        $binary = trim((string) PHP_BINARY);
+        return $binary !== '' ? $binary : 'php';
+    }
+
     private function updateEnvironmentFile(array $data): void
     {
         $envPath = base_path('.env');
@@ -748,15 +825,24 @@ class SystemSettings extends Page
         // Mapping of form fields to .env variables
         $envMappings = [
             'app_name' => 'APP_NAME',
-            'app_email' => 'MAIL_FROM_ADDRESS',
             'system_currency' => 'APP_CURRENCY',
             'booking_period_type' => 'BOOKING_PERIOD_TYPE',
+            'mail_mailer' => 'MAIL_MAILER',
             'smtp_host' => 'MAIL_HOST',
             'smtp_port' => 'MAIL_PORT',
             'smtp_username' => 'MAIL_USERNAME',
             'smtp_password' => 'MAIL_PASSWORD',
             'smtp_encryption' => 'MAIL_ENCRYPTION',
+            'smtp_from_email' => 'MAIL_FROM_ADDRESS',
+            'smtp_from_name' => 'MAIL_FROM_NAME',
         ];
+
+        if (trim((string) ($data['smtp_from_email'] ?? '')) === '') {
+            $data['smtp_from_email'] = (string) ($data['app_email'] ?? '');
+        }
+        if (trim((string) ($data['smtp_from_name'] ?? '')) === '') {
+            $data['smtp_from_name'] = (string) ($data['app_name'] ?? '');
+        }
 
         foreach ($envMappings as $formKey => $envKey) {
             if (isset($data[$formKey])) {
@@ -767,11 +853,18 @@ class SystemSettings extends Page
 
         file_put_contents($envPath, $envContent);
 
+        $fromEmail = trim((string) ($data['smtp_from_email'] ?? ''));
+        $fromName = trim((string) ($data['smtp_from_name'] ?? ''));
+        $resolvedFromEmail = $fromEmail !== '' ? $fromEmail : (string) ($data['app_email'] ?? config('mail.from.address'));
+        $resolvedFromName = $fromName !== '' ? $fromName : (string) ($data['app_name'] ?? config('mail.from.name'));
+
         // Update runtime config
         Config::set('app.name', $data['app_name'] ?? config('app.name'));
         Config::set('app.currency', $data['system_currency'] ?? config('app.currency'));
         Config::set('app.booking_period_type', $data['booking_period_type'] ?? config('app.booking_period_type'));
-        Config::set('mail.from.address', $data['app_email'] ?? config('mail.from.address'));
+        Config::set('mail.from.address', $resolvedFromEmail);
+        Config::set('mail.from.name', $resolvedFromName);
+        Config::set('mail.default', $data['mail_mailer'] ?? config('mail.default'));
         Config::set('mail.mailers.smtp.host', $data['smtp_host'] ?? config('mail.mailers.smtp.host'));
         Config::set('mail.mailers.smtp.port', $data['smtp_port'] ?? config('mail.mailers.smtp.port'));
         Config::set('mail.mailers.smtp.username', $data['smtp_username'] ?? config('mail.mailers.smtp.username'));
@@ -875,6 +968,7 @@ class SystemSettings extends Page
     {
         $data = $this->form->getState();
         $to = $data['smtp_test_email'] ?? null;
+        $mailer = (string) ($data['mail_mailer'] ?? 'smtp');
 
         if (empty($to)) {
             Notification::make()
@@ -886,6 +980,19 @@ class SystemSettings extends Page
         }
 
         try {
+            Config::set('mail.default', $mailer);
+            $fromEmail = trim((string) ($data['smtp_from_email'] ?? ''));
+            $fromName = trim((string) ($data['smtp_from_name'] ?? ''));
+            Config::set('mail.from.address', $fromEmail !== '' ? $fromEmail : ($data['app_email'] ?? config('mail.from.address')));
+            Config::set('mail.from.name', $fromName !== '' ? $fromName : ($data['app_name'] ?? config('mail.from.name')));
+            if ($mailer === 'smtp') {
+                Config::set('mail.mailers.smtp.host', $data['smtp_host'] ?? config('mail.mailers.smtp.host'));
+                Config::set('mail.mailers.smtp.port', $data['smtp_port'] ?? config('mail.mailers.smtp.port'));
+                Config::set('mail.mailers.smtp.username', $data['smtp_username'] ?? config('mail.mailers.smtp.username'));
+                Config::set('mail.mailers.smtp.password', $data['smtp_password'] ?? config('mail.mailers.smtp.password'));
+                Config::set('mail.mailers.smtp.encryption', $data['smtp_encryption'] ?? config('mail.mailers.smtp.encryption'));
+            }
+
             Mail::raw('This is a test email from Hostel Management System SMTP settings.', function ($message) use ($to) {
                 $message->to($to)
                     ->subject('SMTP Test Email');
@@ -949,11 +1056,11 @@ class SystemSettings extends Page
         $ok = app(\App\Services\OutboundWebhookService::class)->dispatch('system.webhook_test', [
             'message' => 'Webhook test from admin settings',
             'actor' => auth()->user()?->email,
-        ]);
+        ], true);
 
         Notification::make()
             ->title($ok ? 'Webhook Test Sent' : 'Webhook Test Failed')
-            ->body($ok ? 'Webhook endpoint acknowledged the test event.' : 'Webhook request failed. Check URL/secret and logs.')
+            ->body($ok ? 'Webhook endpoint acknowledged the test event.' : 'Webhook request failed. Check URL and logs.')
             ->color($ok ? 'success' : 'danger')
             ->send();
     }
@@ -963,28 +1070,29 @@ class SystemSettings extends Page
         try {
             $results = app(PaymentGatewayDiagnosticsService::class)->testConfiguredGateways();
 
-            $lines = [];
-            $allReady = true;
+            $working = [];
+            $issues = [];
 
             foreach ($results as $name => $result) {
-                $status = ($result['initialization_ready'] && $result['verification_ready']) ? 'READY' : 'NOT READY';
-                if ($status !== 'READY' && $result['active']) {
-                    $allReady = false;
+                $isReady = (bool) ($result['initialization_ready'] && $result['verification_ready']);
+                if ($isReady) {
+                    $working[] = strtoupper((string) $name);
+                    continue;
                 }
 
-                $lines[] = sprintf(
-                    '%s: %s (init: %s, verify: %s) - %s',
-                    strtoupper($name),
-                    $status,
-                    $result['initialization_ready'] ? 'ok' : 'fail',
-                    $result['verification_ready'] ? 'ok' : 'fail',
-                    $result['message']
-                );
+                $issues[] = strtoupper((string) $name) . ': ' . ($result['message'] ?? 'Configuration issue');
             }
+
+            $allReady = count($issues) === 0;
+
+            $summary = [
+                'Working: ' . (!empty($working) ? implode(', ', $working) : 'None'),
+                'Needs attention: ' . (!empty($issues) ? implode(' | ', $issues) : 'None'),
+            ];
 
             Notification::make()
                 ->title($allReady ? 'Gateway Diagnostics Passed' : 'Gateway Diagnostics Found Issues')
-                ->body(implode("\n", $lines))
+                ->body(implode("\n", $summary))
                 ->color($allReady ? 'success' : 'warning')
                 ->send();
         } catch (Throwable $e) {

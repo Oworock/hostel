@@ -24,6 +24,10 @@ class ApiDocumentationController extends Controller
             ['method' => 'POST', 'path' => '/api/v1/students', 'description' => 'Create student'],
             ['method' => 'PATCH', 'path' => '/api/v1/students/{student}', 'description' => 'Update student'],
             ['method' => 'DELETE', 'path' => '/api/v1/students/{student}', 'description' => 'Delete student'],
+            ['method' => 'GET', 'path' => '/api/v1/managers', 'description' => 'List managers (paginated)'],
+            ['method' => 'POST', 'path' => '/api/v1/managers', 'description' => 'Create manager'],
+            ['method' => 'PATCH', 'path' => '/api/v1/managers/{manager}', 'description' => 'Update manager'],
+            ['method' => 'DELETE', 'path' => '/api/v1/managers/{manager}', 'description' => 'Delete manager'],
             ['method' => 'GET', 'path' => '/api/v1/bookings', 'description' => 'List bookings (paginated)'],
             ['method' => 'POST', 'path' => '/api/v1/bookings', 'description' => 'Create booking'],
             ['method' => 'PATCH', 'path' => '/api/v1/bookings/{booking}', 'description' => 'Update booking'],
@@ -32,9 +36,27 @@ class ApiDocumentationController extends Controller
             ['method' => 'PATCH', 'path' => '/api/v1/payments/{payment}', 'description' => 'Update payment'],
             ['method' => 'GET', 'path' => '/api/v1/complaints', 'description' => 'List complaints (paginated)'],
             ['method' => 'PATCH', 'path' => '/api/v1/complaints/{complaint}', 'description' => 'Update complaint'],
+            ['method' => 'GET', 'path' => '/api/v1/assets', 'description' => 'List addon assets (paginated)'],
+            ['method' => 'POST', 'path' => '/api/v1/assets', 'description' => 'Create addon asset'],
+            ['method' => 'PATCH', 'path' => '/api/v1/assets/{asset}', 'description' => 'Update addon asset'],
+            ['method' => 'DELETE', 'path' => '/api/v1/assets/{asset}', 'description' => 'Delete addon asset'],
+            ['method' => 'GET', 'path' => '/api/v1/asset-issues', 'description' => 'List addon asset issues'],
+            ['method' => 'PATCH', 'path' => '/api/v1/asset-issues/{assetIssue}', 'description' => 'Update addon asset issue'],
+            ['method' => 'GET', 'path' => '/api/v1/asset-movements', 'description' => 'List addon asset movements'],
+            ['method' => 'PATCH', 'path' => '/api/v1/asset-movements/{assetMovement}', 'description' => 'Update addon asset movement'],
+            ['method' => 'GET', 'path' => '/api/v1/asset-subscriptions', 'description' => 'List addon intangible assets'],
+            ['method' => 'POST', 'path' => '/api/v1/asset-subscriptions', 'description' => 'Create addon intangible asset'],
+            ['method' => 'PATCH', 'path' => '/api/v1/asset-subscriptions/{assetSubscription}', 'description' => 'Update addon intangible asset'],
+            ['method' => 'DELETE', 'path' => '/api/v1/asset-subscriptions/{assetSubscription}', 'description' => 'Delete addon intangible asset'],
         ];
 
         $webhookEvents = [
+            'hostel.created',
+            'hostel.updated',
+            'hostel.deleted',
+            'room.created',
+            'room.updated',
+            'room.deleted',
             'booking.created',
             'booking.cancelled',
             'booking.manager_approved',
@@ -48,6 +70,18 @@ class ApiDocumentationController extends Controller
             'hostel_change.manager_rejected',
             'hostel_change.admin_approved',
             'hostel_change.admin_rejected',
+            'asset.created',
+            'asset.issue_reported',
+            'asset.movement_requested',
+            'asset.movement_receiving_decision',
+            'asset.movement_approved',
+            'asset.movement_rejected',
+            'asset.subscription.created',
+            'asset.subscription.updated',
+            'asset.subscription.deleted',
+            'asset.subscription.expiry_alert',
+            'addon.activated',
+            'addon.deactivated',
             'system.webhook_test',
         ];
 
@@ -137,6 +171,14 @@ class ApiDocumentationController extends Controller
                     'patch' => ['summary' => 'Update student', 'responses' => ['200' => ['description' => 'OK']]],
                     'delete' => ['summary' => 'Delete student', 'responses' => ['200' => ['description' => 'OK']]],
                 ],
+                '/api/v1/managers' => [
+                    'get' => ['summary' => 'List managers', 'responses' => ['200' => ['description' => 'OK']]],
+                    'post' => ['summary' => 'Create manager', 'responses' => ['201' => ['description' => 'Created']]],
+                ],
+                '/api/v1/managers/{manager}' => [
+                    'patch' => ['summary' => 'Update manager', 'responses' => ['200' => ['description' => 'OK']]],
+                    'delete' => ['summary' => 'Delete manager', 'responses' => ['200' => ['description' => 'OK']]],
+                ],
                 '/api/v1/bookings' => [
                     'get' => ['summary' => 'List bookings', 'responses' => ['200' => ['description' => 'OK']]],
                     'post' => ['summary' => 'Create booking', 'responses' => ['201' => ['description' => 'Created']]],
@@ -156,6 +198,34 @@ class ApiDocumentationController extends Controller
                 ],
                 '/api/v1/complaints/{complaint}' => [
                     'patch' => ['summary' => 'Update complaint', 'responses' => ['200' => ['description' => 'OK']]],
+                ],
+                '/api/v1/assets' => [
+                    'get' => ['summary' => 'List addon assets', 'responses' => ['200' => ['description' => 'OK']]],
+                    'post' => ['summary' => 'Create addon asset', 'responses' => ['201' => ['description' => 'Created']]],
+                ],
+                '/api/v1/assets/{asset}' => [
+                    'patch' => ['summary' => 'Update addon asset', 'responses' => ['200' => ['description' => 'OK']]],
+                    'delete' => ['summary' => 'Delete addon asset', 'responses' => ['200' => ['description' => 'OK']]],
+                ],
+                '/api/v1/asset-issues' => [
+                    'get' => ['summary' => 'List addon asset issues', 'responses' => ['200' => ['description' => 'OK']]],
+                ],
+                '/api/v1/asset-issues/{assetIssue}' => [
+                    'patch' => ['summary' => 'Update addon asset issue', 'responses' => ['200' => ['description' => 'OK']]],
+                ],
+                '/api/v1/asset-movements' => [
+                    'get' => ['summary' => 'List addon asset movements', 'responses' => ['200' => ['description' => 'OK']]],
+                ],
+                '/api/v1/asset-movements/{assetMovement}' => [
+                    'patch' => ['summary' => 'Update addon asset movement', 'responses' => ['200' => ['description' => 'OK']]],
+                ],
+                '/api/v1/asset-subscriptions' => [
+                    'get' => ['summary' => 'List addon intangible assets', 'responses' => ['200' => ['description' => 'OK']]],
+                    'post' => ['summary' => 'Create addon intangible asset', 'responses' => ['201' => ['description' => 'Created']]],
+                ],
+                '/api/v1/asset-subscriptions/{assetSubscription}' => [
+                    'patch' => ['summary' => 'Update addon intangible asset', 'responses' => ['200' => ['description' => 'OK']]],
+                    'delete' => ['summary' => 'Delete addon intangible asset', 'responses' => ['200' => ['description' => 'OK']]],
                 ],
             ],
         ];

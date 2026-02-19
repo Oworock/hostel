@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\WelcomeContentResource\Pages;
 
 use App\Filament\Resources\WelcomeContentResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Pages\BaseCreateRecord as CreateRecord;
 
 class CreateWelcomeContent extends CreateRecord
 {

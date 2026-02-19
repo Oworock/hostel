@@ -4,7 +4,7 @@ namespace App\Filament\Resources\SmsProviderResource\Pages;
 
 use App\Filament\Resources\SmsProviderResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\Pages\BaseEditRecord as EditRecord;
 
 class EditSmsProvider extends EditRecord
 {

@@ -115,11 +115,7 @@ class BookingResource extends Resource
                     ]),
                 
                 Tables\Columns\TextColumn::make('total_amount')
-                    ->formatStateUsing(function ($state) {
-                        $currency = config('app.currency', 'NGN');
-                        $currencySymbol = self::getCurrencySymbol($currency);
-                        return $currencySymbol . number_format($state, 2);
-                    })
+                    ->formatStateUsing(fn ($state) => formatCurrency((float) $state))
                     ->sortable(),
                 
                 Tables\Columns\TextColumn::make('created_at')
@@ -188,18 +184,4 @@ class BookingResource extends Resource
         ];
     }
     
-    private static function getCurrencySymbol(string $code): string
-    {
-        $symbols = [
-            'NGN' => '₦',
-            'USD' => '$',
-            'EUR' => '€',
-            'GBP' => '£',
-            'JPY' => '¥',
-            'INR' => '₹',
-            'ZAR' => 'R',
-        ];
-        
-        return $symbols[$code] ?? $code;
-    }
 }

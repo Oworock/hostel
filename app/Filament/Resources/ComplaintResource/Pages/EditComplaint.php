@@ -4,7 +4,7 @@ namespace App\Filament\Resources\ComplaintResource\Pages;
 
 use App\Filament\Resources\ComplaintResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\Pages\BaseEditRecord as EditRecord;
 
 class EditComplaint extends EditRecord
 {

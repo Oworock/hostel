@@ -13,6 +13,10 @@ class ListWelcomeContents extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('manage_sections')
+                ->label('Manage Welcome Sections')
+                ->icon('heroicon-o-rectangle-stack')
+                ->url(route('filament.admin.resources.welcome-sections.index')),
             Actions\CreateAction::make(),
         ];
     }

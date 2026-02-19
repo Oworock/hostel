@@ -14,6 +14,11 @@
     $occupancy = method_exists($room, 'getOccupancyPercentage') ? $room->getOccupancyPercentage() : 0;
     $isAvailable = (bool) ($room->is_available ?? false);
     $period = $periodLabel ?: ('per ' . getBookingPeriodLabel());
+    $formattedPrice = formatCompactNumber((float) $room->price_per_month, 2);
+    $priceLength = strlen(str_replace([',', '.'], '', $formattedPrice));
+    $priceSizeClass = $priceLength >= 10
+        ? 'text-xl sm:text-2xl'
+        : ($priceLength >= 8 ? 'text-2xl sm:text-3xl' : 'text-3xl');
     $locationText = collect([
         $room->hostel->name ?? null,
         $room->hostel->address ?? null,
@@ -37,7 +42,7 @@
         <div class="grid grid-cols-1 gap-3 mb-6 py-4 border-y border-gray-200 dark:border-slate-700 text-slate-700 dark:text-slate-200">
             <div class="flex items-center justify-between"><span>Capacity:</span><strong>{{ $room->capacity }} beds</strong></div>
             <div class="flex items-center justify-between"><span>Occupancy:</span><strong>{{ $occupancy }}%</strong></div>
-            <div class="flex items-center justify-between"><span>Price:</span><strong>{{ getCurrencySymbol() }}{{ number_format($room->price_per_month, 2) }}/{{ getBookingPeriodLabel() }}</strong></div>
+            <div class="flex items-center justify-between"><span>Price:</span><strong class="text-right">{{ getCurrencySymbol() }}{{ $formattedPrice }}/{{ getBookingPeriodLabel() }}</strong></div>
         </div>
 
         @if(isset($actions))
@@ -65,7 +70,7 @@
                     <p class="text-gray-600 dark:text-slate-300">{{ ucfirst($room->type) }} Room</p>
                 </div>
                 <div class="text-right">
-                    <span class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ getCurrencySymbol() }}{{ number_format($room->price_per_month, 2) }}</span>
+                    <span class="{{ $priceSizeClass }} font-bold text-blue-600 dark:text-blue-400 leading-tight break-words">{{ getCurrencySymbol() }}{{ $formattedPrice }}</span>
                     <p class="text-xs text-gray-500 dark:text-slate-400">{{ $period }}</p>
                 </div>
             </div>

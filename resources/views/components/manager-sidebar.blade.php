@@ -79,6 +79,28 @@
             </svg>
             <span class="menu-label">Room Change</span>
         </a>
+
+        @if(\App\Models\Addon::isActive('asset-management'))
+            <a href="{{ route('manager.assets.index') }}" class="{{ $base }} {{ request()->routeIs('manager.assets.*') ? $active : $idle }}">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4m16 0v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7m16 0l-2-3H6L4 7"></path>
+                </svg>
+                <span class="menu-label">Assets</span>
+            </a>
+            <a href="{{ route('manager.assets.create') }}" class="menu-card menu-subitem flex items-center gap-3 ml-8 text-sm font-semibold {{ request()->routeIs('manager.assets.create') ? 'is-active text-blue-700 dark:text-blue-200' : 'text-slate-600 dark:text-slate-300' }} transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <span class="menu-label">Add Asset</span>
+            </a>
+        @endif
+
+        <a href="{{ route('manager.files.index') }}" class="{{ $base }} {{ request()->routeIs('manager.files.*') ? $active : $idle }}">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h5l2 2h7a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"></path>
+            </svg>
+            <span class="menu-label">File Manager</span>
+        </a>
     </div>
 
     <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/50 p-3">

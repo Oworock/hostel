@@ -32,6 +32,9 @@ class AdminStatsOverview extends BaseWidget
         $currency = get_setting('system_currency', 'NGN');
         $currencySymbol = $this->getCurrencySymbol($currency);
 
+        $revenueCompact = $currencySymbol . formatCompactNumber((float) $totalRevenue, 2);
+        $revenueFull = $currencySymbol . number_format((float) $totalRevenue, 2);
+
         return [
             Stat::make('Total Hostels', $totalHostels)
                 ->description('Active hostel facilities')
@@ -53,8 +56,8 @@ class AdminStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color('success'),
             
-            Stat::make('Total Revenue', $currencySymbol . number_format($totalRevenue, 2))
-                ->description('From all paid transactions')
+            Stat::make('Total Revenue', $revenueCompact)
+                ->description('Full amount: ' . $revenueFull)
                 ->descriptionIcon('heroicon-m-wallet')
                 ->color('success'),
             

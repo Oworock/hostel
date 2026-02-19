@@ -13,14 +13,18 @@ use App\Http\Controllers\Student\PaymentController as StudentPaymentController;
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Manager\HostelChangeRequestController as ManagerHostelChangeRequestController;
 use App\Http\Controllers\Manager\RoomChangeRequestController as ManagerRoomChangeRequestController;
+use App\Http\Controllers\Manager\AssetIssueController as ManagerAssetIssueController;
 use App\Http\Controllers\Api\ApiDocumentationController;
 use App\Http\Controllers\PublicRoomController;
 use App\Http\Controllers\InstallController;
+use App\Http\Controllers\FileManagerController;
 use App\Http\Controllers\UserNotificationController;
 use App\Http\Controllers\Student\RoomChangeRequestController as StudentRoomChangeRequestController;
+use App\Http\Controllers\Admin\BackupController;
 use App\Models\SystemSetting;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Fortify\Features;
 
 Route::get('/install', [InstallController::class, 'index'])->name('install.index');
 Route::get('/install/setup', [InstallController::class, 'setup'])->name('install.setup');
@@ -59,11 +63,34 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/notifications/mark-all-read', [UserNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     Route::post('/notifications/{notificationId}/read', [UserNotificationController::class, 'markAsRead'])->name('notifications.read');
 
+    Route::get('/settings/profile', fn () => view('settings.profile'))->name('profile.edit');
+    Route::get('/settings/password', fn () => view('settings.password'))->name('user-password.edit');
+    Route::get('/settings/appearance', fn () => view('settings.appearance'))->name('appearance.edit');
+    Route::get('/settings/two-factor', function () {
+        abort_unless(Features::canManageTwoFactorAuthentication(), 403);
+
+        return view('settings.two-factor');
+    })->middleware('password.confirm')->name('two-factor.show');
+
     // Admin routes
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
         Route::get('/api-docs', [ApiDocumentationController::class, 'index'])->name('api.docs');
         Route::get('/api-docs/openapi.json', [ApiDocumentationController::class, 'openApi'])->name('api.docs.openapi');
+        Route::get('/addons/development-guide', function () {
+            abort_unless(file_exists(base_path('ADDON_DEVELOPMENT_GUIDE.html')), 404);
+            return response()->file(base_path('ADDON_DEVELOPMENT_GUIDE.html'));
+        })->name('addons.development-guide');
+        Route::get('/files', [FileManagerController::class, 'index'])->name('files.index');
+        Route::post('/files', [FileManagerController::class, 'store'])->name('files.store');
+        Route::delete('/files/bulk-delete', [FileManagerController::class, 'bulkDestroy'])->name('files.bulk-destroy');
+        Route::get('/files/{uploadedFile}', [FileManagerController::class, 'show'])->name('files.show');
+        Route::delete('/files/{uploadedFile}', [FileManagerController::class, 'destroy'])->name('files.destroy');
+        Route::delete('/files/system-image/delete', [FileManagerController::class, 'destroySystemImage'])->name('files.system-image.destroy');
+        Route::get('/backups/download/{file}', [BackupController::class, 'download'])->name('backups.download');
+        Route::delete('/backups/{file}', [BackupController::class, 'destroy'])->name('backups.destroy');
+        Route::post('/backups/restore-database/{file}', [BackupController::class, 'restoreDatabase'])->name('backups.restore-database');
+        Route::post('/backups/restore-files/{file}', [BackupController::class, 'restoreFiles'])->name('backups.restore-files');
     });
 
     // Manager routes
@@ -87,6 +114,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('room-change-requests/{roomChangeRequest}/reject', [ManagerRoomChangeRequestController::class, 'reject'])->name('room-change.reject');
         Route::get('profile', [ManagerProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [ManagerProfileController::class, 'update'])->name('profile.update');
+        Route::get('assets', [ManagerAssetIssueController::class, 'index'])
+            ->middleware('addon.active:asset-management')
+            ->name('assets.index');
+        Route::get('assets/create', [ManagerAssetIssueController::class, 'createAsset'])
+            ->middleware('addon.active:asset-management')
+            ->name('assets.create');
+        Route::post('assets', [ManagerAssetIssueController::class, 'storeAsset'])
+            ->middleware('addon.active:asset-management')
+            ->name('assets.store');
+        Route::post('assets/{asset}/issues', [ManagerAssetIssueController::class, 'store'])
+            ->middleware('addon.active:asset-management')
+            ->name('assets.issues.store');
+        Route::post('assets/{asset}/movements', [ManagerAssetIssueController::class, 'requestMovement'])
+            ->middleware('addon.active:asset-management')
+            ->name('assets.movements.request');
+        Route::post('asset-movements/{movement}/respond', [ManagerAssetIssueController::class, 'respondMovement'])
+            ->middleware('addon.active:asset-management')
+            ->name('assets.movements.respond');
+        Route::get('files', [FileManagerController::class, 'index'])->name('files.index');
+        Route::post('files', [FileManagerController::class, 'store'])->name('files.store');
+        Route::delete('files/bulk-delete', [FileManagerController::class, 'bulkDestroy'])->name('files.bulk-destroy');
+        Route::get('files/{uploadedFile}', [FileManagerController::class, 'show'])->name('files.show');
+        Route::delete('files/{uploadedFile}', [FileManagerController::class, 'destroy'])->name('files.destroy');
     });
 
     // Student routes

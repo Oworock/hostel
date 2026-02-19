@@ -50,3 +50,42 @@ if (! function_exists('getBookingPriceSuffix')) {
         return '/'.getBookingPeriodLabel(false);
     }
 }
+
+if (! function_exists('formatCompactNumber')) {
+    function formatCompactNumber(float|int $value, int $precision = 1): string
+    {
+        $abs = abs((float) $value);
+        $suffixes = [
+            1_000_000_000_000 => 'T',
+            1_000_000_000 => 'B',
+            1_000_000 => 'M',
+            1_000 => 'K',
+        ];
+
+        foreach ($suffixes as $threshold => $suffix) {
+            if ($abs >= $threshold) {
+                $scaled = $value / $threshold;
+                $formatted = number_format($scaled, $precision);
+                $formatted = rtrim(rtrim($formatted, '0'), '.');
+                return $formatted . $suffix;
+            }
+        }
+
+        return number_format((float) $value, 2);
+    }
+}
+
+if (! function_exists('formatCurrency')) {
+    function formatCurrency(float|int|string|null $value, bool $compact = true, int $precision = 2): string
+    {
+        if ($value === null || $value === '') {
+            return getCurrencySymbol() . ($compact ? '0' : '0.00');
+        }
+
+        $amount = (float) $value;
+
+        return getCurrencySymbol() . ($compact
+            ? formatCompactNumber($amount, $precision)
+            : number_format($amount, 2));
+    }
+}

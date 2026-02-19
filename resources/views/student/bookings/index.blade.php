@@ -50,7 +50,7 @@
                         </div>
                         <div>
                             <dt class="text-sm text-gray-600 dark:text-slate-300">Total Amount</dt>
-                            <dd class="font-medium text-gray-900 dark:text-slate-100">{{ getCurrencySymbol() }}{{ number_format($booking->total_amount, 2) }}</dd>
+                            <dd class="font-medium text-gray-900 dark:text-slate-100">{{ formatCurrency($booking->total_amount) }}</dd>
                         </div>
                     </dl>
 

@@ -4,7 +4,7 @@ namespace App\Filament\Resources\SmsProviderResource\Pages;
 
 use App\Filament\Resources\SmsProviderResource;
 use Filament\Actions;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Pages\BaseCreateRecord as CreateRecord;
 
 class CreateSmsProvider extends CreateRecord
 {

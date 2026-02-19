@@ -137,11 +137,7 @@ class RoomResource extends Resource
                     ->label('Beds'),
                 
                 Tables\Columns\TextColumn::make('price_per_month')
-                    ->formatStateUsing(function ($state) {
-                        $currency = config('app.currency', 'NGN');
-                        $currencySymbol = self::getCurrencySymbol($currency);
-                        return $currencySymbol . number_format($state, 2);
-                    })
+                    ->formatStateUsing(fn ($state) => formatCurrency((float) $state))
                     ->sortable(),
                 
                 Tables\Columns\BadgeColumn::make('is_available')
@@ -197,18 +193,4 @@ class RoomResource extends Resource
         ];
     }
     
-    private static function getCurrencySymbol(string $code): string
-    {
-        $symbols = [
-            'NGN' => '₦',
-            'USD' => '$',
-            'EUR' => '€',
-            'GBP' => '£',
-            'JPY' => '¥',
-            'INR' => '₹',
-            'ZAR' => 'R',
-        ];
-        
-        return $symbols[$code] ?? $code;
-    }
 }

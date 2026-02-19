@@ -4,7 +4,7 @@ namespace App\Filament\Resources\AcademicSessionResource\Pages;
 
 use App\Filament\Resources\AcademicSessionResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\Pages\BaseEditRecord as EditRecord;
 
 class EditAcademicSession extends EditRecord
 {

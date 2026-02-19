@@ -45,7 +45,7 @@ class WelcomeContentResource extends Resource
                             ->native(false)
                             ->disabled(fn (string $operation): bool => $operation === 'edit')
                             ->unique(SystemSetting::class, 'key', ignoreRecord: true)
-                            ->helperText('Global header/footer keys apply across the system. Welcome body keys only affect the landing page.'),
+                            ->helperText('Global header and footer keys apply across the system.'),
                     ]),
                 Forms\Components\Section::make('Value Editor')
                     ->schema([
@@ -144,7 +144,7 @@ class WelcomeContentResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return true;
     }
 
     public static function canViewAny(): bool
@@ -174,7 +174,9 @@ class WelcomeContentResource extends Resource
     {
         return [
             // Global header (site-wide)
-            'global_header_logo' => ['label' => 'Global Header: Logo', 'input' => 'logo', 'type' => 'string'],
+            'global_header_logo' => ['label' => 'Global Header: Logo (Legacy Fallback)', 'input' => 'logo', 'type' => 'string'],
+            'global_header_logo_light' => ['label' => 'Global Header: Logo (Light Mode)', 'input' => 'logo', 'type' => 'string'],
+            'global_header_logo_dark' => ['label' => 'Global Header: Logo (Dark Mode)', 'input' => 'logo', 'type' => 'string'],
             'global_header_favicon' => ['label' => 'Global Header: Favicon', 'input' => 'logo', 'type' => 'string'],
             'global_header_brand' => ['label' => 'Global Header: Brand Name', 'input' => 'text', 'type' => 'string'],
             'global_header_notice_html' => ['label' => 'Global Header: Notice HTML', 'input' => 'html', 'type' => 'text'],
@@ -187,14 +189,6 @@ class WelcomeContentResource extends Resource
             'global_header_secondary_button_text' => ['label' => 'Global Header: Guest Secondary Button Text', 'input' => 'text', 'type' => 'string'],
             'global_header_secondary_button_url' => ['label' => 'Global Header: Guest Secondary Button URL', 'input' => 'text', 'type' => 'string'],
             'global_header_authenticated_cta_text' => ['label' => 'Global Header: Authenticated CTA Text', 'input' => 'text', 'type' => 'string'],
-
-            // Welcome body (welcome page only)
-            'welcome_body_student_title' => ['label' => 'Welcome Body: Student Card Title', 'input' => 'text', 'type' => 'string'],
-            'welcome_body_student_description' => ['label' => 'Welcome Body: Student Card Description', 'input' => 'html', 'type' => 'text'],
-            'welcome_body_manager_title' => ['label' => 'Welcome Body: Manager Card Title', 'input' => 'text', 'type' => 'string'],
-            'welcome_body_manager_description' => ['label' => 'Welcome Body: Manager Card Description', 'input' => 'html', 'type' => 'text'],
-            'welcome_body_admin_title' => ['label' => 'Welcome Body: Admin Card Title', 'input' => 'text', 'type' => 'string'],
-            'welcome_body_admin_description' => ['label' => 'Welcome Body: Admin Card Description', 'input' => 'html', 'type' => 'text'],
 
             // Global footer (site-wide)
             'global_footer_title' => ['label' => 'Global Footer: Title', 'input' => 'text', 'type' => 'string'],
@@ -238,7 +232,7 @@ class WelcomeContentResource extends Resource
 
     public static function scopeForKey(string $key): string
     {
-        return str_starts_with($key, 'welcome_body_') ? 'Welcome Page Only' : 'Global';
+        return 'Global';
     }
 
     public static function valueFromFormData(array $data, ?string $forcedKey = null): ?string

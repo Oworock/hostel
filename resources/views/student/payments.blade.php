@@ -12,11 +12,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-white dark:bg-slate-900 rounded-lg shadow-md border border-transparent dark:border-slate-800 p-6">
                 <p class="text-slate-600 dark:text-slate-300 text-sm">Total Paid</p>
-                <p class="text-3xl font-bold text-green-600 dark:text-green-400">₦{{ number_format($totalPaid, 2) }}</p>
+                <p class="text-3xl font-bold text-green-600 dark:text-green-400">{{ formatCurrency($totalPaid) }}</p>
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-lg shadow-md border border-transparent dark:border-slate-800 p-6">
                 <p class="text-slate-600 dark:text-slate-300 text-sm">Outstanding Balance</p>
-                <p class="text-3xl font-bold text-red-600 dark:text-red-400">₦{{ number_format($totalOwing, 2) }}</p>
+                <p class="text-3xl font-bold text-red-600 dark:text-red-400">{{ formatCurrency($totalOwing) }}</p>
             </div>
         </div>
 
@@ -28,7 +28,7 @@
                         <div class="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-4 flex items-center justify-between gap-3">
                             <div>
                                 <p class="font-semibold text-slate-900 dark:text-slate-100">{{ $payment->booking->room->name ?? $payment->booking->room->room_number ?? 'Booking #' . $payment->booking_id }}</p>
-                                <p class="text-sm text-slate-600 dark:text-slate-300">Amount: ₦{{ number_format($payment->amount, 2) }}</p>
+                                <p class="text-sm text-slate-600 dark:text-slate-300">Amount: {{ formatCurrency($payment->amount) }}</p>
                             </div>
                             <form action="{{ route('student.payments.complete', $payment->id) }}" method="POST">
                                 @csrf
@@ -62,7 +62,7 @@
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{{ $payment->payment_date?->format('M d, Y') ?? 'Pending' }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-900 dark:text-slate-100">{{ $payment->booking->room->name ?? $payment->booking->room->room_number ?? 'Booking #' . $payment->booking_id }}</td>
-                                <td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-slate-100">₦{{ number_format($payment->amount, 2) }}</td>
+                                <td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-slate-100">{{ formatCurrency($payment->amount) }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
                                     @if($payment->payment_method)
                                         {{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }}
