@@ -1,23 +1,23 @@
-<x-dashboard-layout title="Bookings">
+<x-dashboard-layout :title="__('Bookings')">
     <x-slot name="sidebar">
         @include('components.manager-sidebar')
     </x-slot>
 
     <div class="uniform-page">
-        <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Bookings</h1>
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">{{ __('Bookings') }}</h1>
 
         <div class="uniform-card overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full">
                     <thead class="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Student</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Room</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Check-in</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Check-out</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Status</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Amount</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Action</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __('Student') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __('Room') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __('Check-in') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __('Check-out') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __("Status") }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __("Amount") }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __('Action') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
@@ -39,12 +39,12 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-slate-100">{{ formatCurrency($booking->total_amount) }}</td>
                                 <td class="px-6 py-4 text-sm">
-                                    <a href="{{ route('manager.bookings.show', $booking) }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">View</a>
+                                    <a href="{{ route('manager.bookings.show', $booking) }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">{{ __('View') }}</a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-6 text-center text-slate-600 dark:text-slate-300">No bookings found.</td>
+                                <td colspan="7" class="px-6 py-6 text-center text-slate-600 dark:text-slate-300">{{ __('No bookings found.') }}</td>
                             </tr>
                         @endforelse
                     </tbody>

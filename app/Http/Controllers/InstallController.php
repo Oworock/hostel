@@ -9,10 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Symfony\Component\Process\Process;
 
 class InstallController extends Controller
 {
+    private ?string $lastDatabaseError = null;
+
     public function index()
     {
         if ($this->isInstalled()) {
@@ -78,11 +79,12 @@ class InstallController extends Controller
         if (!$this->canConnectToDatabase()) {
             return back()
                 ->withInput($request->except(['db_password', 'admin_password', 'admin_password_confirmation']))
-                ->withErrors(['db_database' => 'Unable to connect to the configured database. Verify host, port, database name, username and password.']);
+                ->withErrors(['db_database' => 'Unable to connect to the configured database. Verify host, port, database name, username and password. ' . $this->lastDatabaseError]);
         }
 
         try {
-            $steps = $this->runSystemPreparationCommands();
+            $this->ensureApplicationKey();
+            $steps = $this->runArtisanSetupCommands();
             $failedStep = collect($steps)->firstWhere('passed', false);
             if ($failedStep) {
                 return back()
@@ -118,12 +120,13 @@ class InstallController extends Controller
         SystemSetting::setSetting('app_phone', $data['admin_phone'] ?? '');
         $this->writeInstallLock($data['app_name'], $data['admin_email']);
         $this->markInstalledInEnv();
-        Artisan::call('optimize:clear');
-        Artisan::call('config:cache');
-        Artisan::call('route:cache');
-        Artisan::call('view:cache');
+        $warnings = $this->runPostInstallOptimizations();
+        $message = 'Installation completed successfully. Please sign in.';
+        if (!empty($warnings)) {
+            $message .= ' Optimization warnings: ' . implode(' | ', $warnings);
+        }
 
-        return redirect()->route('login')->with('success', 'Installation completed successfully. Please sign in.');
+        return redirect()->route('login')->with('success', $message);
     }
 
     private function isInstalled(): bool
@@ -152,13 +155,24 @@ class InstallController extends Controller
     {
         $envExamplePath = base_path('.env.example');
         $envPath = base_path('.env');
-        $content = file_exists($envExamplePath)
-            ? file_get_contents($envExamplePath)
-            : "APP_NAME=Hostel\nAPP_ENV=production\nAPP_KEY=\nAPP_DEBUG=false\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite\nDB_DATABASE=database/database.sqlite\n";
+        $content = file_exists($envPath)
+            ? file_get_contents($envPath)
+            : (file_exists($envExamplePath)
+                ? file_get_contents($envExamplePath)
+                : "APP_NAME=Hostel\nAPP_ENV=production\nAPP_KEY=\nAPP_DEBUG=false\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite\nDB_DATABASE=database/database.sqlite\n");
+
+        $resolvedAppKey = $this->extractEnvValue((string) $content, 'APP_KEY');
+        if ($resolvedAppKey === '') {
+            $resolvedAppKey = trim((string) config('app.key'));
+        }
+        if ($resolvedAppKey === '') {
+            $resolvedAppKey = 'base64:' . base64_encode(random_bytes(32));
+        }
 
         $map = [
             'APP_NAME' => '"' . str_replace('"', '\"', $data['app_name']) . '"',
             'APP_ENV' => 'production',
+            'APP_KEY' => $resolvedAppKey,
             'APP_DEBUG' => 'false',
             'APP_URL' => $data['app_url'],
             'APP_INSTALLED' => 'false',
@@ -180,6 +194,7 @@ class InstallController extends Controller
         }
 
         file_put_contents($envPath, $content);
+        config(['app.key' => $resolvedAppKey]);
 
         if (($data['db_connection'] ?? '') === 'sqlite') {
             $dbFile = base_path($data['db_database']);
@@ -191,6 +206,15 @@ class InstallController extends Controller
                 touch($dbFile);
             }
         }
+    }
+
+    private function extractEnvValue(string $content, string $key): string
+    {
+        if (!preg_match('/^' . preg_quote($key, '/') . '=(.*)$/m', $content, $matches)) {
+            return '';
+        }
+
+        return trim((string) ($matches[1] ?? ''), "\"' ");
     }
 
     private function markInstalledInEnv(): void
@@ -237,9 +261,11 @@ class InstallController extends Controller
     private function canConnectToDatabase(): bool
     {
         try {
+            $this->lastDatabaseError = null;
             DB::connection()->getPdo();
             return true;
         } catch (\Throwable $e) {
+            $this->lastDatabaseError = $e->getMessage();
             return false;
         }
     }
@@ -305,17 +331,6 @@ class InstallController extends Controller
             'required' => '.env writable or project root writable',
         ];
 
-        $commands = [];
-        foreach (['composer', 'npm', 'node'] as $binary) {
-            $path = $this->findBinary($binary);
-            $commands[] = [
-                'label' => "Command available: {$binary}",
-                'passed' => $path !== null,
-                'current' => $path ?? 'Not found in PATH',
-                'required' => 'Available in PATH',
-            ];
-        }
-
         return [
             'core' => [
                 [
@@ -327,65 +342,30 @@ class InstallController extends Controller
             ],
             'extensions' => $extensions,
             'permissions' => $permissions,
-            'commands' => $commands,
         ];
     }
 
     /**
      * @return array<int, array{label: string, passed: bool, message: string}>
      */
-    private function runSystemPreparationCommands(): array
+    private function runArtisanSetupCommands(): array
     {
         $steps = [];
 
-        $steps[] = $this->runShellCommand(
-            ['composer', 'install', '--no-dev', '--optimize-autoloader', '--no-interaction'],
-            'Install PHP dependencies (composer)'
-        );
-        if (!$steps[array_key_last($steps)]['passed']) {
-            return $steps;
-        }
-
-        if (file_exists(base_path('package.json'))) {
-            $steps[] = $this->runShellCommand(
-                ['npm', 'install', '--no-audit', '--no-fund'],
-                'Install frontend dependencies (npm)'
-            );
-            if (!$steps[array_key_last($steps)]['passed']) {
-                return $steps;
-            }
-
-            $steps[] = $this->runShellCommand(
-                ['npm', 'run', 'build'],
-                'Build frontend assets (npm run build)'
-            );
-            if (!$steps[array_key_last($steps)]['passed']) {
-                return $steps;
-            }
-        }
-
         $artisanCommands = [
-            ['key:generate', ['--force' => true]],
             ['storage:link', ['--force' => true]],
             ['migrate', ['--force' => true]],
             ['db:seed', ['--force' => true]],
         ];
 
         foreach ($artisanCommands as [$command, $args]) {
-            try {
-                Artisan::call($command, $args);
-                $steps[] = [
-                    'label' => "Run artisan {$command}",
-                    'passed' => true,
-                    'message' => trim((string) Artisan::output()),
-                ];
-            } catch (\Throwable $e) {
-                $steps[] = [
-                    'label' => "Run artisan {$command}",
-                    'passed' => false,
-                    'message' => $e->getMessage(),
-                ];
-
+            $result = $this->executeArtisanCommand($command, $args);
+            $steps[] = [
+                'label' => "Run artisan {$command}",
+                'passed' => $result['passed'],
+                'message' => $result['message'],
+            ];
+            if (!$result['passed']) {
                 return $steps;
             }
         }
@@ -394,57 +374,83 @@ class InstallController extends Controller
     }
 
     /**
-     * @param array<int, string> $command
-     * @return array{label: string, passed: bool, message: string}
+     * @return array{passed: bool, message: string}
      */
-    private function runShellCommand(array $command, string $label): array
+    private function executeArtisanCommand(string $command, array $args = []): array
     {
-        $binary = $command[0] ?? '';
-        if ($binary === '' || $this->findBinary($binary) === null) {
-            return [
-                'label' => $label,
-                'passed' => false,
-                'message' => "Command not found: {$binary}",
-            ];
-        }
+        try {
+            $exitCode = Artisan::call($command, $args);
+            $output = trim((string) Artisan::output());
 
-        $process = new Process($command, base_path());
-        $process->setTimeout(1800);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            $error = trim($process->getErrorOutput()) ?: trim($process->getOutput());
+            if ($exitCode !== 0) {
+                return [
+                    'passed' => false,
+                    'message' => $output !== '' ? $output : "Command failed with exit code {$exitCode}",
+                ];
+            }
 
             return [
-                'label' => $label,
+                'passed' => true,
+                'message' => $output !== '' ? $output : 'Completed',
+            ];
+        } catch (\Throwable $e) {
+            return [
                 'passed' => false,
-                'message' => $error !== '' ? $error : 'Unknown command error',
+                'message' => $e->getMessage(),
             ];
         }
-
-        $output = trim($process->getOutput());
-
-        return [
-            'label' => $label,
-            'passed' => true,
-            'message' => $output !== '' ? $output : 'Completed successfully',
-        ];
     }
 
-    private function findBinary(string $binary): ?string
+    /**
+     * @return array<int, string>
+     */
+    private function runPostInstallOptimizations(): array
     {
-        $command = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'
-            ? ['where', $binary]
-            : ['which', $binary];
+        $warnings = [];
+        $commands = ['optimize:clear', 'config:cache', 'route:cache', 'view:cache'];
 
-        $process = new Process($command, base_path());
-        $process->run();
-        if (!$process->isSuccessful()) {
-            return null;
+        foreach ($commands as $command) {
+            $result = $this->executeArtisanCommand($command);
+            if (!$result['passed']) {
+                $warnings[] = "{$command}: {$result['message']}";
+            }
         }
 
-        $path = trim($process->getOutput());
+        return $warnings;
+    }
 
-        return $path !== '' ? strtok($path, PHP_EOL) ?: null : null;
+    private function ensureApplicationKey(): void
+    {
+        $current = trim((string) env('APP_KEY', ''));
+        if ($current !== '') {
+            return;
+        }
+
+        try {
+            Artisan::call('key:generate', ['--force' => true]);
+            $generated = trim((string) env('APP_KEY', ''));
+            if ($generated !== '') {
+                return;
+            }
+        } catch (\Throwable $e) {
+            // Fall back to direct key write below.
+        }
+
+        $this->writeAppKeyToEnv('base64:' . base64_encode(random_bytes(32)));
+    }
+
+    private function writeAppKeyToEnv(string $appKey): void
+    {
+        $envPath = base_path('.env');
+        $content = file_exists($envPath) ? (string) file_get_contents($envPath) : '';
+
+        if (preg_match('/^APP_KEY=/m', $content)) {
+            $content = (string) preg_replace('/^APP_KEY=.*/m', "APP_KEY={$appKey}", $content);
+        } else {
+            $content .= PHP_EOL . "APP_KEY={$appKey}";
+        }
+
+        file_put_contents($envPath, $content);
+        config(['app.key' => $appKey]);
     }
 }

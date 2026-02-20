@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="max-w-4xl mx-auto space-y-6">
-        <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Create New Room</h1>
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">{{ __('Create New Room') }}</h1>
 
         <div class="bg-white dark:bg-slate-900 rounded-lg shadow-md border border-transparent dark:border-slate-800 p-6 sm:p-8">
             <form method="POST" action="{{ route('manager.rooms.store') }}" enctype="multipart/form-data" class="space-y-6">
@@ -56,13 +56,13 @@
                 </div>
 
                 <div>
-                    <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Description</label>
+                    <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ __("Description") }}</label>
                     <textarea id="description" name="description" rows="4" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
                     @error('description')<p class="mt-1 text-sm text-red-500">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
-                    <label for="cover_image" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Room Cover Image (Optional)</label>
+                    <label for="cover_image" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ __('Room Cover Image (Optional)') }}</label>
                     <input type="file" id="cover_image" name="cover_image" accept="image/*" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('cover_image') border-red-500 @enderror">
                     @error('cover_image')<p class="mt-1 text-sm text-red-500">{{ $message }}</p>@enderror
                 </div>

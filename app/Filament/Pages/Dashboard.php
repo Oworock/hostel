@@ -39,6 +39,8 @@ class Dashboard extends BaseDashboard
     {
         return [
             \App\Filament\Widgets\AdminStatsOverview::class,
+            \App\Filament\Widgets\StaffPayrollOverview::class,
+            \App\Filament\Widgets\StaffApprovalQueueWidget::class,
             \App\Filament\Widgets\AssetIssuesOverview::class,
             \App\Filament\Widgets\AssetSubscriptionAlertsWidget::class,
             \App\Filament\Widgets\PaymentSettingsHealthCheck::class,

@@ -1,4 +1,4 @@
-<x-dashboard-layout title="Payments">
+<x-dashboard-layout :title="__('Payments')">
     <x-slot name="sidebar">
         @include('components.manager-sidebar')
     </x-slot>
@@ -6,7 +6,7 @@
     <div class="uniform-page">
         <div class="uniform-header">
             <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Payment Records</h1>
-            <p class="text-slate-600 dark:text-slate-300 mt-1">All payments from students in your managed hostels.</p>
+            <p class="text-slate-600 dark:text-slate-300 mt-1">{{ __('All payments from students in your managed hostels.') }}</p>
         </div>
 
         @if($payments->count() > 0)
@@ -17,10 +17,10 @@
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Student</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Booking ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Amount</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Method</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __("Amount") }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __("Method") }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __("Status") }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __("Date") }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
@@ -77,8 +77,8 @@
                 <svg class="w-14 h-14 mx-auto text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <h3 class="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">No Payments Yet</h3>
-                <p class="text-slate-600 dark:text-slate-300">No payments have been recorded for your hostels.</p>
+                <h3 class="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">{{ __('No Payments Yet') }}</h3>
+                <p class="text-slate-600 dark:text-slate-300">{{ __('No payments have been recorded for your hostels.') }}</p>
             </div>
         @endif
     </div>

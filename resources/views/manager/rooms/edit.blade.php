@@ -55,13 +55,13 @@
                 </div>
 
                 <div>
-                    <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Description</label>
+                    <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ __("Description") }}</label>
                     <textarea id="description" name="description" rows="4" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('description') border-red-500 @enderror">{{ old('description', $room->description) }}</textarea>
                     @error('description')<p class="mt-1 text-sm text-red-500">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
-                    <label for="cover_image" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Room Cover Image (Optional)</label>
+                    <label for="cover_image" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ __('Room Cover Image (Optional)') }}</label>
                     @if($room->cover_image)
                         <img src="{{ asset('storage/' . $room->cover_image) }}" alt="Room Image" class="h-24 w-24 object-cover rounded-lg border border-slate-200 dark:border-slate-700 mb-3">
                     @endif
@@ -78,7 +78,7 @@
                 <div>
                     <label for="is_available" class="flex items-center">
                         <input type="checkbox" id="is_available" name="is_available" value="1" @checked(old('is_available', $room->is_available)) class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-700 rounded">
-                        <span class="ml-2 text-sm font-medium text-slate-700 dark:text-slate-200">Available</span>
+                        <span class="ml-2 text-sm font-medium text-slate-700 dark:text-slate-200">{{ __("Available") }}</span>
                     </label>
                 </div>
 

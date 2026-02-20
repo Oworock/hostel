@@ -1,0 +1,16 @@
+{
+  "name": "Staff Payroll",
+  "slug": "staff-payroll",
+  "version": "1.0.0",
+  "description": "Manage staff records, salaries, payroll history, and paid notifications.",
+  "requires": {
+    "php": ">=8.2",
+    "laravel": ">=12"
+  },
+  "features": [
+    "staff_directory",
+    "salary_tracking",
+    "salary_paid_notifications",
+    "hidden_staff_registration_link"
+  ]
+}

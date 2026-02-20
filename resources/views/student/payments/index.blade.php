@@ -1,12 +1,12 @@
-<x-dashboard-layout title="My Payments">
+<x-dashboard-layout :title="__('My Payments')">
     <x-slot name="sidebar">
         @include('components.student-sidebar')
     </x-slot>
 
     <div class="max-w-6xl mx-auto">
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100">Payment History</h1>
-            <p class="text-gray-600 dark:text-slate-300 mt-2">View all your payments and transactions</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100">{{ __("Payment History") }}</h1>
+            <p class="text-gray-600 dark:text-slate-300 mt-2">{{ __('View all your payments and transactions') }}</p>
         </div>
 
         @if($outstandingBookings->isNotEmpty())
@@ -26,7 +26,7 @@
                     <span class="text-xs px-2.5 py-1 rounded-full bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">{{ $outstandingBookings->count() }} pending</span>
                 </div>
                 @if($activeGateways->isEmpty())
-                    <p class="text-sm text-red-600 dark:text-red-400 mb-4">No active online payment gateway is currently configured by admin.</p>
+                    <p class="text-sm text-red-600 dark:text-red-400 mb-4">{{ __('No active online payment gateway is currently configured by admin.') }}</p>
                 @endif
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -67,11 +67,11 @@
                         <thead class="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
                             <tr>
                                 <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-slate-100">Booking ID</th>
-                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-slate-100">Amount</th>
-                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-slate-100">Method</th>
-                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-slate-100">Status</th>
-                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-slate-100">Date</th>
-                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-slate-100">Receipt</th>
+                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-slate-100">{{ __("Amount") }}</th>
+                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-slate-100">{{ __("Method") }}</th>
+                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-slate-100">{{ __("Status") }}</th>
+                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-slate-100">{{ __("Date") }}</th>
+                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-slate-100">{{ __("Receipt") }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-slate-800">
@@ -122,8 +122,8 @@
                 <svg class="w-16 h-16 mx-auto text-gray-400 dark:text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-2">No Payments Yet</h3>
-                <p class="text-gray-600 dark:text-slate-300 mb-6">You haven't made any payments yet.</p>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-slate-100 mb-2">{{ __('No Payments Yet') }}</h3>
+                <p class="text-gray-600 dark:text-slate-300 mb-6">{{ __("You haven't made any payments yet.") }}</p>
                 <a href="{{ route('student.bookings.available') }}" class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     Browse Rooms
                 </a>

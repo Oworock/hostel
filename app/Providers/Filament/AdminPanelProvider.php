@@ -23,6 +23,7 @@ use App\Filament\Pages\SendEmail;
 use App\Filament\Pages\SystemSettings;
 use App\Filament\Pages\FileManagerPage;
 use App\Filament\Pages\BackupManagerPage;
+use App\Filament\Pages\StaffPayrollSettings;
 use App\Filament\Pages\Dashboard as AdminDashboard;
 
 class AdminPanelProvider extends PanelProvider
@@ -99,6 +100,7 @@ class AdminPanelProvider extends PanelProvider
                 SendSMS::class,
                 SendEmail::class,
                 SystemSettings::class,
+                StaffPayrollSettings::class,
                 FileManagerPage::class,
                 BackupManagerPage::class,
             ])

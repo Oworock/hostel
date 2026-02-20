@@ -6,18 +6,27 @@ use Illuminate\Support\Facades\Http;
 
 class SmsGatewayService
 {
-    public function send(string $phone, string $message): bool
+    public function isConfigured(): bool
     {
         $provider = get_setting('sms_provider', 'none');
         if ($provider !== 'custom') {
             return false;
         }
 
-        $url = (string) get_setting('sms_url', '');
-        $apiKey = (string) get_setting('sms_api_key', '');
-        if ($url === '' || $apiKey === '') {
+        $url = trim((string) get_setting('sms_url', ''));
+        $apiKey = trim((string) get_setting('sms_api_key', ''));
+
+        return $url !== '' && $apiKey !== '';
+    }
+
+    public function send(string $phone, string $message): bool
+    {
+        if (!$this->isConfigured()) {
             return false;
         }
+
+        $url = (string) get_setting('sms_url', '');
+        $apiKey = (string) get_setting('sms_api_key', '');
 
         $sender = (string) get_setting('sms_sender_id', 'Hostel');
         $method = strtoupper((string) get_setting('sms_http_method', 'POST'));

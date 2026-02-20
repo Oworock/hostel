@@ -1,11 +1,11 @@
 @props(['title' => 'Dashboard'])
 
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title }} - Hostel Management System</title>
+    <title>{{ __($title) }} - {{ __('Hostel Management System') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         (function () {
@@ -358,7 +358,7 @@
 
                     <div class="text-xs sm:text-sm text-gray-600 dark:text-slate-300 text-right hidden sm:block">
                         @if(session('impersonator_id'))
-                            <p><a href="{{ route('impersonation.leave') }}" class="text-blue-600 hover:text-blue-700 font-semibold">Return to Admin</a></p>
+                            <p><a href="{{ route('impersonation.leave') }}" class="text-blue-600 hover:text-blue-700 font-semibold">{{ __('Return to Admin') }}</a></p>
                         @endif
                     </div>
 
@@ -377,32 +377,32 @@
 
                             <div id="notification-menu-panel" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg z-50">
                                 <div class="px-4 py-3 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
-                                    <p class="text-sm font-semibold text-gray-800 dark:text-slate-100">Notifications</p>
+                                    <p class="text-sm font-semibold text-gray-800 dark:text-slate-100">{{ __('Notifications') }}</p>
                                     <form method="POST" action="{{ route('notifications.mark-all-read') }}">
                                         @csrf
-                                        <button type="submit" class="text-xs text-blue-600 dark:text-blue-300 hover:underline">Mark all read</button>
+                                        <button type="submit" class="text-xs text-blue-600 dark:text-blue-300 hover:underline">{{ __('Mark all read') }}</button>
                                     </form>
                                 </div>
                                 <div class="max-h-80 overflow-y-auto">
                                     @forelse($latestNotifications as $notification)
                                         <div class="px-4 py-3 border-b border-gray-100 dark:border-slate-800 {{ $notification->read_at ? '' : 'bg-blue-50/70 dark:bg-blue-900/10' }}">
-                                            <p class="text-sm font-semibold text-gray-800 dark:text-slate-100">{{ $notification->data['title'] ?? 'Notification' }}</p>
+                                            <p class="text-sm font-semibold text-gray-800 dark:text-slate-100">{{ $notification->data['title'] ?? __('Notification') }}</p>
                                             <p class="text-xs text-gray-600 dark:text-slate-300 mt-1">{{ $notification->data['message'] ?? '' }}</p>
                                             <div class="mt-2 flex items-center justify-between">
                                                 <p class="text-[11px] text-gray-500 dark:text-slate-400">{{ $notification->created_at?->diffForHumans() }}</p>
                                                 @if(!$notification->read_at)
                                                     <form method="POST" action="{{ route('notifications.read', $notification->id) }}">
                                                         @csrf
-                                                        <button type="submit" class="text-[11px] text-blue-600 dark:text-blue-300 hover:underline">Mark read</button>
+                                                        <button type="submit" class="text-[11px] text-blue-600 dark:text-blue-300 hover:underline">{{ __('Mark read') }}</button>
                                                     </form>
                                                 @endif
                                             </div>
                                         </div>
                                     @empty
-                                        <p class="px-4 py-6 text-sm text-gray-500 dark:text-slate-400">No notifications yet.</p>
+                                        <p class="px-4 py-6 text-sm text-gray-500 dark:text-slate-400">{{ __('No notifications yet.') }}</p>
                                     @endforelse
                                 </div>
-                                <a href="{{ route('notifications.index') }}" class="block px-4 py-2 text-sm text-center text-blue-600 dark:text-blue-300 hover:bg-gray-50 dark:hover:bg-slate-800">View all notifications</a>
+                                <a href="{{ route('notifications.index') }}" class="block px-4 py-2 text-sm text-center text-blue-600 dark:text-blue-300 hover:bg-gray-50 dark:hover:bg-slate-800">{{ __('View all notifications') }}</a>
                             </div>
                         </div>
 
@@ -420,37 +420,37 @@
 
                             <div id="user-menu-panel" class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg z-50">
                                 @if($profileRoute)
-                                    <a href="{{ $profileRoute }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800">Edit Profile</a>
+                                    <a href="{{ $profileRoute }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800">{{ __('Edit Profile') }}</a>
                                 @endif
                                 <div class="px-4 py-3 border-t border-gray-200 dark:border-slate-700">
                                     <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400 mb-2">Theme</p>
                                     <div class="flex items-center gap-2">
-                                        <button type="button" class="theme-mode-btn" data-theme-mode="system" title="Use Device Theme" aria-label="Use Device Theme">
+                                        <button type="button" class="theme-mode-btn" data-theme-mode="system" title="{{ __('Use Device Theme') }}" aria-label="{{ __('Use Device Theme') }}">
                                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <rect x="3" y="4" width="18" height="12" rx="2"></rect>
                                                 <path d="M8 20h8"></path>
                                             </svg>
                                         </button>
-                                        <button type="button" class="theme-mode-btn" data-theme-mode="light" title="Light Theme" aria-label="Light Theme">
+                                        <button type="button" class="theme-mode-btn" data-theme-mode="light" title="{{ __('Light Theme') }}" aria-label="{{ __('Light Theme') }}">
                                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <circle cx="12" cy="12" r="4"></circle>
                                                 <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
                                             </svg>
                                         </button>
-                                        <button type="button" class="theme-mode-btn" data-theme-mode="dark" title="Dark Theme" aria-label="Dark Theme">
+                                        <button type="button" class="theme-mode-btn" data-theme-mode="dark" title="{{ __('Dark Theme') }}" aria-label="{{ __('Dark Theme') }}">
                                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 1 0 9.8 9.8z"></path>
                                             </svg>
                                         </button>
                                     </div>
-                                    <p id="theme-mode-label" class="mt-2 text-xs text-gray-500 dark:text-slate-400">Following device setting</p>
+                                    <p id="theme-mode-label" class="mt-2 text-xs text-gray-500 dark:text-slate-400">{{ __('Following device setting') }}</p>
                                 </div>
                                 @if(session('impersonator_id'))
-                                    <a href="{{ route('impersonation.leave') }}" class="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-slate-800">Return to Admin</a>
+                                    <a href="{{ route('impersonation.leave') }}" class="block px-4 py-2 text-sm text-blue-700 hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-slate-800">{{ __('Return to Admin') }}</a>
                                 @endif
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-slate-800">Sign Out</button>
+                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-slate-800">{{ __('Sign Out') }}</button>
                                 </form>
                             </div>
                         </div>
@@ -464,7 +464,7 @@
             <aside id="sidebar-desktop" class="lg:flex lg:flex-col bg-transparent sidebar-transition w-80 xl:w-96 lg:sticky lg:top-0 lg:self-start lg:h-screen p-3">
                 <div class="rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden flex flex-col h-full min-h-0">
                 <div class="sidebar-brand px-3 py-3 border-b border-gray-200 dark:border-slate-800 flex items-center gap-2">
-                    <div class="menu-section-title text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">Navigation Menu</div>
+                    <div class="menu-section-title text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{{ __('Navigation Menu') }}</div>
                     <button data-sidebar-toggle type="button" class="ml-auto inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-slate-700 p-2 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 7h16M4 12h16M4 17h16"></path>

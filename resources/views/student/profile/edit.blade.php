@@ -1,12 +1,12 @@
-<x-dashboard-layout title="Profile Settings">
+<x-dashboard-layout :title="__('Profile Settings')">
     <x-slot name="sidebar">
         @include('components.student-sidebar')
     </x-slot>
 
     <div class="max-w-5xl mx-auto">
         <div class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100">Profile Settings</h1>
-            <p class="text-gray-600 dark:text-slate-300 mt-1">Update your profile information and profile photo.</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100">{{ __("Profile Settings") }}</h1>
+            <p class="text-gray-600 dark:text-slate-300 mt-1">{{ __('Update your profile information and profile photo.') }}</p>
         </div>
 
         <div class="bg-white dark:bg-slate-900 rounded-lg shadow-md p-8">
@@ -28,7 +28,7 @@
                         </div>
                         <div class="flex-1">
                             <input type="file" name="profile_image" accept="image/*" class="block w-full text-sm text-gray-500 dark:text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                            <p class="mt-2 text-sm text-gray-600 dark:text-slate-400">JPG, PNG or GIF. Max 2MB.</p>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-slate-400">{{ __('JPG, PNG or GIF. Max 2MB.') }}</p>
                         </div>
                     </div>
                     @error('profile_image')
@@ -81,7 +81,7 @@
                 </div>
 
                 <div>
-                    <label for="new_password_confirmation" class="block text-sm font-semibold text-gray-700 dark:text-slate-200 mb-2">Confirm New Password</label>
+                    <label for="new_password_confirmation" class="block text-sm font-semibold text-gray-700 dark:text-slate-200 mb-2">{{ __('Confirm New Password') }}</label>
                     <input type="password" name="new_password_confirmation" id="new_password_confirmation" class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100">
                 </div>
 

@@ -1,4 +1,4 @@
-<x-dashboard-layout title="Book Room">
+<x-dashboard-layout :title="__('Book Room')">
     <x-slot name="sidebar">
         @include('components.student-sidebar')
     </x-slot>
@@ -8,7 +8,7 @@
     @if(!auth()->user()->profile_image)
         <div class="mb-6 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
             <p class="text-sm text-yellow-800 dark:text-yellow-200">
-                <strong>Note:</strong> You need to upload a profile picture before completing your booking.
+                <strong>{{ __('Note:') }}</strong> {{ __('You need to upload a profile picture before completing your booking.') }}
                 <a href="{{ route('student.profile.edit') }}" class="text-blue-600 hover:text-blue-800 font-medium">Update your profile</a>
             </p>
         </div>
@@ -165,7 +165,7 @@
 
                     <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                         <p class="text-sm text-blue-800 dark:text-blue-200">
-                            <strong>Price:</strong>
+                            <strong>{{ __('Price:') }}</strong>
                             <span id="total-amount">{{ getCurrencySymbol() }}{{ number_format($room->price_per_month, 2) }}</span>
                             <span class="text-xs text-blue-700 dark:text-blue-300">(for 1 {{ getBookingPeriodLabel() }})</span>
                         </p>

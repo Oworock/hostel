@@ -14,6 +14,7 @@ use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Manager\HostelChangeRequestController as ManagerHostelChangeRequestController;
 use App\Http\Controllers\Manager\RoomChangeRequestController as ManagerRoomChangeRequestController;
 use App\Http\Controllers\Manager\AssetIssueController as ManagerAssetIssueController;
+use App\Http\Controllers\Manager\StaffDirectoryController as ManagerStaffDirectoryController;
 use App\Http\Controllers\Api\ApiDocumentationController;
 use App\Http\Controllers\PublicRoomController;
 use App\Http\Controllers\InstallController;
@@ -21,6 +22,8 @@ use App\Http\Controllers\FileManagerController;
 use App\Http\Controllers\UserNotificationController;
 use App\Http\Controllers\Student\RoomChangeRequestController as StudentRoomChangeRequestController;
 use App\Http\Controllers\Admin\BackupController;
+use App\Http\Controllers\StaffRegistrationController;
+use App\Http\Controllers\StaffPayslipController;
 use App\Models\SystemSetting;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +43,15 @@ Route::get('/', function () {
 });
 Route::get('/book-rooms', [PublicRoomController::class, 'index'])->name('public.rooms.index');
 Route::get('/book-rooms/{room}/book', [PublicRoomController::class, 'book'])->name('public.rooms.book');
+Route::middleware(['guest', 'addon.active:staff-payroll'])->group(function () {
+    Route::get('/staff/register/{token}', [StaffRegistrationController::class, 'create'])->name('staff.register.create');
+    Route::post('/staff/register/{token}', [StaffRegistrationController::class, 'store'])->name('staff.register.store');
+});
+Route::middleware(['addon.active:staff-payroll', 'signed'])->group(function () {
+    Route::get('/staff/payslips/{salaryPayment}', [StaffPayslipController::class, 'show'])->name('staff.payslips.show');
+    Route::get('/staff/payslips/{salaryPayment}/pdf', [StaffPayslipController::class, 'pdf'])->name('staff.payslips.pdf');
+    Route::get('/staff/payslips/{salaryPayment}/image', [StaffPayslipController::class, 'image'])->name('staff.payslips.image');
+});
 Route::get('student/payments/callback/paystack', [StudentPaymentController::class, 'paystackCallback'])->name('student.payments.callback.paystack');
 Route::get('student/payments/callback/flutterwave', [StudentPaymentController::class, 'flutterwaveCallback'])->name('student.payments.callback.flutterwave');
 Route::get('student/payments/callback/stripe', [StudentPaymentController::class, 'stripeCallback'])->name('student.payments.callback.stripe');
@@ -137,6 +149,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('files/bulk-delete', [FileManagerController::class, 'bulkDestroy'])->name('files.bulk-destroy');
         Route::get('files/{uploadedFile}', [FileManagerController::class, 'show'])->name('files.show');
         Route::delete('files/{uploadedFile}', [FileManagerController::class, 'destroy'])->name('files.destroy');
+        Route::get('staff', [ManagerStaffDirectoryController::class, 'index'])
+            ->middleware('addon.active:staff-payroll')
+            ->name('staff.index');
     });
 
     // Student routes

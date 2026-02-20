@@ -1,14 +1,14 @@
-<x-dashboard-layout title="Notifications">
+<x-dashboard-layout :title="__('Notifications')">
     <x-slot name="sidebar">
         @include('components.student-sidebar')
     </x-slot>
 
     <div class="uniform-page">
         <div class="uniform-header">
-            <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Notifications</h1>
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">{{ __("Notifications") }}</h1>
             <form method="POST" action="{{ route('notifications.mark-all-read') }}">
                 @csrf
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium">Mark all as read</button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium">{{ __("Mark all as read") }}</button>
             </form>
         </div>
 
@@ -24,13 +24,13 @@
                         @if(!$notification->read_at)
                             <form method="POST" action="{{ route('notifications.read', $notification->id) }}">
                                 @csrf
-                                <button type="submit" class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-3 py-1 rounded-md">Mark read</button>
+                                <button type="submit" class="text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-3 py-1 rounded-md">{{ __("Mark read") }}</button>
                             </form>
                         @endif
                     </div>
                 </div>
             @empty
-                <p class="text-slate-600 dark:text-slate-300">No notifications available.</p>
+                <p class="text-slate-600 dark:text-slate-300">{{ __("No notifications available.") }}</p>
             @endforelse
         </section>
 

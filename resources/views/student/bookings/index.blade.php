@@ -5,7 +5,7 @@
 
     <div class="uniform-page">
         <div class="uniform-header">
-            <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">My Bookings</h1>
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">{{ __("My Bookings") }}</h1>
             <a href="{{ route('student.bookings.available') }}" class="inline-flex items-center justify-center bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 font-medium">
                 Browse Rooms
             </a>
@@ -49,7 +49,7 @@
                             <dd class="font-medium text-gray-900 dark:text-slate-100">{{ ucfirst($booking->room->type) }}</dd>
                         </div>
                         <div>
-                            <dt class="text-sm text-gray-600 dark:text-slate-300">Total Amount</dt>
+                            <dt class="text-sm text-gray-600 dark:text-slate-300">{{ __("Total Amount") }}</dt>
                             <dd class="font-medium text-gray-900 dark:text-slate-100">{{ formatCurrency($booking->total_amount) }}</dd>
                         </div>
                     </dl>
@@ -66,7 +66,7 @@
                                 View
                             </a>
                             @if($canCancel)
-                                <form method="POST" action="{{ route('student.bookings.cancel', $booking) }}" onsubmit="return confirm('Are you sure?')" class="inline">
+                                <form method="POST" action="{{ route('student.bookings.cancel', $booking) }}" onsubmit="return confirm(@js(__('Are you sure?')))" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300 px-4 py-2 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/60 font-medium">
@@ -79,7 +79,7 @@
                 </article>
             @empty
                 <div class="uniform-card p-12 text-center">
-                    <p class="text-slate-600 dark:text-slate-300 text-lg mb-4">You have no bookings yet.</p>
+                    <p class="text-slate-600 dark:text-slate-300 text-lg mb-4">{{ __('You have no bookings yet.') }}</p>
                     <a href="{{ route('student.bookings.available') }}" class="inline-block bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 font-medium">
                         Browse Available Rooms
                     </a>
