@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Models\SystemSetting;
-use App\Support\SystemTranslationStore;
 use Throwable;
 
 class SystemSettings extends Page
@@ -36,9 +35,6 @@ class SystemSettings extends Page
     protected static ?string $slug = 'settings/config';
 
     public ?array $data = [];
-    private ?array $translationCatalogCache = null;
-    private ?array $resourceTermCatalogCache = null;
-
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()?->role === 'admin';
@@ -61,15 +57,12 @@ class SystemSettings extends Page
         $registrationRequiredFields = json_decode(SystemSetting::getSetting('registration_required_fields_json', ''), true);
         $registrationCustomFields = json_decode(SystemSetting::getSetting('registration_custom_fields_json', ''), true);
         $webhookEvents = json_decode(SystemSetting::getSetting('webhook_events_json', ''), true);
-        $enabledLocales = json_decode(SystemSetting::getSetting('enabled_locales_json', ''), true);
-        $customTranslations = SystemTranslationStore::read();
-        if (!is_array($customTranslations) || empty($customTranslations)) {
-            $customTranslations = $this->fullLanguagePackRowsForLocales(array_keys($this->languageOptions()));
-            SystemTranslationStore::write($customTranslations);
-        }
-        $defaultLocale = (string) SystemSetting::getSetting('app_locale', config('app.locale', 'en'));
-        $customTranslationsForUi = $this->subsetCustomTranslationsForUi($customTranslations, $defaultLocale);
         $notificationTemplates = app(NotificationTemplateService::class)->forRepeater();
+        $referralInviteToken = (string) SystemSetting::getSetting('referral_partner_invite_token', '');
+        if (trim($referralInviteToken) === '') {
+            $referralInviteToken = strtoupper(Str::random(18));
+            SystemSetting::setSetting('referral_partner_invite_token', $referralInviteToken);
+        }
         
         $defaultCustomCss = $this->getDefaultCustomCss();
         $currentCustomCss = SystemSetting::getSetting('custom_css', '');
@@ -88,25 +81,22 @@ class SystemSettings extends Page
             'custom_css' => $currentCustomCss,
             'app_locale' => SystemSetting::getSetting('app_locale', config('app.locale', 'en')),
             'app_fallback_locale' => SystemSetting::getSetting('app_fallback_locale', config('app.fallback_locale', 'en')),
-            'enabled_locales' => is_array($enabledLocales) && !empty($enabledLocales)
-                ? $enabledLocales
-                : array_keys($this->languageOptions()),
-            'custom_translations' => $customTranslationsForUi,
-            'translation_locale' => $defaultLocale,
-            'translation_search' => '',
-            'translation_page' => 1,
-            'translation_per_page' => 50,
-            'translation_editor' => $this->buildTranslationEditorRows(
-                $defaultLocale,
-                is_array($customTranslations) ? $customTranslations : [],
-                '',
-                1,
-                50
-            ),
             'registration_fields' => is_array($registrationFields) ? $registrationFields : ['phone'],
             'registration_required_fields' => is_array($registrationRequiredFields) ? $registrationRequiredFields : [],
             'registration_custom_fields' => is_array($registrationCustomFields) ? $registrationCustomFields : [],
             'booking_period_type' => SystemSetting::getSetting('booking_period_type', 'months'),
+            'session_booking_enabled' => filter_var(SystemSetting::getSetting('session_booking_enabled', true), FILTER_VALIDATE_BOOL),
+            'session_booking_price' => (float) SystemSetting::getSetting('session_booking_price', 0),
+            'session_booking_discount_type' => SystemSetting::getSetting('session_booking_discount_type', 'none'),
+            'session_booking_discount_value' => (float) SystemSetting::getSetting('session_booking_discount_value', 0),
+            'referral_enabled' => filter_var(SystemSetting::getSetting('referral_enabled', true), FILTER_VALIDATE_BOOL),
+            'referral_students_can_be_agents' => filter_var(SystemSetting::getSetting('referral_students_can_be_agents', true), FILTER_VALIDATE_BOOL),
+            'referral_default_commission_type' => SystemSetting::getSetting('referral_default_commission_type', 'percentage'),
+            'referral_default_commission_value' => (float) SystemSetting::getSetting('referral_default_commission_value', 5),
+            'referral_min_payout' => (float) SystemSetting::getSetting('referral_min_payout', 0),
+            'referral_notify_email' => filter_var(SystemSetting::getSetting('referral_notify_email', true), FILTER_VALIDATE_BOOL),
+            'referral_notify_sms' => filter_var(SystemSetting::getSetting('referral_notify_sms', false), FILTER_VALIDATE_BOOL),
+            'referral_partner_invite_token' => $referralInviteToken,
             'sms_provider' => SystemSetting::getSetting('sms_provider', 'none'),
             'sms_url' => SystemSetting::getSetting('sms_url', ''),
             'sms_http_method' => SystemSetting::getSetting('sms_http_method', 'POST'),
@@ -199,8 +189,34 @@ class SystemSettings extends Page
                                                 'sessions' => 'Sessions',
                                             ])
                                             ->required(),
+                                        Forms\Components\Toggle::make('session_booking_enabled')
+                                            ->label(__('Allow Session Booking In Semester Mode'))
+                                            ->helperText(__('When enabled, students can choose Session booking even when booking type is set to Semesters.'))
+                                            ->default(true),
+                                        Forms\Components\TextInput::make('session_booking_price')
+                                            ->label(__('Session Booking Price'))
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->default(0)
+                                            ->required(),
+                                        Forms\Components\Select::make('session_booking_discount_type')
+                                            ->label(__('Session Discount Type'))
+                                            ->options([
+                                                'none' => 'No discount',
+                                                'percentage' => 'Percentage (%)',
+                                                'fixed' => 'Fixed amount',
+                                            ])
+                                            ->default('none')
+                                            ->native(false)
+                                            ->required(),
+                                        Forms\Components\TextInput::make('session_booking_discount_value')
+                                            ->label(__('Session Discount Value'))
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->default(0)
+                                            ->required(),
                                     ]),
-                                
+
                                 Forms\Components\Section::make(__('System Currency'))
                                     ->schema([
                                         Forms\Components\Select::make('system_currency')
@@ -238,6 +254,50 @@ class SystemSettings extends Page
                                             ->rows(12)
                                             ->placeholder("/* Example */\n:root { --brand: #0f766e; }\n.btn-primary { border-radius: 10px; }")
                                             ->columnSpanFull(),
+                                    ]),
+                            ]),
+
+                        Forms\Components\Tabs\Tab::make(__('Referral Settings'))
+                            ->icon('heroicon-m-user-group')
+                            ->schema([
+                                Forms\Components\Section::make(__('Referral Incentives'))
+                                    ->schema([
+                                        Forms\Components\Toggle::make('referral_enabled')
+                                            ->label(__('Enable Referral Program'))
+                                            ->default(true),
+                                        Forms\Components\Toggle::make('referral_students_can_be_agents')
+                                            ->label(__('Allow Students To Become Referral Partners'))
+                                            ->default(true),
+                                        Forms\Components\Select::make('referral_default_commission_type')
+                                            ->label(__('Default Commission Type'))
+                                            ->options([
+                                                'percentage' => 'Percentage (%)',
+                                                'fixed' => 'Fixed amount',
+                                            ])
+                                            ->default('percentage')
+                                            ->required(),
+                                        Forms\Components\TextInput::make('referral_default_commission_value')
+                                            ->label(__('Default Commission Value'))
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->default(5)
+                                            ->required(),
+                                        Forms\Components\TextInput::make('referral_min_payout')
+                                            ->label(__('Minimum Payout Threshold'))
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->default(0)
+                                            ->required(),
+                                        Forms\Components\Toggle::make('referral_notify_email')
+                                            ->label(__('Send Referral Event Email Notifications'))
+                                            ->default(true),
+                                        Forms\Components\Toggle::make('referral_notify_sms')
+                                            ->label(__('Send Referral Event SMS Notifications'))
+                                            ->default(false),
+                                        Forms\Components\TextInput::make('referral_partner_invite_token')
+                                            ->label(__('Referral Partner Invite Token'))
+                                            ->helperText(fn (Forms\Get $get): string => url('/referrals/register?invite=' . trim((string) $get('referral_partner_invite_token'))))
+                                            ->required(),
                                     ]),
                             ]),
 
@@ -304,11 +364,8 @@ class SystemSettings extends Page
                             ->icon('heroicon-m-language')
                             ->schema([
                                 Forms\Components\Section::make(__('Language Configuration'))
-                                    ->description(__('Set default language, fallback language, and enabled languages including RTL options.'))
+                                    ->description(__('Set default and fallback languages.'))
                                     ->schema([
-                                        Forms\Components\Placeholder::make('translation_file_health')
-                                            ->label(__('Translation File Health'))
-                                            ->content(fn (): HtmlString => $this->translationFileHealthSummary()),
                                         Forms\Components\Select::make('app_locale')
                                             ->label(__('Default Language'))
                                             ->options($this->languageOptions())
@@ -319,225 +376,6 @@ class SystemSettings extends Page
                                             ->options($this->languageOptions())
                                             ->searchable()
                                             ->required(),
-                                        Forms\Components\CheckboxList::make('enabled_locales')
-                                            ->label(__('Enabled Languages'))
-                                            ->options($this->languageOptions())
-                                            ->columns(2)
-                                            ->required()
-                                            ->helperText(__('Includes RTL languages: Arabic, Hebrew, and Urdu.')),
-                                    ]),
-
-                                Forms\Components\Section::make(__('Language Translation Editor'))
-                                    ->description(__('Select a language and fill translated values. Keys are prefilled from the system translation catalog.'))
-                                    ->schema([
-                                        Forms\Components\Select::make('translation_locale')
-                                            ->label(__('Language To Translate'))
-                                            ->options($this->languageOptions())
-                                            ->searchable()
-                                            ->required()
-                                            ->live()
-                                            ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get, ?string $state): void {
-                                                $locale = is_string($state) && $state !== '' ? $state : 'en';
-                                                $set('translation_page', 1);
-                                                $perPage = max(25, (int) ($get('translation_per_page') ?? 50));
-                                                $rows = $this->buildTranslationEditorRows(
-                                                    $locale,
-                                                    $this->sanitizeCustomTranslations($get('custom_translations') ?? []),
-                                                    (string) ($get('translation_search') ?? ''),
-                                                    1,
-                                                    $perPage
-                                                );
-                                                $set('translation_editor', $rows);
-                                            }),
-                                        Forms\Components\TextInput::make('translation_search')
-                                            ->label(__('Search Key'))
-                                            ->placeholder(__('Type to filter keys, e.g. dashboard, password, booking'))
-                                            ->live()
-                                            ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get, ?string $state): void {
-                                                $locale = (string) ($get('translation_locale') ?? 'en');
-                                                $set('translation_page', 1);
-                                                $rows = $this->buildTranslationEditorRows(
-                                                    $locale,
-                                                    $this->sanitizeCustomTranslations($get('custom_translations') ?? []),
-                                                    (string) ($state ?? ''),
-                                                    1,
-                                                    (int) ($get('translation_per_page') ?? 50)
-                                                );
-                                                $set('translation_editor', $rows);
-                                            }),
-                                        Forms\Components\Select::make('translation_per_page')
-                                            ->label(__('Rows Per Page'))
-                                            ->options([
-                                                25 => '25',
-                                                50 => '50',
-                                                100 => '100',
-                                            ])
-                                            ->default(50)
-                                            ->native(false)
-                                            ->live()
-                                            ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get, $state): void {
-                                                $locale = (string) ($get('translation_locale') ?? 'en');
-                                                $perPage = max(25, (int) ($state ?? 50));
-                                                $set('translation_page', 1);
-                                                $rows = $this->buildTranslationEditorRows(
-                                                    $locale,
-                                                    $this->sanitizeCustomTranslations($get('custom_translations') ?? []),
-                                                    (string) ($get('translation_search') ?? ''),
-                                                    1,
-                                                    $perPage
-                                                );
-                                                $set('translation_editor', $rows);
-                                            }),
-                                        Forms\Components\Hidden::make('translation_page')
-                                            ->default(1),
-                                        Forms\Components\Placeholder::make('translation_page_info')
-                                            ->label(__('Translation Page'))
-                                            ->content(function (Forms\Get $get): string {
-                                                $locale = (string) ($get('translation_locale') ?? 'en');
-                                                $search = (string) ($get('translation_search') ?? '');
-                                                $perPage = max(25, (int) ($get('translation_per_page') ?? 50));
-                                                $page = max(1, (int) ($get('translation_page') ?? 1));
-                                                $total = $this->translationEditorTotalCount($locale, $search);
-                                                $pages = max(1, (int) ceil($total / $perPage));
-                                                $page = min($page, $pages);
-                                                $from = $total === 0 ? 0 : (($page - 1) * $perPage) + 1;
-                                                $to = min($total, $page * $perPage);
-
-                                                return __('Showing :from-:to of :total keys (page :page/:pages)', [
-                                                    'from' => $from,
-                                                    'to' => $to,
-                                                    'total' => $total,
-                                                    'page' => $page,
-                                                    'pages' => $pages,
-                                                ]);
-                                            }),
-                                        Forms\Components\Actions::make([
-                                            Forms\Components\Actions\Action::make('translation_prev_page')
-                                                ->label(__('Previous'))
-                                                ->color('gray')
-                                                ->disabled(function (Forms\Get $get): bool {
-                                                    return (int) ($get('translation_page') ?? 1) <= 1;
-                                                })
-                                                ->action(function (Forms\Set $set, Forms\Get $get): void {
-                                                    $locale = (string) ($get('translation_locale') ?? 'en');
-                                                    $search = (string) ($get('translation_search') ?? '');
-                                                    $perPage = max(25, (int) ($get('translation_per_page') ?? 50));
-                                                    $page = max(1, ((int) ($get('translation_page') ?? 1)) - 1);
-                                                    $set('translation_page', $page);
-                                                    $rows = $this->buildTranslationEditorRows(
-                                                        $locale,
-                                                        $this->sanitizeCustomTranslations($get('custom_translations') ?? []),
-                                                        $search,
-                                                        $page,
-                                                        $perPage
-                                                    );
-                                                    $set('translation_editor', $rows);
-                                                }),
-                                            Forms\Components\Actions\Action::make('translation_next_page')
-                                                ->label(__('Next'))
-                                                ->color('gray')
-                                                ->action(function (Forms\Set $set, Forms\Get $get): void {
-                                                    $locale = (string) ($get('translation_locale') ?? 'en');
-                                                    $search = (string) ($get('translation_search') ?? '');
-                                                    $perPage = max(25, (int) ($get('translation_per_page') ?? 50));
-                                                    $currentPage = max(1, (int) ($get('translation_page') ?? 1));
-                                                    $total = $this->translationEditorTotalCount($locale, $search);
-                                                    $maxPages = max(1, (int) ceil($total / $perPage));
-                                                    $page = min($maxPages, $currentPage + 1);
-                                                    $set('translation_page', $page);
-                                                    $rows = $this->buildTranslationEditorRows(
-                                                        $locale,
-                                                        $this->sanitizeCustomTranslations($get('custom_translations') ?? []),
-                                                        $search,
-                                                        $page,
-                                                        $perPage
-                                                    );
-                                                    $set('translation_editor', $rows);
-                                                }),
-                                            Forms\Components\Actions\Action::make('load_translation_keys')
-                                                ->label(__('Reload Prefilled Keys'))
-                                                ->color('gray')
-                                                ->action(function (Forms\Set $set, Forms\Get $get): void {
-                                                    $locale = (string) ($get('translation_locale') ?? 'en');
-                                                    $page = max(1, (int) ($get('translation_page') ?? 1));
-                                                    $perPage = max(25, (int) ($get('translation_per_page') ?? 50));
-                                                    $rows = $this->buildTranslationEditorRows(
-                                                        $locale,
-                                                        $this->sanitizeCustomTranslations($get('custom_translations') ?? []),
-                                                        (string) ($get('translation_search') ?? ''),
-                                                        $page,
-                                                        $perPage
-                                                    );
-                                                    $set('translation_editor', $rows);
-                                                }),
-                                            Forms\Components\Actions\Action::make('install_starter_pack')
-                                                ->label(__('Install Starter Pack'))
-                                                ->color('info')
-                                                ->requiresConfirmation()
-                                                ->action(function (Forms\Set $set, Forms\Get $get): void {
-                                                    $locale = (string) ($get('translation_locale') ?? 'en');
-                                                    $customRows = $this->sanitizeCustomTranslations($get('custom_translations') ?? []);
-                                                    $withStarter = $this->mergeTranslationRows(
-                                                        $customRows,
-                                                        $this->starterPackRowsForLocale($locale)
-                                                    );
-                                                    $set('custom_translations', $withStarter);
-                                                    $page = max(1, (int) ($get('translation_page') ?? 1));
-                                                    $perPage = max(25, (int) ($get('translation_per_page') ?? 50));
-                                                    $set('translation_editor', $this->buildTranslationEditorRows(
-                                                        $locale,
-                                                        $withStarter,
-                                                        (string) ($get('translation_search') ?? ''),
-                                                        $page,
-                                                        $perPage
-                                                    ));
-                                                }),
-                                        ]),
-                                        Forms\Components\Repeater::make('translation_editor')
-                                            ->label(__('Prefilled Keys'))
-                                            ->schema([
-                                                Forms\Components\TextInput::make('key')
-                                                    ->label(__('Key'))
-                                                    ->disabled()
-                                                    ->dehydrated(true)
-                                                    ->required(),
-                                                Forms\Components\Textarea::make('value')
-                                                    ->label(__('Translated Value'))
-                                                    ->rows(2)
-                                                    ->placeholder(__('Enter translation value (variables: :name or {name})')),
-                                            ])
-                                            ->columns(1)
-                                            ->addable(false)
-                                            ->deletable(false)
-                                            ->reorderable(false)
-                                            ->columnSpanFull()
-                                            ->helperText(__('Tip: Leave a value empty to use fallback language for that key. Use search above for faster navigation.')),
-                                    ]),
-
-                                Forms\Components\Section::make(__('Custom Translation Lines'))
-                                    ->description(__('Customize system text per language. Use exact source text as Key (for example: Dashboard).'))
-                                    ->schema([
-                                        Forms\Components\Repeater::make('custom_translations')
-                                            ->label(__('Translation Overrides'))
-                                            ->schema([
-                                                Forms\Components\Select::make('locale')
-                                                    ->label(__('Language'))
-                                                    ->options($this->languageOptions())
-                                                    ->searchable()
-                                                    ->required(),
-                                                Forms\Components\TextInput::make('key')
-                                                    ->label(__('Source Key/Text'))
-                                                    ->required()
-                                                    ->maxLength(255),
-                                                Forms\Components\Textarea::make('value')
-                                                    ->label(__('Translated Value'))
-                                                    ->required()
-                                                    ->rows(2),
-                                            ])
-                                            ->columns(1)
-                                            ->reorderableWithButtons()
-                                            ->collapsible()
-                                            ->columnSpanFull(),
                                     ]),
                             ]),
 
@@ -954,50 +792,12 @@ class SystemSettings extends Page
         $data['registration_fields_json'] = json_encode(array_values($data['registration_fields'] ?? []));
         $data['registration_required_fields_json'] = json_encode(array_values($data['registration_required_fields'] ?? []));
         $data['registration_custom_fields_json'] = json_encode(array_values($data['registration_custom_fields'] ?? []));
-        $enabledLocales = collect($data['enabled_locales'] ?? [])
-            ->filter(fn ($code) => is_string($code) && array_key_exists($code, $this->languageOptions()))
-            ->unique()
-            ->values();
-        if ($enabledLocales->isEmpty()) {
-            $enabledLocales = collect(['en']);
+        if (!array_key_exists((string) ($data['app_locale'] ?? ''), $this->languageOptions())) {
+            $data['app_locale'] = config('app.locale', 'en');
         }
-        if (!$enabledLocales->contains($data['app_locale'] ?? '')) {
-            $data['app_locale'] = (string) $enabledLocales->first();
+        if (!array_key_exists((string) ($data['app_fallback_locale'] ?? ''), $this->languageOptions())) {
+            $data['app_fallback_locale'] = config('app.fallback_locale', 'en');
         }
-        if (!$enabledLocales->contains($data['app_fallback_locale'] ?? '')) {
-            $data['app_fallback_locale'] = (string) $enabledLocales->first();
-        }
-
-        $translationLocale = (string) ($data['translation_locale'] ?? $data['app_locale'] ?? 'en');
-        if (!array_key_exists($translationLocale, $this->languageOptions())) {
-            $translationLocale = (string) $enabledLocales->first();
-        }
-        $data['translation_locale'] = $translationLocale;
-
-        $persistedRows = $this->sanitizeCustomTranslations(SystemTranslationStore::read());
-        $formRows = $this->sanitizeCustomTranslations($data['custom_translations'] ?? []);
-        $baseRows = $this->mergeTranslationRows($persistedRows, $formRows);
-        $editorRows = $this->sanitizeTranslationEditorRows(
-            $data['translation_editor'] ?? [],
-            $translationLocale,
-            $this->translationKeyCatalog()
-        );
-        $fullRows = $this->mergeTranslationRows($baseRows, $editorRows);
-        $fullRows = $this->fillMissingTranslationsForLocales(
-            $fullRows,
-            $enabledLocales->all()
-        );
-        $data['translation_editor'] = $this->buildTranslationEditorRows(
-            $translationLocale,
-            $fullRows,
-            (string) ($data['translation_search'] ?? ''),
-            max(1, (int) ($data['translation_page'] ?? 1)),
-            max(25, (int) ($data['translation_per_page'] ?? 50))
-        );
-        $data['custom_translations'] = $this->subsetCustomTranslationsForUi($fullRows, $translationLocale);
-
-        $data['enabled_locales_json'] = json_encode($enabledLocales->all());
-        SystemTranslationStore::write($fullRows);
         $data['notification_templates_json'] = json_encode(
             collect($data['notification_templates'] ?? [])
                 ->filter(fn ($row) => is_array($row) && !empty($row['event']))
@@ -1045,7 +845,7 @@ class SystemSettings extends Page
         $data['registration_custom_fields_json'] = json_encode($customFields);
 
         foreach ($data as $key => $value) {
-            if (!in_array($key, ['test_phone', 'sms_payload_template', 'sms_custom_headers', 'webhook_events', 'registration_fields', 'registration_required_fields', 'registration_custom_fields', 'notification_templates', 'enabled_locales', 'custom_translations', 'translation_locale', 'translation_search', 'translation_page', 'translation_per_page', 'translation_editor'], true)) {
+            if (!in_array($key, ['test_phone', 'sms_payload_template', 'sms_custom_headers', 'webhook_events', 'registration_fields', 'registration_required_fields', 'registration_custom_fields', 'notification_templates'], true)) {
                 SystemSetting::setSetting($key, $value);
             }
         }
@@ -1335,32 +1135,6 @@ class SystemSettings extends Page
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('exportTranslationsJson')
-                ->label(__('Export Translations JSON'))
-                ->icon('heroicon-o-arrow-down-tray')
-                ->color('success')
-                ->action(fn () => $this->exportTranslationsJson()),
-            Action::make('importTranslationsJson')
-                ->label(__('Import Translations JSON'))
-                ->icon('heroicon-o-arrow-up-tray')
-                ->color('info')
-                ->form([
-                    Forms\Components\Textarea::make('translations_json')
-                        ->label(__('Translations JSON'))
-                        ->rows(14)
-                        ->required()
-                        ->placeholder("{\n  \"translations\": [\n    {\"locale\": \"fr\", \"key\": \"Dashboard\", \"value\": \"Tableau de bord\"}\n  ]\n}"),
-                    Forms\Components\Toggle::make('replace_existing')
-                        ->label(__('Replace existing translations'))
-                        ->helperText(__('If enabled, existing custom translations are replaced. If disabled, imported lines are merged.')),
-                ])
-                ->action(fn (array $data) => $this->importTranslationsJson($data)),
-            Action::make('installFullLanguagePacks')
-                ->label(__('Install Full Language Packs'))
-                ->icon('heroicon-o-language')
-                ->color('success')
-                ->requiresConfirmation()
-                ->action(fn () => $this->installFullLanguagePacks()),
             Action::make('generateApiKey')
                 ->label(__('Generate API Key'))
                 ->icon('heroicon-o-key')

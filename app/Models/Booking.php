@@ -97,4 +97,25 @@ class Booking extends Model
     {
         return $this->outstandingAmount() <= 0;
     }
+
+    public function isActiveNow(): bool
+    {
+        if ($this->status !== 'approved') {
+            return false;
+        }
+
+        $today = now()->toDateString();
+        $checkIn = (string) optional($this->check_in_date)->toDateString();
+        $checkOut = optional($this->check_out_date)?->toDateString();
+
+        if ($checkIn === '' || $checkIn > $today) {
+            return false;
+        }
+
+        if ($checkOut !== null && $checkOut < $today) {
+            return false;
+        }
+
+        return true;
+    }
 }

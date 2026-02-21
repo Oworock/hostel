@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ __($title) }} - {{ __('Hostel Management System') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
@@ -96,6 +97,19 @@
             border-color: rgb(59 130 246 / .5);
             box-shadow: inset 0 0 0 1px rgb(59 130 246 / .35);
         }
+        .sidebar-menu details > summary::-webkit-details-marker { display: none; }
+        .sidebar-menu details > summary { position: relative; }
+        .sidebar-menu details > summary::after {
+            content: '+';
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            font-weight: 700;
+            opacity: 0.7;
+        }
+        .sidebar-menu details[open] > summary::after { content: '-'; }
         .site-footer { display: block !important; visibility: visible !important; width: 100% !important; }
         .dashboard-sidebar-scroll {
             overflow-y: auto;
@@ -304,6 +318,22 @@
         $resolvedLogoDark = $toLogoUrl($logoDark ?: $logoLight);
         $resolvedFavicon = $toLogoUrl($favicon);
         $currentUser = auth()->user();
+        $loginPopup = null;
+        if ($currentUser && ($currentUser->isStudent() || $currentUser->isManager())) {
+            $roleTarget = $currentUser->isStudent() ? 'students' : 'managers';
+            $dismissedPopupIds = collect(session('dismissed_popup_ids', []))
+                ->map(fn ($id) => (int) $id)
+                ->filter(fn ($id) => $id > 0)
+                ->values()
+                ->all();
+            $loginPopup = \App\Models\PopupAnnouncement::query()
+                ->currentlyActive()
+                ->whereIn('target', [$roleTarget, 'both'])
+                ->whereDoesntHave('seenByUsers', fn ($q) => $q->where('users.id', $currentUser->id))
+                ->when(!empty($dismissedPopupIds), fn ($q) => $q->whereNotIn('id', $dismissedPopupIds))
+                ->latest('id')
+                ->first();
+        }
         $profileImage = $currentUser?->profile_image ? asset('storage/' . $currentUser->profile_image) : null;
         $latestNotifications = $currentUser?->notifications()?->latest()->limit(8)->get() ?? collect();
         $unreadNotificationCount = $currentUser?->unreadNotifications()?->count() ?? 0;
@@ -523,6 +553,27 @@
         @include('components.footer')
     </div>
 
+    @if($loginPopup)
+        <div id="login-popup-modal" class="fixed bottom-4 right-4 z-[90] w-[calc(100%-2rem)] max-w-sm">
+            <div class="rounded-xl bg-white/95 dark:bg-slate-900/95 border border-gray-200 dark:border-slate-700 shadow-2xl backdrop-blur-sm">
+                <div class="px-4 py-3 border-b border-gray-200 dark:border-slate-700">
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-slate-100 truncate">{{ $loginPopup->title }}</h3>
+                </div>
+                <div class="px-4 py-3 text-xs text-gray-700 dark:text-slate-200 whitespace-pre-line max-h-40 overflow-y-auto">{{ $loginPopup->body }}</div>
+                <div class="px-4 py-3 border-t border-gray-200 dark:border-slate-700 flex justify-end">
+                    <button
+                        type="button"
+                        id="login-popup-dismiss"
+                        data-dismiss-url="{{ route('notifications.popup.dismiss', $loginPopup) }}"
+                        class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-md hover:bg-blue-700"
+                    >
+                        {{ __('Dismiss') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <script>
         (function () {
             const shell = document.getElementById('dashboard-shell');
@@ -699,6 +750,27 @@
                 if (e.target.closest('a') || e.target.closest('button[type="submit"]')) {
                     openMobileSidebar(false);
                 }
+            });
+
+            const popupDismissBtn = document.getElementById('login-popup-dismiss');
+            popupDismissBtn?.addEventListener('click', async function () {
+                const modal = document.getElementById('login-popup-modal');
+                const url = popupDismissBtn.getAttribute('data-dismiss-url');
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                try {
+                    await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrf || '',
+                            'Accept': 'application/json',
+                        },
+                    });
+                } catch (e) {
+                    // Ignore dismiss network failure; close popup for current view.
+                }
+
+                modal?.remove();
             });
         })();
     </script>

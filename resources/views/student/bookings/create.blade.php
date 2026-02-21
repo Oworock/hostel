@@ -101,51 +101,80 @@
                             @enderror
                         </div>
                     @else
-                        <div>
-                            <label for="academic_session_id" class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Academic Session *</label>
-                            <select id="academic_session_id" name="academic_session_id"
-                                    class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('academic_session_id') border-red-500 @enderror"
-                                    required onchange="updateSemesters()">
-                                <option value="">Select Academic Session</option>
-                                @foreach($academicSessions as $session)
-                                    <option value="{{ $session->id }}" @selected(old('academic_session_id') == $session->id)>
-                                        {{ $session->session_name }} ({{ $session->start_year }}/{{ $session->end_year }})
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('academic_session_id')
-                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        @if($periodType === 'semesters')
+                            @if($sessionBookingEnabled)
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-2">Booking For *</label>
+                                    <div class="flex gap-4">
+                                        <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-slate-200">
+                                            <input type="radio" name="booking_scope" value="semester" @checked(old('booking_scope', 'semester') === 'semester') onchange="toggleBookingScope()">
+                                            Semester
+                                        </label>
+                                        <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-slate-200">
+                                            <input type="radio" name="booking_scope" value="session" @checked(old('booking_scope') === 'session') onchange="toggleBookingScope()">
+                                            Session
+                                        </label>
+                                    </div>
+                                    @error('booking_scope')
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            @else
+                                <input type="hidden" name="booking_scope" value="semester">
+                            @endif
 
-                        <div>
-                            <label for="semester_id" class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">
-                                @if($periodType === 'semesters')
-                                    Semester *
-                                @else
-                                    Period *
-                                @endif
-                            </label>
-                            <select id="semester_id" name="semester_id"
-                                    class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('semester_id') border-red-500 @enderror"
-                                    required>
-                                <option value="">Select {{ $periodType === 'semesters' ? 'Semester' : 'Period' }}</option>
-                                @foreach($semesters as $semester)
-                                    <option value="{{ $semester->id }}"
-                                            data-session-id="{{ $semester->academic_session_id }}"
-                                            @selected(old('semester_id') == $semester->id)>
-                                        @if($periodType === 'semesters')
+                            <div>
+                                <label for="academic_session_id" class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Academic Session *</label>
+                                <select id="academic_session_id" name="academic_session_id"
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('academic_session_id') border-red-500 @enderror"
+                                        required onchange="updateSemesters()">
+                                    <option value="">Select Academic Session</option>
+                                    @foreach($academicSessions as $session)
+                                        <option value="{{ $session->id }}" @selected(old('academic_session_id') == $session->id)>
+                                            {{ $session->session_name }} ({{ $session->start_year }}/{{ $session->end_year }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('academic_session_id')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div id="semester-wrap">
+                                <label for="semester_id" class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Semester *</label>
+                                <select id="semester_id" name="semester_id"
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('semester_id') border-red-500 @enderror">
+                                    <option value="">Select Semester</option>
+                                    @foreach($semesters as $semester)
+                                        <option value="{{ $semester->id }}"
+                                                data-session-id="{{ $semester->academic_session_id }}"
+                                                @selected(old('semester_id') == $semester->id)>
                                             Semester {{ $semester->semester_number }}
-                                        @else
-                                            {{ $semester->start_date->format('M d, Y') }} - {{ $semester->end_date->format('M d, Y') }}
-                                        @endif
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('semester_id')
-                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('semester_id')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        @else
+                            <div>
+                                <label for="academic_session_id" class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Academic Session *</label>
+                                <select id="academic_session_id" name="academic_session_id"
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('academic_session_id') border-red-500 @enderror"
+                                        required>
+                                    <option value="">Select Academic Session</option>
+                                    @foreach($academicSessions as $session)
+                                        <option value="{{ $session->id }}" @selected(old('academic_session_id') == $session->id)>
+                                            {{ $session->session_name }} ({{ $session->start_year }}/{{ $session->end_year }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('academic_session_id')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        @endif
                     @endif
 
                     @if(!$availableBeds->isEmpty())
@@ -164,11 +193,19 @@
                     @endif
 
                     <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                        <p class="text-sm text-blue-800 dark:text-blue-200">
+                        <div class="text-sm text-blue-800 dark:text-blue-200">
                             <strong>{{ __('Price:') }}</strong>
                             <span id="total-amount">{{ getCurrencySymbol() }}{{ number_format($room->price_per_month, 2) }}</span>
-                            <span class="text-xs text-blue-700 dark:text-blue-300">(for 1 {{ getBookingPeriodLabel() }})</span>
-                        </p>
+                            <span id="price-caption" class="text-xs text-blue-700 dark:text-blue-300">(for 1 {{ getBookingPeriodLabel() }})</span>
+                            @if(($periodType === 'semesters' && $sessionBookingEnabled) || $periodType === 'sessions')
+                                <p class="mt-1 text-xs text-blue-700 dark:text-blue-300">
+                                    Session price: {{ getCurrencySymbol() }}{{ number_format($sessionPrice ?? 0, 2) }}
+                                    @if(($sessionDiscountType ?? 'none') !== 'none' && (float)($sessionDiscountValue ?? 0) > 0)
+                                        (discount: {{ $sessionDiscountType === 'percentage' ? rtrim(rtrim(number_format((float)$sessionDiscountValue, 2), '0'), '.') . '%' : getCurrencySymbol() . number_format((float)$sessionDiscountValue, 2) }})
+                                    @endif
+                                </p>
+                            @endif
+                        </div>
                     </div>
 
                     <div class="flex items-center space-x-4 pt-6 border-t border-gray-200 dark:border-slate-700">
@@ -203,23 +240,67 @@
             }
         }
     @else
-        function updateSemesters() {
-            const sessionId = document.getElementById('academic_session_id').value;
-            const semesterSelect = document.getElementById('semester_id');
-            const options = semesterSelect.querySelectorAll('option');
+        const regularAmount = {{ (float) $room->price_per_month }};
+        const sessionAmount = {{ (float) ($sessionPayable ?? $room->price_per_month) }};
+        const currency = '{{ getCurrencySymbol() }}';
 
+        function formatAmount(value) {
+            return currency + parseFloat(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        function updatePriceByScope() {
+            const total = document.getElementById('total-amount');
+            const caption = document.getElementById('price-caption');
+            const scope = document.querySelector('input[name="booking_scope"]:checked')?.value ?? '{{ $periodType === 'sessions' ? 'session' : 'semester' }}';
+
+            if (!total || !caption) return;
+
+            if (scope === 'session') {
+                total.textContent = formatAmount(sessionAmount);
+                caption.textContent = '(for 1 session)';
+            } else {
+                total.textContent = formatAmount(regularAmount);
+                caption.textContent = '(for 1 {{ getBookingPeriodLabel() }})';
+            }
+        }
+
+        function updateSemesters() {
+            const semesterSelect = document.getElementById('semester_id');
+            const sessionSelect = document.getElementById('academic_session_id');
+            if (!semesterSelect || !sessionSelect) return;
+
+            const sessionId = sessionSelect.value;
+            const options = semesterSelect.querySelectorAll('option');
             options.forEach(opt => {
                 if (opt.value === '') {
                     opt.style.display = 'block';
-                } else if (opt.getAttribute('data-session-id') === sessionId) {
-                    opt.style.display = 'block';
                 } else {
-                    opt.style.display = 'none';
+                    opt.style.display = opt.getAttribute('data-session-id') === sessionId ? 'block' : 'none';
                 }
             });
-
             semesterSelect.value = '';
         }
+
+        function toggleBookingScope() {
+            const scope = document.querySelector('input[name="booking_scope"]:checked')?.value ?? 'semester';
+            const semesterWrap = document.getElementById('semester-wrap');
+            const semesterSelect = document.getElementById('semester_id');
+
+            if (semesterWrap) {
+                semesterWrap.style.display = scope === 'session' ? 'none' : 'block';
+            }
+            if (semesterSelect) {
+                semesterSelect.required = scope !== 'session';
+            }
+
+            updatePriceByScope();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSemesters();
+            toggleBookingScope();
+            updatePriceByScope();
+        });
     @endif
 </script>
 </x-dashboard-layout>

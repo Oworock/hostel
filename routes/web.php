@@ -11,6 +11,7 @@ use App\Http\Controllers\Student\ComplaintController as StudentComplaintControll
 use App\Http\Controllers\Student\HostelChangeRequestController as StudentHostelChangeRequestController;
 use App\Http\Controllers\Student\PaymentController as StudentPaymentController;
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
+use App\Http\Controllers\Student\ReferralDashboardController as StudentReferralDashboardController;
 use App\Http\Controllers\Manager\HostelChangeRequestController as ManagerHostelChangeRequestController;
 use App\Http\Controllers\Manager\RoomChangeRequestController as ManagerRoomChangeRequestController;
 use App\Http\Controllers\Manager\AssetIssueController as ManagerAssetIssueController;
@@ -20,6 +21,8 @@ use App\Http\Controllers\PublicRoomController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\FileManagerController;
 use App\Http\Controllers\UserNotificationController;
+use App\Http\Controllers\ReferralController;
+use App\Http\Controllers\ReferralPartnerController;
 use App\Http\Controllers\Student\RoomChangeRequestController as StudentRoomChangeRequestController;
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\StaffRegistrationController;
@@ -43,6 +46,21 @@ Route::get('/', function () {
 });
 Route::get('/book-rooms', [PublicRoomController::class, 'index'])->name('public.rooms.index');
 Route::get('/book-rooms/{room}/book', [PublicRoomController::class, 'book'])->name('public.rooms.book');
+Route::middleware('addon.active:referral-system')->group(function () {
+    Route::get('/r/{code}', [ReferralController::class, 'capture'])->name('referrals.capture');
+});
+Route::middleware(['guest', 'addon.active:referral-system'])->group(function () {
+    Route::get('/referrals/register', [ReferralController::class, 'create'])->name('referrals.register.create');
+    Route::post('/referrals/register', [ReferralController::class, 'store'])->name('referrals.register.store');
+    Route::get('/referral/login', [ReferralPartnerController::class, 'showLogin'])->name('referral.login');
+    Route::post('/referral/login', [ReferralPartnerController::class, 'login'])->name('referral.login.submit');
+});
+Route::middleware(['referral.auth', 'addon.active:referral-system'])->group(function () {
+    Route::get('/referral/dashboard', [ReferralPartnerController::class, 'dashboard'])->name('referral.dashboard');
+    Route::post('/referral/payouts', [ReferralPartnerController::class, 'storePayoutRequest'])->name('referral.payouts.store');
+    Route::post('/referral/popup-dismiss', [ReferralPartnerController::class, 'dismissPopup'])->name('referral.popup.dismiss');
+    Route::post('/referral/logout', [ReferralPartnerController::class, 'logout'])->name('referral.logout');
+});
 Route::middleware(['guest', 'addon.active:staff-payroll'])->group(function () {
     Route::get('/staff/register/{token}', [StaffRegistrationController::class, 'create'])->name('staff.register.create');
     Route::post('/staff/register/{token}', [StaffRegistrationController::class, 'store'])->name('staff.register.store');
@@ -74,6 +92,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/notifications', [UserNotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/mark-all-read', [UserNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     Route::post('/notifications/{notificationId}/read', [UserNotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/popup/{announcement}/dismiss', [UserNotificationController::class, 'dismissLoginPopup'])->name('notifications.popup.dismiss');
 
     Route::get('/settings/profile', fn () => view('settings.profile'))->name('profile.edit');
     Route::get('/settings/password', fn () => view('settings.password'))->name('user-password.edit');
@@ -176,6 +195,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('room-change-requests', [StudentRoomChangeRequestController::class, 'store'])->name('room-change.store');
         Route::get('profile', [StudentProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [StudentProfileController::class, 'update'])->name('profile.update');
+        Route::middleware('addon.active:referral-system')->group(function () {
+            Route::get('referrals', [StudentReferralDashboardController::class, 'index'])->name('referrals.index');
+            Route::post('referrals/payouts', [StudentReferralDashboardController::class, 'storePayoutRequest'])->name('referrals.payouts.store');
+            Route::post('referrals/popup-dismiss', [StudentReferralDashboardController::class, 'dismissPopup'])->name('referrals.popup.dismiss');
+        });
+        Route::get('id-card', [\App\Http\Controllers\Student\IdCardController::class, 'show'])->name('id-card.show');
+        Route::get('id-card/download/svg', [\App\Http\Controllers\Student\IdCardController::class, 'downloadSvg'])->name('id-card.download.svg');
+        Route::get('id-card/download/png', [\App\Http\Controllers\Student\IdCardController::class, 'downloadPng'])->name('id-card.download.png');
+        Route::get('id-card/download/pdf', [\App\Http\Controllers\Student\IdCardController::class, 'downloadPdf'])->name('id-card.download.pdf');
     });
 });
 

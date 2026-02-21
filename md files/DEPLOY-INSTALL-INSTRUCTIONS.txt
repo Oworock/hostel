@@ -68,7 +68,13 @@ B) aaPanel Deployment
    php artisan route:cache
    php artisan view:cache
 7. Permissions:
-   chown -R www:www /www/wwwroot/hostel
+chown -R www:www /www/wwwroot/hostel
+
+========================================
+SYSTEM UPDATE MANIFEST DOCUMENTATION
+========================================
+For developer update flow (manifest.json + update package setup), see:
+UPDATE-MANIFEST-INSTRUCTIONS.txt
    chmod -R 775 /www/wwwroot/hostel/storage /www/wwwroot/hostel/bootstrap/cache
 
 ========================================
@@ -138,4 +144,3 @@ Post-Deployment Security
 2) Use HTTPS SSL certificate
 3) Restrict access to .env
 4) Schedule backups
-

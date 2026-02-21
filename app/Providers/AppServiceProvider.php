@@ -12,10 +12,8 @@ use App\Policies\BookingPolicy;
 use App\Policies\RoomPolicy;
 use App\Observers\PaymentObserver;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\View;
 use App\Models\SystemSetting;
-use App\Support\SystemTranslationStore;
 use App\Models\SalaryPayment;
 use App\Models\StaffMember;
 use App\Observers\SalaryPaymentObserver;
@@ -60,28 +58,6 @@ class AppServiceProvider extends ServiceProvider
 
             $rtlLocales = ['ar', 'he', 'ur', 'fa'];
             View::share('isRtlLocale', in_array($locale, $rtlLocales, true));
-
-            $rows = SystemTranslationStore::read();
-
-            if (!empty($rows)) {
-                $grouped = [];
-                foreach ($rows as $row) {
-                    if (!is_array($row)) {
-                        continue;
-                    }
-                    $targetLocale = trim((string) ($row['locale'] ?? ''));
-                    $key = trim((string) ($row['key'] ?? ''));
-                    $value = (string) ($row['value'] ?? '');
-                    if ($targetLocale === '' || $key === '' || $value === '') {
-                        continue;
-                    }
-                    $grouped[$targetLocale][$key] = $value;
-                }
-
-                foreach ($grouped as $targetLocale => $lines) {
-                    Lang::addLines($lines, $targetLocale);
-                }
-            }
         } catch (\Throwable $e) {
             // Ignore localization bootstrap errors to avoid breaking app startup.
         }

@@ -10,6 +10,7 @@
     $registrationFields = is_array($registrationFields) ? $registrationFields : ['phone'];
     $registrationRequiredFields = is_array($registrationRequiredFields) ? $registrationRequiredFields : [];
     $registrationCustomFields = is_array($registrationCustomFields) ? $registrationCustomFields : [];
+    $referralCode = strtoupper(trim((string) request('ref', session('referral_code', old('referral_code', '')))));
 @endphp
 <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
@@ -18,9 +19,16 @@
         </div>
 
         <h2 class="text-center text-3xl font-bold text-gray-900 mb-6">Create account</h2>
+
+        @if($referralCode !== '')
+            <div class="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-800">
+                Referral applied: <span class="font-semibold">{{ $referralCode }}</span>
+            </div>
+        @endif
         
         <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data" class="space-y-4">
             @csrf
+            <input type="hidden" name="referral_code" value="{{ $referralCode }}">
             <input type="hidden" name="form_started_at" value="{{ time() }}">
             <input type="text" name="website" value="" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
             

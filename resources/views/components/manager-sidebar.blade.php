@@ -2,9 +2,18 @@
     $base = 'menu-card flex items-center gap-3 font-semibold text-base transition-colors';
     $active = 'is-active text-blue-700 dark:text-blue-200';
     $idle = 'text-slate-700 dark:text-slate-200';
+    $operationsOpen = request()->routeIs('manager.students.*')
+        || request()->routeIs('manager.rooms.*')
+        || request()->routeIs('manager.bookings.*')
+        || request()->routeIs('manager.payments.*')
+        || request()->routeIs('manager.complaints.*')
+        || request()->routeIs('notifications.*')
+        || request()->routeIs('manager.files.*');
+    $requestsOpen = request()->routeIs('manager.hostel-change.*') || request()->routeIs('manager.room-change.*');
+    $servicesOpen = request()->routeIs('manager.assets.*') || request()->routeIs('manager.staff.*');
 @endphp
 
-<div class="pb-6 space-y-6">
+<div class="pb-6 space-y-4">
     <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/50 p-3">
         <a href="{{ route('dashboard') }}" class="{{ $base }} {{ request()->routeIs('dashboard') ? $active : $idle }}">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,109 +24,84 @@
     </div>
 
     <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/50 p-3">
-        <p class="px-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 menu-section">{{ __('Management') }}</p>
+        <details {{ $operationsOpen ? 'open' : '' }} class="group">
+            <summary class="menu-card cursor-pointer list-none {{ $operationsOpen ? 'is-active text-blue-700 dark:text-blue-200' : 'text-slate-700 dark:text-slate-200' }}">
+                <span class="menu-label">{{ __('Operations') }}</span>
+            </summary>
+            <div class="mt-2 space-y-2 pl-2">
+                <a href="{{ route('manager.students.index') }}" class="{{ $base }} {{ request()->routeIs('manager.students.*') ? $active : $idle }}">
+                    <span class="menu-label">{{ __('Students') }}</span>
+                </a>
+                <a href="{{ route('manager.rooms.index') }}" class="{{ $base }} {{ request()->routeIs('manager.rooms.*') ? $active : $idle }}">
+                    <span class="menu-label">{{ __('Rooms') }}</span>
+                </a>
+                <a href="{{ route('manager.rooms.create') }}" class="{{ $base }} {{ request()->routeIs('manager.rooms.create') ? $active : $idle }}">
+                    <span class="menu-label">{{ __('Add New Room') }}</span>
+                </a>
+                <a href="{{ route('manager.bookings.index') }}" class="{{ $base }} {{ request()->routeIs('manager.bookings.*') ? $active : $idle }}">
+                    <span class="menu-label">{{ __('Bookings') }}</span>
+                </a>
+                <a href="{{ route('manager.payments.index') }}" class="{{ $base }} {{ request()->routeIs('manager.payments.*') ? $active : $idle }}">
+                    <span class="menu-label">{{ __('Payments') }}</span>
+                </a>
+                <a href="{{ route('manager.complaints.index') }}" class="{{ $base }} {{ request()->routeIs('manager.complaints.*') ? $active : $idle }}">
+                    <span class="menu-label">{{ __('Complaints Queue') }}</span>
+                </a>
+                <a href="{{ route('notifications.index') }}" class="{{ $base }} {{ request()->routeIs('notifications.*') ? $active : $idle }}">
+                    <span class="menu-label">{{ __('Notifications') }}</span>
+                </a>
+                <a href="{{ route('manager.files.index') }}" class="{{ $base }} {{ request()->routeIs('manager.files.*') ? $active : $idle }}">
+                    <span class="menu-label">{{ __('File Manager') }}</span>
+                </a>
+            </div>
+        </details>
 
-        <a href="{{ route('manager.students.index') }}" class="{{ $base }} {{ request()->routeIs('manager.students.*') ? $active : $idle }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20h12v-2a9 9 0 00-9-9 9 9 0 00-9 9v2h12z"></path>
-            </svg>
-            <span class="menu-label">{{ __('Students') }}</span>
-        </a>
+        <details {{ $requestsOpen ? 'open' : '' }} class="group mt-3">
+            <summary class="menu-card cursor-pointer list-none {{ $requestsOpen ? 'is-active text-blue-700 dark:text-blue-200' : 'text-slate-700 dark:text-slate-200' }}">
+                <span class="menu-label">{{ __('Requests') }}</span>
+            </summary>
+            <div class="mt-2 space-y-2 pl-2">
+                <a href="{{ route('manager.hostel-change.index') }}" class="{{ $base }} {{ request()->routeIs('manager.hostel-change.*') ? $active : $idle }}">
+                    <span class="menu-label">{{ __('Hostel Change') }}</span>
+                </a>
+                <a href="{{ route('manager.room-change.index') }}" class="{{ $base }} {{ request()->routeIs('manager.room-change.*') ? $active : $idle }}">
+                    <span class="menu-label">{{ __('Room Change') }}</span>
+                </a>
+            </div>
+        </details>
 
-        <a href="{{ route('manager.rooms.index') }}" class="{{ $base }} {{ request()->routeIs('manager.rooms.*') ? $active : $idle }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5.581m0 0H9m0 0h5.581M9 3h6"></path>
-            </svg>
-            <span class="menu-label">{{ __('Rooms') }}</span>
-        </a>
-
-        <a href="{{ route('manager.rooms.create') }}" class="menu-card menu-subitem flex items-center gap-3 ml-8 text-sm font-semibold text-slate-600 dark:text-slate-300 transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            <span class="menu-label">{{ __('Add New Room') }}</span>
-        </a>
-
-        <a href="{{ route('manager.bookings.index') }}" class="{{ $base }} {{ request()->routeIs('manager.bookings.*') ? $active : $idle }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            <span class="menu-label">{{ __('Bookings') }}</span>
-        </a>
-
-        <a href="{{ route('manager.payments.index') }}" class="{{ $base }} {{ request()->routeIs('manager.payments.*') ? $active : $idle }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span class="menu-label">{{ __('Payments') }}</span>
-        </a>
-
-        <a href="{{ route('manager.complaints.index') }}" class="{{ $base }} {{ request()->routeIs('manager.complaints.*') ? $active : $idle }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
-            </svg>
-            <span class="menu-label">{{ __('Complaints Queue') }}</span>
-        </a>
-
-        <a href="{{ route('notifications.index') }}" class="{{ $base }} {{ request()->routeIs('notifications.*') ? $active : $idle }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2a2 2 0 01-.6 1.4L4 17h5m6 0a3 3 0 11-6 0m6 0H9"></path>
-            </svg>
-            <span class="menu-label">{{ __('Notifications') }}</span>
-        </a>
-
-        <a href="{{ route('manager.hostel-change.index') }}" class="{{ $base }} {{ request()->routeIs('manager.hostel-change.*') ? $active : $idle }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-            </svg>
-            <span class="menu-label">{{ __('Hostel Change') }}</span>
-        </a>
-
-        <a href="{{ route('manager.room-change.index') }}" class="{{ $base }} {{ request()->routeIs('manager.room-change.*') ? $active : $idle }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12M4 12h16M8 17h12"></path>
-            </svg>
-            <span class="menu-label">{{ __('Room Change') }}</span>
-        </a>
-
-        @if(\App\Models\Addon::isActive('asset-management'))
-            <a href="{{ route('manager.assets.index') }}" class="{{ $base }} {{ request()->routeIs('manager.assets.*') ? $active : $idle }}">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7H4m16 0v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7m16 0l-2-3H6L4 7"></path>
-                </svg>
-                <span class="menu-label">{{ __('Assets') }}</span>
-            </a>
-            <a href="{{ route('manager.assets.create') }}" class="menu-card menu-subitem flex items-center gap-3 ml-8 text-sm font-semibold {{ request()->routeIs('manager.assets.create') ? 'is-active text-blue-700 dark:text-blue-200' : 'text-slate-600 dark:text-slate-300' }} transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                <span class="menu-label">{{ __('Add Asset') }}</span>
-            </a>
-        @endif
-
-        @if(\App\Models\Addon::isActive('staff-payroll'))
-            <a href="{{ route('manager.staff.index') }}" class="{{ $base }} {{ request()->routeIs('manager.staff.*') ? $active : $idle }}">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M9 20H4v-2a3 3 0 015.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-                <span class="menu-label">{{ __('Staff Directory') }}</span>
-            </a>
-        @endif
-
-        <a href="{{ route('manager.files.index') }}" class="{{ $base }} {{ request()->routeIs('manager.files.*') ? $active : $idle }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h5l2 2h7a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"></path>
-            </svg>
-            <span class="menu-label">{{ __('File Manager') }}</span>
-        </a>
+        <details {{ $servicesOpen ? 'open' : '' }} class="group mt-3">
+            <summary class="menu-card cursor-pointer list-none {{ $servicesOpen ? 'is-active text-blue-700 dark:text-blue-200' : 'text-slate-700 dark:text-slate-200' }}">
+                <span class="menu-label">{{ __('Services') }}</span>
+            </summary>
+            <div class="mt-2 space-y-2 pl-2">
+                @if(\App\Models\Addon::isActive('asset-management'))
+                    <a href="{{ route('manager.assets.index') }}" class="{{ $base }} {{ request()->routeIs('manager.assets.*') ? $active : $idle }}">
+                        <span class="menu-label">{{ __('Assets') }}</span>
+                    </a>
+                    <a href="{{ route('manager.assets.create') }}" class="{{ $base }} {{ request()->routeIs('manager.assets.create') ? $active : $idle }}">
+                        <span class="menu-label">{{ __('Add Asset') }}</span>
+                    </a>
+                @endif
+                @if(\App\Models\Addon::isActive('staff-payroll'))
+                    <a href="{{ route('manager.staff.index') }}" class="{{ $base }} {{ request()->routeIs('manager.staff.*') ? $active : $idle }}">
+                        <span class="menu-label">{{ __('Staff Directory') }}</span>
+                    </a>
+                @endif
+            </div>
+        </details>
     </div>
 
     <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/50 p-3">
-        <a href="{{ route('manager.profile.edit') }}" class="{{ $base }} {{ request()->routeIs('manager.profile.*') ? $active : $idle }}">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
-            <span class="menu-label">{{ __('Profile Settings') }}</span>
-        </a>
+        <details open class="group">
+            <summary class="menu-card cursor-pointer list-none {{ request()->routeIs('manager.profile.*') ? 'is-active text-blue-700 dark:text-blue-200' : 'text-slate-700 dark:text-slate-200' }}">
+                <span class="menu-label">{{ __('Account') }}</span>
+            </summary>
+            <div class="mt-2 space-y-2 pl-2">
+                <a href="{{ route('manager.profile.edit') }}" class="{{ $base }} {{ request()->routeIs('manager.profile.*') ? $active : $idle }}">
+                    <span class="menu-label">{{ __('Profile Settings') }}</span>
+                </a>
+            </div>
+        </details>
     </div>
 </div>

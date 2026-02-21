@@ -1,6 +1,11 @@
 {
-    "updated_at": "2026-02-19T22:24:36+00:00",
+    "updated_at": "2026-02-21T07:28:39+00:00",
     "translations": [
+        {
+            "locale": "en",
+            "key": "+2349000000000",
+            "value": "+2349000000000"
+        },
         {
             "locale": "en",
             "key": "-",
@@ -15,11 +20,6 @@
             "locale": "en",
             "key": "587",
             "value": "587"
-        },
-        {
-            "locale": "en",
-            "key": "+2349000000000",
-            "value": "+2349000000000"
         },
         {
             "locale": "en",
@@ -128,6 +128,11 @@
         },
         {
             "locale": "en",
+            "key": "Add",
+            "value": "Add"
+        },
+        {
+            "locale": "en",
             "key": "Add Asset",
             "value": "Add Asset"
         },
@@ -135,11 +140,6 @@
             "locale": "en",
             "key": "Add Bed Space",
             "value": "Add Bed Space"
-        },
-        {
-            "locale": "en",
-            "key": "Add Block",
-            "value": "Add Block"
         },
         {
             "locale": "en",
@@ -983,6 +983,11 @@
         },
         {
             "locale": "en",
+            "key": "Confirmation required",
+            "value": "Confirmation required"
+        },
+        {
+            "locale": "en",
             "key": "Contact",
             "value": "Contact"
         },
@@ -1003,6 +1008,11 @@
         },
         {
             "locale": "en",
+            "key": "Continue & Apply",
+            "value": "Continue & Apply"
+        },
+        {
+            "locale": "en",
             "key": "Continue Booking",
             "value": "Continue Booking"
         },
@@ -1015,6 +1025,11 @@
             "locale": "en",
             "key": "Control base fields and add custom fields shown on the staff registration page.",
             "value": "Control base fields and add custom fields shown on the staff registration page."
+        },
+        {
+            "locale": "en",
+            "key": "Copy",
+            "value": "Copy"
         },
         {
             "locale": "en",
@@ -1085,6 +1100,11 @@
             "locale": "en",
             "key": "Current Stay",
             "value": "Current Stay"
+        },
+        {
+            "locale": "en",
+            "key": "Current Version",
+            "value": "Current Version"
         },
         {
             "locale": "en",
@@ -1213,8 +1233,18 @@
         },
         {
             "locale": "en",
+            "key": "Decline",
+            "value": "Decline"
+        },
+        {
+            "locale": "en",
             "key": "Default Language",
             "value": "Default Language"
+        },
+        {
+            "locale": "en",
+            "key": "Del",
+            "value": "Del"
         },
         {
             "locale": "en",
@@ -1343,16 +1373,6 @@
         },
         {
             "locale": "en",
-            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
-            "value": "Drag each block, resize it, change text size and color, and lock it when done."
-        },
-        {
-            "locale": "en",
-            "key": "Duplicate",
-            "value": "Duplicate"
-        },
-        {
-            "locale": "en",
             "key": "Duration",
             "value": "Duration"
         },
@@ -1380,6 +1400,11 @@
             "locale": "en",
             "key": "Edit Profile",
             "value": "Edit Profile"
+        },
+        {
+            "locale": "en",
+            "key": "Edit blocks on the left and preview the card on the right. Changes save automatically.",
+            "value": "Edit blocks on the left and preview the card on the right. Changes save automatically."
         },
         {
             "locale": "en",
@@ -1615,6 +1640,11 @@
             "locale": "en",
             "key": "Export Translations JSON",
             "value": "Export Translations JSON"
+        },
+        {
+            "locale": "en",
+            "key": "Failed to pull update",
+            "value": "Failed to pull update"
         },
         {
             "locale": "en",
@@ -1948,6 +1978,11 @@
         },
         {
             "locale": "en",
+            "key": "I understand customized files may be overwritten",
+            "value": "I understand customized files may be overwritten"
+        },
+        {
+            "locale": "en",
             "key": "ID",
             "value": "ID"
         },
@@ -1965,6 +2000,11 @@
             "locale": "en",
             "key": "ID Card Layout",
             "value": "ID Card Layout"
+        },
+        {
+            "locale": "en",
+            "key": "ID Card Layout Builder",
+            "value": "ID Card Layout Builder"
         },
         {
             "locale": "en",
@@ -2068,11 +2108,6 @@
         },
         {
             "locale": "en",
-            "key": "Interactive ID Card SVG Editor",
-            "value": "Interactive ID Card SVG Editor"
-        },
-        {
-            "locale": "en",
             "key": "Invalid JSON format.",
             "value": "Invalid JSON format."
         },
@@ -2130,6 +2165,11 @@
             "locale": "en",
             "key": "Job Title",
             "value": "Job Title"
+        },
+        {
+            "locale": "en",
+            "key": "Joined",
+            "value": "Joined"
         },
         {
             "locale": "en",
@@ -2410,6 +2450,11 @@
             "locale": "en",
             "key": "Managers can add assets but cannot edit any asset record after creation.",
             "value": "Managers can add assets but cannot edit any asset record after creation."
+        },
+        {
+            "locale": "en",
+            "key": "Manifest URL required",
+            "value": "Manifest URL required"
         },
         {
             "locale": "en",
@@ -2853,6 +2898,11 @@
         },
         {
             "locale": "en",
+            "key": "No update package selected",
+            "value": "No update package selected"
+        },
+        {
+            "locale": "en",
             "key": "No valid translation rows found.",
             "value": "No valid translation rows found."
         },
@@ -3283,6 +3333,21 @@
         },
         {
             "locale": "en",
+            "key": "Preview Update",
+            "value": "Preview Update"
+        },
+        {
+            "locale": "en",
+            "key": "Preview failed",
+            "value": "Preview failed"
+        },
+        {
+            "locale": "en",
+            "key": "Preview required",
+            "value": "Preview required"
+        },
+        {
+            "locale": "en",
             "key": "Previous",
             "value": "Previous"
         },
@@ -3355,6 +3420,11 @@
             "locale": "en",
             "key": "Publishable Key",
             "value": "Publishable Key"
+        },
+        {
+            "locale": "en",
+            "key": "Pull Remote Update",
+            "value": "Pull Remote Update"
         },
         {
             "locale": "en",
@@ -3640,6 +3710,11 @@
             "locale": "en",
             "key": "Reset",
             "value": "Reset"
+        },
+        {
+            "locale": "en",
+            "key": "Reset Defaults",
+            "value": "Reset Defaults"
         },
         {
             "locale": "en",
@@ -3943,11 +4018,6 @@
         },
         {
             "locale": "en",
-            "key": "Select a block on the card to edit it.",
-            "value": "Select a block on the card to edit it."
-        },
-        {
-            "locale": "en",
             "key": "Select a language and fill translated values. Keys are prefilled from the system translation catalog.",
             "value": "Select a language and fill translated values. Keys are prefilled from the system translation catalog."
         },
@@ -3960,11 +4030,6 @@
             "locale": "en",
             "key": "Select option",
             "value": "Select option"
-        },
-        {
-            "locale": "en",
-            "key": "Selected Block",
-            "value": "Selected Block"
         },
         {
             "locale": "en",
@@ -4128,11 +4193,6 @@
         },
         {
             "locale": "en",
-            "key": "Snap",
-            "value": "Snap"
-        },
-        {
-            "locale": "en",
             "key": "Sort Order",
             "value": "Sort Order"
         },
@@ -4155,6 +4215,11 @@
             "locale": "en",
             "key": "Staff",
             "value": "Staff"
+        },
+        {
+            "locale": "en",
+            "key": "Staff Code",
+            "value": "Staff Code"
         },
         {
             "locale": "en",
@@ -4638,13 +4703,53 @@
         },
         {
             "locale": "en",
+            "key": "Update Manifest URL",
+            "value": "Update Manifest URL"
+        },
+        {
+            "locale": "en",
             "key": "Update Profile",
             "value": "Update Profile"
         },
         {
             "locale": "en",
+            "key": "Update Zip File",
+            "value": "Update Zip File"
+        },
+        {
+            "locale": "en",
+            "key": "Update applied successfully",
+            "value": "Update applied successfully"
+        },
+        {
+            "locale": "en",
+            "key": "Update cancelled.",
+            "value": "Update cancelled."
+        },
+        {
+            "locale": "en",
+            "key": "Update failed",
+            "value": "Update failed"
+        },
+        {
+            "locale": "en",
+            "key": "Update package downloaded",
+            "value": "Update package downloaded"
+        },
+        {
+            "locale": "en",
+            "key": "Update package required",
+            "value": "Update package required"
+        },
+        {
+            "locale": "en",
             "key": "Update password",
             "value": "Update password"
+        },
+        {
+            "locale": "en",
+            "key": "Update preview ready",
+            "value": "Update preview ready"
         },
         {
             "locale": "en",
@@ -4680,6 +4785,11 @@
             "locale": "en",
             "key": "Upload Profile Picture",
             "value": "Upload Profile Picture"
+        },
+        {
+            "locale": "en",
+            "key": "Upload Update ZIP",
+            "value": "Upload Update ZIP"
         },
         {
             "locale": "en",
@@ -4755,6 +4865,11 @@
             "locale": "en",
             "key": "Verify Authentication Code",
             "value": "Verify Authentication Code"
+        },
+        {
+            "locale": "en",
+            "key": "Version & Source",
+            "value": "Version & Source"
         },
         {
             "locale": "en",
@@ -4943,6 +5058,11 @@
         },
         {
             "locale": "en",
+            "key": "https://example.com/updates/manifest.json",
+            "value": "https://example.com/updates/manifest.json"
+        },
+        {
+            "locale": "en",
             "key": "https://hooks.zapier.com/...",
             "value": "https://hooks.zapier.com/..."
         },
@@ -5038,6 +5158,11 @@
         },
         {
             "locale": "fr",
+            "key": "+2349000000000",
+            "value": "+2349000000000"
+        },
+        {
+            "locale": "fr",
             "key": "-",
             "value": "-"
         },
@@ -5050,11 +5175,6 @@
             "locale": "fr",
             "key": "587",
             "value": "587"
-        },
-        {
-            "locale": "fr",
-            "key": "+2349000000000",
-            "value": "+2349000000000"
         },
         {
             "locale": "fr",
@@ -5163,6 +5283,11 @@
         },
         {
             "locale": "fr",
+            "key": "Add",
+            "value": "Add"
+        },
+        {
+            "locale": "fr",
             "key": "Add Asset",
             "value": "Add actif"
         },
@@ -5170,11 +5295,6 @@
             "locale": "fr",
             "key": "Add Bed Space",
             "value": "Add lit Space"
-        },
-        {
-            "locale": "fr",
-            "key": "Add Block",
-            "value": "Add Block"
         },
         {
             "locale": "fr",
@@ -6018,6 +6138,11 @@
         },
         {
             "locale": "fr",
+            "key": "Confirmation required",
+            "value": "Confirmation required"
+        },
+        {
+            "locale": "fr",
             "key": "Contact",
             "value": "Contact"
         },
@@ -6038,6 +6163,11 @@
         },
         {
             "locale": "fr",
+            "key": "Continue & Apply",
+            "value": "Continue & Apply"
+        },
+        {
+            "locale": "fr",
             "key": "Continue Booking",
             "value": "Continue réservation"
         },
@@ -6050,6 +6180,11 @@
             "locale": "fr",
             "key": "Control base fields and add custom fields shown on the staff registration page.",
             "value": "Control base fields and add custom fields shown on the staff registration page."
+        },
+        {
+            "locale": "fr",
+            "key": "Copy",
+            "value": "Copy"
         },
         {
             "locale": "fr",
@@ -6120,6 +6255,11 @@
             "locale": "fr",
             "key": "Current Stay",
             "value": "Current Stay"
+        },
+        {
+            "locale": "fr",
+            "key": "Current Version",
+            "value": "Current Version"
         },
         {
             "locale": "fr",
@@ -6248,8 +6388,18 @@
         },
         {
             "locale": "fr",
+            "key": "Decline",
+            "value": "Decline"
+        },
+        {
+            "locale": "fr",
             "key": "Default Language",
             "value": "Langue par défaut"
+        },
+        {
+            "locale": "fr",
+            "key": "Del",
+            "value": "Del"
         },
         {
             "locale": "fr",
@@ -6378,16 +6528,6 @@
         },
         {
             "locale": "fr",
-            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
-            "value": "Drag each block, resize it, change text size and color, and lock it when done."
-        },
-        {
-            "locale": "fr",
-            "key": "Duplicate",
-            "value": "Duplicate"
-        },
-        {
-            "locale": "fr",
             "key": "Duration",
             "value": "Duration"
         },
@@ -6415,6 +6555,11 @@
             "locale": "fr",
             "key": "Edit Profile",
             "value": "modifier Profile"
+        },
+        {
+            "locale": "fr",
+            "key": "Edit blocks on the left and preview the card on the right. Changes save automatically.",
+            "value": "modifier blocks on the left and preview the card on the right. Changes save automatically."
         },
         {
             "locale": "fr",
@@ -6650,6 +6795,11 @@
             "locale": "fr",
             "key": "Export Translations JSON",
             "value": "exporter Translations JSON"
+        },
+        {
+            "locale": "fr",
+            "key": "Failed to pull update",
+            "value": "Failed to pull update"
         },
         {
             "locale": "fr",
@@ -6983,6 +7133,11 @@
         },
         {
             "locale": "fr",
+            "key": "I understand customized files may be overwritten",
+            "value": "I understand customized files may be overwritten"
+        },
+        {
+            "locale": "fr",
             "key": "ID",
             "value": "ID"
         },
@@ -7000,6 +7155,11 @@
             "locale": "fr",
             "key": "ID Card Layout",
             "value": "ID Card Layout"
+        },
+        {
+            "locale": "fr",
+            "key": "ID Card Layout Builder",
+            "value": "ID Card Layout Builder"
         },
         {
             "locale": "fr",
@@ -7103,11 +7263,6 @@
         },
         {
             "locale": "fr",
-            "key": "Interactive ID Card SVG Editor",
-            "value": "Interactive ID Card SVG Editor"
-        },
-        {
-            "locale": "fr",
             "key": "Invalid JSON format.",
             "value": "Invalid JSON format."
         },
@@ -7165,6 +7320,11 @@
             "locale": "fr",
             "key": "Job Title",
             "value": "Job Title"
+        },
+        {
+            "locale": "fr",
+            "key": "Joined",
+            "value": "Joined"
         },
         {
             "locale": "fr",
@@ -7445,6 +7605,11 @@
             "locale": "fr",
             "key": "Managers can add assets but cannot edit any asset record after creation.",
             "value": "gestionnaires can add actifs but cannot modifier any actif record after creation."
+        },
+        {
+            "locale": "fr",
+            "key": "Manifest URL required",
+            "value": "Manifest URL required"
         },
         {
             "locale": "fr",
@@ -7888,6 +8053,11 @@
         },
         {
             "locale": "fr",
+            "key": "No update package selected",
+            "value": "No update package selected"
+        },
+        {
+            "locale": "fr",
             "key": "No valid translation rows found.",
             "value": "No valid translation rows found."
         },
@@ -8318,6 +8488,21 @@
         },
         {
             "locale": "fr",
+            "key": "Preview Update",
+            "value": "Preview Update"
+        },
+        {
+            "locale": "fr",
+            "key": "Preview failed",
+            "value": "Preview failed"
+        },
+        {
+            "locale": "fr",
+            "key": "Preview required",
+            "value": "Preview required"
+        },
+        {
+            "locale": "fr",
             "key": "Previous",
             "value": "Previous"
         },
@@ -8390,6 +8575,11 @@
             "locale": "fr",
             "key": "Publishable Key",
             "value": "Publishable Key"
+        },
+        {
+            "locale": "fr",
+            "key": "Pull Remote Update",
+            "value": "Pull Remote Update"
         },
         {
             "locale": "fr",
@@ -8675,6 +8865,11 @@
             "locale": "fr",
             "key": "Reset",
             "value": "Reset"
+        },
+        {
+            "locale": "fr",
+            "key": "Reset Defaults",
+            "value": "Reset Defaults"
         },
         {
             "locale": "fr",
@@ -8978,11 +9173,6 @@
         },
         {
             "locale": "fr",
-            "key": "Select a block on the card to edit it.",
-            "value": "Select a block on the card to modifier it."
-        },
-        {
-            "locale": "fr",
             "key": "Select a language and fill translated values. Keys are prefilled from the system translation catalog.",
             "value": "Select a language and fill translated values. Keys are prefilled from the système translation catalog."
         },
@@ -8995,11 +9185,6 @@
             "locale": "fr",
             "key": "Select option",
             "value": "Select option"
-        },
-        {
-            "locale": "fr",
-            "key": "Selected Block",
-            "value": "Selected Block"
         },
         {
             "locale": "fr",
@@ -9163,11 +9348,6 @@
         },
         {
             "locale": "fr",
-            "key": "Snap",
-            "value": "Snap"
-        },
-        {
-            "locale": "fr",
             "key": "Sort Order",
             "value": "Sort Order"
         },
@@ -9190,6 +9370,11 @@
             "locale": "fr",
             "key": "Staff",
             "value": "Staff"
+        },
+        {
+            "locale": "fr",
+            "key": "Staff Code",
+            "value": "Staff Code"
         },
         {
             "locale": "fr",
@@ -9673,13 +9858,53 @@
         },
         {
             "locale": "fr",
+            "key": "Update Manifest URL",
+            "value": "Update Manifest URL"
+        },
+        {
+            "locale": "fr",
             "key": "Update Profile",
             "value": "Update Profile"
         },
         {
             "locale": "fr",
+            "key": "Update Zip File",
+            "value": "Update Zip File"
+        },
+        {
+            "locale": "fr",
+            "key": "Update applied successfully",
+            "value": "Update applied successfully"
+        },
+        {
+            "locale": "fr",
+            "key": "Update cancelled.",
+            "value": "Update cancelled."
+        },
+        {
+            "locale": "fr",
+            "key": "Update failed",
+            "value": "Update failed"
+        },
+        {
+            "locale": "fr",
+            "key": "Update package downloaded",
+            "value": "Update package downloaded"
+        },
+        {
+            "locale": "fr",
+            "key": "Update package required",
+            "value": "Update package required"
+        },
+        {
+            "locale": "fr",
             "key": "Update password",
             "value": "Update password"
+        },
+        {
+            "locale": "fr",
+            "key": "Update preview ready",
+            "value": "Update preview ready"
         },
         {
             "locale": "fr",
@@ -9715,6 +9940,11 @@
             "locale": "fr",
             "key": "Upload Profile Picture",
             "value": "Upload Profile Picture"
+        },
+        {
+            "locale": "fr",
+            "key": "Upload Update ZIP",
+            "value": "Upload Update ZIP"
         },
         {
             "locale": "fr",
@@ -9790,6 +10020,11 @@
             "locale": "fr",
             "key": "Verify Authentication Code",
             "value": "Verify Authentication Code"
+        },
+        {
+            "locale": "fr",
+            "key": "Version & Source",
+            "value": "Version & Source"
         },
         {
             "locale": "fr",
@@ -9978,6 +10213,11 @@
         },
         {
             "locale": "fr",
+            "key": "https://example.com/updates/manifest.json",
+            "value": "https://example.com/updates/manifest.json"
+        },
+        {
+            "locale": "fr",
             "key": "https://hooks.zapier.com/...",
             "value": "https://hooks.zapier.com/..."
         },
@@ -10073,6 +10313,11 @@
         },
         {
             "locale": "es",
+            "key": "+2349000000000",
+            "value": "+2349000000000"
+        },
+        {
+            "locale": "es",
             "key": "-",
             "value": "-"
         },
@@ -10085,11 +10330,6 @@
             "locale": "es",
             "key": "587",
             "value": "587"
-        },
-        {
-            "locale": "es",
-            "key": "+2349000000000",
-            "value": "+2349000000000"
         },
         {
             "locale": "es",
@@ -10198,6 +10438,11 @@
         },
         {
             "locale": "es",
+            "key": "Add",
+            "value": "Add"
+        },
+        {
+            "locale": "es",
             "key": "Add Asset",
             "value": "Add activo"
         },
@@ -10205,11 +10450,6 @@
             "locale": "es",
             "key": "Add Bed Space",
             "value": "Add cama Space"
-        },
-        {
-            "locale": "es",
-            "key": "Add Block",
-            "value": "Add Block"
         },
         {
             "locale": "es",
@@ -11053,6 +11293,11 @@
         },
         {
             "locale": "es",
+            "key": "Confirmation required",
+            "value": "Confirmation required"
+        },
+        {
+            "locale": "es",
             "key": "Contact",
             "value": "Contact"
         },
@@ -11073,6 +11318,11 @@
         },
         {
             "locale": "es",
+            "key": "Continue & Apply",
+            "value": "Continue & Apply"
+        },
+        {
+            "locale": "es",
             "key": "Continue Booking",
             "value": "Continue reserva"
         },
@@ -11085,6 +11335,11 @@
             "locale": "es",
             "key": "Control base fields and add custom fields shown on the staff registration page.",
             "value": "Control base fields and add custom fields shown on the staff registration page."
+        },
+        {
+            "locale": "es",
+            "key": "Copy",
+            "value": "Copy"
         },
         {
             "locale": "es",
@@ -11155,6 +11410,11 @@
             "locale": "es",
             "key": "Current Stay",
             "value": "Current Stay"
+        },
+        {
+            "locale": "es",
+            "key": "Current Version",
+            "value": "Current Version"
         },
         {
             "locale": "es",
@@ -11283,8 +11543,18 @@
         },
         {
             "locale": "es",
+            "key": "Decline",
+            "value": "Decline"
+        },
+        {
+            "locale": "es",
             "key": "Default Language",
             "value": "Idioma predeterminado"
+        },
+        {
+            "locale": "es",
+            "key": "Del",
+            "value": "Del"
         },
         {
             "locale": "es",
@@ -11413,16 +11683,6 @@
         },
         {
             "locale": "es",
-            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
-            "value": "Drag each block, resize it, change text size and color, and lock it when done."
-        },
-        {
-            "locale": "es",
-            "key": "Duplicate",
-            "value": "Duplicate"
-        },
-        {
-            "locale": "es",
             "key": "Duration",
             "value": "Duration"
         },
@@ -11450,6 +11710,11 @@
             "locale": "es",
             "key": "Edit Profile",
             "value": "editar Profile"
+        },
+        {
+            "locale": "es",
+            "key": "Edit blocks on the left and preview the card on the right. Changes save automatically.",
+            "value": "editar blocks on the left and preview the card on the right. Changes save automatically."
         },
         {
             "locale": "es",
@@ -11685,6 +11950,11 @@
             "locale": "es",
             "key": "Export Translations JSON",
             "value": "exportar Translations JSON"
+        },
+        {
+            "locale": "es",
+            "key": "Failed to pull update",
+            "value": "Failed to pull update"
         },
         {
             "locale": "es",
@@ -12018,6 +12288,11 @@
         },
         {
             "locale": "es",
+            "key": "I understand customized files may be overwritten",
+            "value": "I understand customized files may be overwritten"
+        },
+        {
+            "locale": "es",
             "key": "ID",
             "value": "ID"
         },
@@ -12035,6 +12310,11 @@
             "locale": "es",
             "key": "ID Card Layout",
             "value": "ID Card Layout"
+        },
+        {
+            "locale": "es",
+            "key": "ID Card Layout Builder",
+            "value": "ID Card Layout Builder"
         },
         {
             "locale": "es",
@@ -12138,11 +12418,6 @@
         },
         {
             "locale": "es",
-            "key": "Interactive ID Card SVG Editor",
-            "value": "Interactive ID Card SVG Editor"
-        },
-        {
-            "locale": "es",
             "key": "Invalid JSON format.",
             "value": "Invalid JSON format."
         },
@@ -12200,6 +12475,11 @@
             "locale": "es",
             "key": "Job Title",
             "value": "Job Title"
+        },
+        {
+            "locale": "es",
+            "key": "Joined",
+            "value": "Joined"
         },
         {
             "locale": "es",
@@ -12480,6 +12760,11 @@
             "locale": "es",
             "key": "Managers can add assets but cannot edit any asset record after creation.",
             "value": "gestores can add activos but cannot editar any activo record after creation."
+        },
+        {
+            "locale": "es",
+            "key": "Manifest URL required",
+            "value": "Manifest URL required"
         },
         {
             "locale": "es",
@@ -12923,6 +13208,11 @@
         },
         {
             "locale": "es",
+            "key": "No update package selected",
+            "value": "No update package selected"
+        },
+        {
+            "locale": "es",
             "key": "No valid translation rows found.",
             "value": "No valid translation rows found."
         },
@@ -13353,6 +13643,21 @@
         },
         {
             "locale": "es",
+            "key": "Preview Update",
+            "value": "Preview Update"
+        },
+        {
+            "locale": "es",
+            "key": "Preview failed",
+            "value": "Preview failed"
+        },
+        {
+            "locale": "es",
+            "key": "Preview required",
+            "value": "Preview required"
+        },
+        {
+            "locale": "es",
             "key": "Previous",
             "value": "Previous"
         },
@@ -13425,6 +13730,11 @@
             "locale": "es",
             "key": "Publishable Key",
             "value": "Publishable Key"
+        },
+        {
+            "locale": "es",
+            "key": "Pull Remote Update",
+            "value": "Pull Remote Update"
         },
         {
             "locale": "es",
@@ -13710,6 +14020,11 @@
             "locale": "es",
             "key": "Reset",
             "value": "Reset"
+        },
+        {
+            "locale": "es",
+            "key": "Reset Defaults",
+            "value": "Reset Defaults"
         },
         {
             "locale": "es",
@@ -14013,11 +14328,6 @@
         },
         {
             "locale": "es",
-            "key": "Select a block on the card to edit it.",
-            "value": "Select a block on the card to editar it."
-        },
-        {
-            "locale": "es",
             "key": "Select a language and fill translated values. Keys are prefilled from the system translation catalog.",
             "value": "Select a language and fill translated values. Keys are prefilled from the sistema translation catalog."
         },
@@ -14030,11 +14340,6 @@
             "locale": "es",
             "key": "Select option",
             "value": "Select option"
-        },
-        {
-            "locale": "es",
-            "key": "Selected Block",
-            "value": "Selected Block"
         },
         {
             "locale": "es",
@@ -14198,11 +14503,6 @@
         },
         {
             "locale": "es",
-            "key": "Snap",
-            "value": "Snap"
-        },
-        {
-            "locale": "es",
             "key": "Sort Order",
             "value": "Sort Order"
         },
@@ -14225,6 +14525,11 @@
             "locale": "es",
             "key": "Staff",
             "value": "Staff"
+        },
+        {
+            "locale": "es",
+            "key": "Staff Code",
+            "value": "Staff Code"
         },
         {
             "locale": "es",
@@ -14708,13 +15013,53 @@
         },
         {
             "locale": "es",
+            "key": "Update Manifest URL",
+            "value": "Update Manifest URL"
+        },
+        {
+            "locale": "es",
             "key": "Update Profile",
             "value": "Update Profile"
         },
         {
             "locale": "es",
+            "key": "Update Zip File",
+            "value": "Update Zip File"
+        },
+        {
+            "locale": "es",
+            "key": "Update applied successfully",
+            "value": "Update applied successfully"
+        },
+        {
+            "locale": "es",
+            "key": "Update cancelled.",
+            "value": "Update cancelled."
+        },
+        {
+            "locale": "es",
+            "key": "Update failed",
+            "value": "Update failed"
+        },
+        {
+            "locale": "es",
+            "key": "Update package downloaded",
+            "value": "Update package downloaded"
+        },
+        {
+            "locale": "es",
+            "key": "Update package required",
+            "value": "Update package required"
+        },
+        {
+            "locale": "es",
             "key": "Update password",
             "value": "Update password"
+        },
+        {
+            "locale": "es",
+            "key": "Update preview ready",
+            "value": "Update preview ready"
         },
         {
             "locale": "es",
@@ -14750,6 +15095,11 @@
             "locale": "es",
             "key": "Upload Profile Picture",
             "value": "Upload Profile Picture"
+        },
+        {
+            "locale": "es",
+            "key": "Upload Update ZIP",
+            "value": "Upload Update ZIP"
         },
         {
             "locale": "es",
@@ -14825,6 +15175,11 @@
             "locale": "es",
             "key": "Verify Authentication Code",
             "value": "Verify Authentication Code"
+        },
+        {
+            "locale": "es",
+            "key": "Version & Source",
+            "value": "Version & Source"
         },
         {
             "locale": "es",
@@ -15013,6 +15368,11 @@
         },
         {
             "locale": "es",
+            "key": "https://example.com/updates/manifest.json",
+            "value": "https://example.com/updates/manifest.json"
+        },
+        {
+            "locale": "es",
             "key": "https://hooks.zapier.com/...",
             "value": "https://hooks.zapier.com/..."
         },
@@ -15108,6 +15468,11 @@
         },
         {
             "locale": "de",
+            "key": "+2349000000000",
+            "value": "+2349000000000"
+        },
+        {
+            "locale": "de",
             "key": "-",
             "value": "-"
         },
@@ -15120,11 +15485,6 @@
             "locale": "de",
             "key": "587",
             "value": "587"
-        },
-        {
-            "locale": "de",
-            "key": "+2349000000000",
-            "value": "+2349000000000"
         },
         {
             "locale": "de",
@@ -15233,6 +15593,11 @@
         },
         {
             "locale": "de",
+            "key": "Add",
+            "value": "Add"
+        },
+        {
+            "locale": "de",
             "key": "Add Asset",
             "value": "Add anlage"
         },
@@ -15240,11 +15605,6 @@
             "locale": "de",
             "key": "Add Bed Space",
             "value": "Add bett Space"
-        },
-        {
-            "locale": "de",
-            "key": "Add Block",
-            "value": "Add Block"
         },
         {
             "locale": "de",
@@ -16088,6 +16448,11 @@
         },
         {
             "locale": "de",
+            "key": "Confirmation required",
+            "value": "Confirmation required"
+        },
+        {
+            "locale": "de",
             "key": "Contact",
             "value": "Contact"
         },
@@ -16108,6 +16473,11 @@
         },
         {
             "locale": "de",
+            "key": "Continue & Apply",
+            "value": "Continue & Apply"
+        },
+        {
+            "locale": "de",
             "key": "Continue Booking",
             "value": "Continue buchung"
         },
@@ -16120,6 +16490,11 @@
             "locale": "de",
             "key": "Control base fields and add custom fields shown on the staff registration page.",
             "value": "Control base fields and add custom fields shown on the staff registration page."
+        },
+        {
+            "locale": "de",
+            "key": "Copy",
+            "value": "Copy"
         },
         {
             "locale": "de",
@@ -16190,6 +16565,11 @@
             "locale": "de",
             "key": "Current Stay",
             "value": "Current Stay"
+        },
+        {
+            "locale": "de",
+            "key": "Current Version",
+            "value": "Current Version"
         },
         {
             "locale": "de",
@@ -16318,8 +16698,18 @@
         },
         {
             "locale": "de",
+            "key": "Decline",
+            "value": "Decline"
+        },
+        {
+            "locale": "de",
             "key": "Default Language",
             "value": "Standardsprache"
+        },
+        {
+            "locale": "de",
+            "key": "Del",
+            "value": "Del"
         },
         {
             "locale": "de",
@@ -16448,16 +16838,6 @@
         },
         {
             "locale": "de",
-            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
-            "value": "Drag each block, resize it, change text size and color, and lock it when done."
-        },
-        {
-            "locale": "de",
-            "key": "Duplicate",
-            "value": "Duplicate"
-        },
-        {
-            "locale": "de",
             "key": "Duration",
             "value": "Duration"
         },
@@ -16485,6 +16865,11 @@
             "locale": "de",
             "key": "Edit Profile",
             "value": "bearbeiten Profile"
+        },
+        {
+            "locale": "de",
+            "key": "Edit blocks on the left and preview the card on the right. Changes save automatically.",
+            "value": "bearbeiten blocks on the left and preview the card on the right. Changes save automatically."
         },
         {
             "locale": "de",
@@ -16720,6 +17105,11 @@
             "locale": "de",
             "key": "Export Translations JSON",
             "value": "exportieren Translations JSON"
+        },
+        {
+            "locale": "de",
+            "key": "Failed to pull update",
+            "value": "Failed to pull update"
         },
         {
             "locale": "de",
@@ -17053,6 +17443,11 @@
         },
         {
             "locale": "de",
+            "key": "I understand customized files may be overwritten",
+            "value": "I understand customized files may be overwritten"
+        },
+        {
+            "locale": "de",
             "key": "ID",
             "value": "ID"
         },
@@ -17070,6 +17465,11 @@
             "locale": "de",
             "key": "ID Card Layout",
             "value": "ID Card Layout"
+        },
+        {
+            "locale": "de",
+            "key": "ID Card Layout Builder",
+            "value": "ID Card Layout Builder"
         },
         {
             "locale": "de",
@@ -17173,11 +17573,6 @@
         },
         {
             "locale": "de",
-            "key": "Interactive ID Card SVG Editor",
-            "value": "Interactive ID Card SVG Editor"
-        },
-        {
-            "locale": "de",
             "key": "Invalid JSON format.",
             "value": "Invalid JSON format."
         },
@@ -17235,6 +17630,11 @@
             "locale": "de",
             "key": "Job Title",
             "value": "Job Title"
+        },
+        {
+            "locale": "de",
+            "key": "Joined",
+            "value": "Joined"
         },
         {
             "locale": "de",
@@ -17515,6 +17915,11 @@
             "locale": "de",
             "key": "Managers can add assets but cannot edit any asset record after creation.",
             "value": "manager can add anlagen but cannot bearbeiten any anlage record after creation."
+        },
+        {
+            "locale": "de",
+            "key": "Manifest URL required",
+            "value": "Manifest URL required"
         },
         {
             "locale": "de",
@@ -17958,6 +18363,11 @@
         },
         {
             "locale": "de",
+            "key": "No update package selected",
+            "value": "No update package selected"
+        },
+        {
+            "locale": "de",
             "key": "No valid translation rows found.",
             "value": "No valid translation rows found."
         },
@@ -18388,6 +18798,21 @@
         },
         {
             "locale": "de",
+            "key": "Preview Update",
+            "value": "Preview Update"
+        },
+        {
+            "locale": "de",
+            "key": "Preview failed",
+            "value": "Preview failed"
+        },
+        {
+            "locale": "de",
+            "key": "Preview required",
+            "value": "Preview required"
+        },
+        {
+            "locale": "de",
             "key": "Previous",
             "value": "Previous"
         },
@@ -18460,6 +18885,11 @@
             "locale": "de",
             "key": "Publishable Key",
             "value": "Publishable Key"
+        },
+        {
+            "locale": "de",
+            "key": "Pull Remote Update",
+            "value": "Pull Remote Update"
         },
         {
             "locale": "de",
@@ -18745,6 +19175,11 @@
             "locale": "de",
             "key": "Reset",
             "value": "Reset"
+        },
+        {
+            "locale": "de",
+            "key": "Reset Defaults",
+            "value": "Reset Defaults"
         },
         {
             "locale": "de",
@@ -19048,11 +19483,6 @@
         },
         {
             "locale": "de",
-            "key": "Select a block on the card to edit it.",
-            "value": "Select a block on the card to bearbeiten it."
-        },
-        {
-            "locale": "de",
             "key": "Select a language and fill translated values. Keys are prefilled from the system translation catalog.",
             "value": "Select a language and fill translated values. Keys are prefilled from the system translation catalog."
         },
@@ -19065,11 +19495,6 @@
             "locale": "de",
             "key": "Select option",
             "value": "Select option"
-        },
-        {
-            "locale": "de",
-            "key": "Selected Block",
-            "value": "Selected Block"
         },
         {
             "locale": "de",
@@ -19233,11 +19658,6 @@
         },
         {
             "locale": "de",
-            "key": "Snap",
-            "value": "Snap"
-        },
-        {
-            "locale": "de",
             "key": "Sort Order",
             "value": "Sort Order"
         },
@@ -19260,6 +19680,11 @@
             "locale": "de",
             "key": "Staff",
             "value": "Staff"
+        },
+        {
+            "locale": "de",
+            "key": "Staff Code",
+            "value": "Staff Code"
         },
         {
             "locale": "de",
@@ -19743,13 +20168,53 @@
         },
         {
             "locale": "de",
+            "key": "Update Manifest URL",
+            "value": "Update Manifest URL"
+        },
+        {
+            "locale": "de",
             "key": "Update Profile",
             "value": "Update Profile"
         },
         {
             "locale": "de",
+            "key": "Update Zip File",
+            "value": "Update Zip File"
+        },
+        {
+            "locale": "de",
+            "key": "Update applied successfully",
+            "value": "Update applied successfully"
+        },
+        {
+            "locale": "de",
+            "key": "Update cancelled.",
+            "value": "Update cancelled."
+        },
+        {
+            "locale": "de",
+            "key": "Update failed",
+            "value": "Update failed"
+        },
+        {
+            "locale": "de",
+            "key": "Update package downloaded",
+            "value": "Update package downloaded"
+        },
+        {
+            "locale": "de",
+            "key": "Update package required",
+            "value": "Update package required"
+        },
+        {
+            "locale": "de",
             "key": "Update password",
             "value": "Update password"
+        },
+        {
+            "locale": "de",
+            "key": "Update preview ready",
+            "value": "Update preview ready"
         },
         {
             "locale": "de",
@@ -19785,6 +20250,11 @@
             "locale": "de",
             "key": "Upload Profile Picture",
             "value": "Upload Profile Picture"
+        },
+        {
+            "locale": "de",
+            "key": "Upload Update ZIP",
+            "value": "Upload Update ZIP"
         },
         {
             "locale": "de",
@@ -19860,6 +20330,11 @@
             "locale": "de",
             "key": "Verify Authentication Code",
             "value": "Verify Authentication Code"
+        },
+        {
+            "locale": "de",
+            "key": "Version & Source",
+            "value": "Version & Source"
         },
         {
             "locale": "de",
@@ -20048,6 +20523,11 @@
         },
         {
             "locale": "de",
+            "key": "https://example.com/updates/manifest.json",
+            "value": "https://example.com/updates/manifest.json"
+        },
+        {
+            "locale": "de",
             "key": "https://hooks.zapier.com/...",
             "value": "https://hooks.zapier.com/..."
         },
@@ -20143,6 +20623,11 @@
         },
         {
             "locale": "pt",
+            "key": "+2349000000000",
+            "value": "+2349000000000"
+        },
+        {
+            "locale": "pt",
             "key": "-",
             "value": "-"
         },
@@ -20155,11 +20640,6 @@
             "locale": "pt",
             "key": "587",
             "value": "587"
-        },
-        {
-            "locale": "pt",
-            "key": "+2349000000000",
-            "value": "+2349000000000"
         },
         {
             "locale": "pt",
@@ -20268,6 +20748,11 @@
         },
         {
             "locale": "pt",
+            "key": "Add",
+            "value": "Add"
+        },
+        {
+            "locale": "pt",
             "key": "Add Asset",
             "value": "Add ativo"
         },
@@ -20275,11 +20760,6 @@
             "locale": "pt",
             "key": "Add Bed Space",
             "value": "Add cama Space"
-        },
-        {
-            "locale": "pt",
-            "key": "Add Block",
-            "value": "Add Block"
         },
         {
             "locale": "pt",
@@ -21123,6 +21603,11 @@
         },
         {
             "locale": "pt",
+            "key": "Confirmation required",
+            "value": "Confirmation required"
+        },
+        {
+            "locale": "pt",
             "key": "Contact",
             "value": "Contact"
         },
@@ -21143,6 +21628,11 @@
         },
         {
             "locale": "pt",
+            "key": "Continue & Apply",
+            "value": "Continue & Apply"
+        },
+        {
+            "locale": "pt",
             "key": "Continue Booking",
             "value": "Continue reserva"
         },
@@ -21155,6 +21645,11 @@
             "locale": "pt",
             "key": "Control base fields and add custom fields shown on the staff registration page.",
             "value": "Control base fields and add custom fields shown on the staff registration page."
+        },
+        {
+            "locale": "pt",
+            "key": "Copy",
+            "value": "Copy"
         },
         {
             "locale": "pt",
@@ -21225,6 +21720,11 @@
             "locale": "pt",
             "key": "Current Stay",
             "value": "Current Stay"
+        },
+        {
+            "locale": "pt",
+            "key": "Current Version",
+            "value": "Current Version"
         },
         {
             "locale": "pt",
@@ -21353,8 +21853,18 @@
         },
         {
             "locale": "pt",
+            "key": "Decline",
+            "value": "Decline"
+        },
+        {
+            "locale": "pt",
             "key": "Default Language",
             "value": "Idioma padrão"
+        },
+        {
+            "locale": "pt",
+            "key": "Del",
+            "value": "Del"
         },
         {
             "locale": "pt",
@@ -21483,16 +21993,6 @@
         },
         {
             "locale": "pt",
-            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
-            "value": "Drag each block, resize it, change text size and color, and lock it when done."
-        },
-        {
-            "locale": "pt",
-            "key": "Duplicate",
-            "value": "Duplicate"
-        },
-        {
-            "locale": "pt",
             "key": "Duration",
             "value": "Duration"
         },
@@ -21520,6 +22020,11 @@
             "locale": "pt",
             "key": "Edit Profile",
             "value": "editar Profile"
+        },
+        {
+            "locale": "pt",
+            "key": "Edit blocks on the left and preview the card on the right. Changes save automatically.",
+            "value": "editar blocks on the left and preview the card on the right. Changes save automatically."
         },
         {
             "locale": "pt",
@@ -21755,6 +22260,11 @@
             "locale": "pt",
             "key": "Export Translations JSON",
             "value": "exportar Translations JSON"
+        },
+        {
+            "locale": "pt",
+            "key": "Failed to pull update",
+            "value": "Failed to pull update"
         },
         {
             "locale": "pt",
@@ -22088,6 +22598,11 @@
         },
         {
             "locale": "pt",
+            "key": "I understand customized files may be overwritten",
+            "value": "I understand customized files may be overwritten"
+        },
+        {
+            "locale": "pt",
             "key": "ID",
             "value": "ID"
         },
@@ -22105,6 +22620,11 @@
             "locale": "pt",
             "key": "ID Card Layout",
             "value": "ID Card Layout"
+        },
+        {
+            "locale": "pt",
+            "key": "ID Card Layout Builder",
+            "value": "ID Card Layout Builder"
         },
         {
             "locale": "pt",
@@ -22208,11 +22728,6 @@
         },
         {
             "locale": "pt",
-            "key": "Interactive ID Card SVG Editor",
-            "value": "Interactive ID Card SVG Editor"
-        },
-        {
-            "locale": "pt",
             "key": "Invalid JSON format.",
             "value": "Invalid JSON format."
         },
@@ -22270,6 +22785,11 @@
             "locale": "pt",
             "key": "Job Title",
             "value": "Job Title"
+        },
+        {
+            "locale": "pt",
+            "key": "Joined",
+            "value": "Joined"
         },
         {
             "locale": "pt",
@@ -22550,6 +23070,11 @@
             "locale": "pt",
             "key": "Managers can add assets but cannot edit any asset record after creation.",
             "value": "gerentes can add ativos but cannot editar any ativo record after creation."
+        },
+        {
+            "locale": "pt",
+            "key": "Manifest URL required",
+            "value": "Manifest URL required"
         },
         {
             "locale": "pt",
@@ -22993,6 +23518,11 @@
         },
         {
             "locale": "pt",
+            "key": "No update package selected",
+            "value": "No update package selected"
+        },
+        {
+            "locale": "pt",
             "key": "No valid translation rows found.",
             "value": "No valid translation rows found."
         },
@@ -23423,6 +23953,21 @@
         },
         {
             "locale": "pt",
+            "key": "Preview Update",
+            "value": "Preview Update"
+        },
+        {
+            "locale": "pt",
+            "key": "Preview failed",
+            "value": "Preview failed"
+        },
+        {
+            "locale": "pt",
+            "key": "Preview required",
+            "value": "Preview required"
+        },
+        {
+            "locale": "pt",
             "key": "Previous",
             "value": "Previous"
         },
@@ -23495,6 +24040,11 @@
             "locale": "pt",
             "key": "Publishable Key",
             "value": "Publishable Key"
+        },
+        {
+            "locale": "pt",
+            "key": "Pull Remote Update",
+            "value": "Pull Remote Update"
         },
         {
             "locale": "pt",
@@ -23780,6 +24330,11 @@
             "locale": "pt",
             "key": "Reset",
             "value": "Reset"
+        },
+        {
+            "locale": "pt",
+            "key": "Reset Defaults",
+            "value": "Reset Defaults"
         },
         {
             "locale": "pt",
@@ -24083,11 +24638,6 @@
         },
         {
             "locale": "pt",
-            "key": "Select a block on the card to edit it.",
-            "value": "Select a block on the card to editar it."
-        },
-        {
-            "locale": "pt",
             "key": "Select a language and fill translated values. Keys are prefilled from the system translation catalog.",
             "value": "Select a language and fill translated values. Keys are prefilled from the sistema translation catalog."
         },
@@ -24100,11 +24650,6 @@
             "locale": "pt",
             "key": "Select option",
             "value": "Select option"
-        },
-        {
-            "locale": "pt",
-            "key": "Selected Block",
-            "value": "Selected Block"
         },
         {
             "locale": "pt",
@@ -24268,11 +24813,6 @@
         },
         {
             "locale": "pt",
-            "key": "Snap",
-            "value": "Snap"
-        },
-        {
-            "locale": "pt",
             "key": "Sort Order",
             "value": "Sort Order"
         },
@@ -24295,6 +24835,11 @@
             "locale": "pt",
             "key": "Staff",
             "value": "Staff"
+        },
+        {
+            "locale": "pt",
+            "key": "Staff Code",
+            "value": "Staff Code"
         },
         {
             "locale": "pt",
@@ -24778,13 +25323,53 @@
         },
         {
             "locale": "pt",
+            "key": "Update Manifest URL",
+            "value": "Update Manifest URL"
+        },
+        {
+            "locale": "pt",
             "key": "Update Profile",
             "value": "Update Profile"
         },
         {
             "locale": "pt",
+            "key": "Update Zip File",
+            "value": "Update Zip File"
+        },
+        {
+            "locale": "pt",
+            "key": "Update applied successfully",
+            "value": "Update applied successfully"
+        },
+        {
+            "locale": "pt",
+            "key": "Update cancelled.",
+            "value": "Update cancelled."
+        },
+        {
+            "locale": "pt",
+            "key": "Update failed",
+            "value": "Update failed"
+        },
+        {
+            "locale": "pt",
+            "key": "Update package downloaded",
+            "value": "Update package downloaded"
+        },
+        {
+            "locale": "pt",
+            "key": "Update package required",
+            "value": "Update package required"
+        },
+        {
+            "locale": "pt",
             "key": "Update password",
             "value": "Update password"
+        },
+        {
+            "locale": "pt",
+            "key": "Update preview ready",
+            "value": "Update preview ready"
         },
         {
             "locale": "pt",
@@ -24820,6 +25405,11 @@
             "locale": "pt",
             "key": "Upload Profile Picture",
             "value": "Upload Profile Picture"
+        },
+        {
+            "locale": "pt",
+            "key": "Upload Update ZIP",
+            "value": "Upload Update ZIP"
         },
         {
             "locale": "pt",
@@ -24895,6 +25485,11 @@
             "locale": "pt",
             "key": "Verify Authentication Code",
             "value": "Verify Authentication Code"
+        },
+        {
+            "locale": "pt",
+            "key": "Version & Source",
+            "value": "Version & Source"
         },
         {
             "locale": "pt",
@@ -25083,6 +25678,11 @@
         },
         {
             "locale": "pt",
+            "key": "https://example.com/updates/manifest.json",
+            "value": "https://example.com/updates/manifest.json"
+        },
+        {
+            "locale": "pt",
             "key": "https://hooks.zapier.com/...",
             "value": "https://hooks.zapier.com/..."
         },
@@ -25178,6 +25778,11 @@
         },
         {
             "locale": "ar",
+            "key": "+2349000000000",
+            "value": "+2349000000000"
+        },
+        {
+            "locale": "ar",
             "key": "-",
             "value": "-"
         },
@@ -25190,11 +25795,6 @@
             "locale": "ar",
             "key": "587",
             "value": "587"
-        },
-        {
-            "locale": "ar",
-            "key": "+2349000000000",
-            "value": "+2349000000000"
         },
         {
             "locale": "ar",
@@ -25303,6 +25903,11 @@
         },
         {
             "locale": "ar",
+            "key": "Add",
+            "value": "Add"
+        },
+        {
+            "locale": "ar",
             "key": "Add Asset",
             "value": "Add أصل"
         },
@@ -25310,11 +25915,6 @@
             "locale": "ar",
             "key": "Add Bed Space",
             "value": "Add سرير Space"
-        },
-        {
-            "locale": "ar",
-            "key": "Add Block",
-            "value": "Add Block"
         },
         {
             "locale": "ar",
@@ -26158,6 +26758,11 @@
         },
         {
             "locale": "ar",
+            "key": "Confirmation required",
+            "value": "Confirmation required"
+        },
+        {
+            "locale": "ar",
             "key": "Contact",
             "value": "Contact"
         },
@@ -26178,6 +26783,11 @@
         },
         {
             "locale": "ar",
+            "key": "Continue & Apply",
+            "value": "Continue & Apply"
+        },
+        {
+            "locale": "ar",
             "key": "Continue Booking",
             "value": "Continue حجز"
         },
@@ -26190,6 +26800,11 @@
             "locale": "ar",
             "key": "Control base fields and add custom fields shown on the staff registration page.",
             "value": "Control base fields and add custom fields shown on the staff registration page."
+        },
+        {
+            "locale": "ar",
+            "key": "Copy",
+            "value": "Copy"
         },
         {
             "locale": "ar",
@@ -26260,6 +26875,11 @@
             "locale": "ar",
             "key": "Current Stay",
             "value": "Current Stay"
+        },
+        {
+            "locale": "ar",
+            "key": "Current Version",
+            "value": "Current Version"
         },
         {
             "locale": "ar",
@@ -26388,8 +27008,18 @@
         },
         {
             "locale": "ar",
+            "key": "Decline",
+            "value": "Decline"
+        },
+        {
+            "locale": "ar",
             "key": "Default Language",
             "value": "اللغة الافتراضية"
+        },
+        {
+            "locale": "ar",
+            "key": "Del",
+            "value": "Del"
         },
         {
             "locale": "ar",
@@ -26518,16 +27148,6 @@
         },
         {
             "locale": "ar",
-            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
-            "value": "Drag each block, resize it, change text size and color, and lock it when done."
-        },
-        {
-            "locale": "ar",
-            "key": "Duplicate",
-            "value": "Duplicate"
-        },
-        {
-            "locale": "ar",
             "key": "Duration",
             "value": "Duration"
         },
@@ -26555,6 +27175,11 @@
             "locale": "ar",
             "key": "Edit Profile",
             "value": "تعديل Profile"
+        },
+        {
+            "locale": "ar",
+            "key": "Edit blocks on the left and preview the card on the right. Changes save automatically.",
+            "value": "تعديل blocks on the left and preview the card on the right. Changes save automatically."
         },
         {
             "locale": "ar",
@@ -26790,6 +27415,11 @@
             "locale": "ar",
             "key": "Export Translations JSON",
             "value": "تصدير Translations JSON"
+        },
+        {
+            "locale": "ar",
+            "key": "Failed to pull update",
+            "value": "Failed to pull update"
         },
         {
             "locale": "ar",
@@ -27123,6 +27753,11 @@
         },
         {
             "locale": "ar",
+            "key": "I understand customized files may be overwritten",
+            "value": "I understand customized files may be overwritten"
+        },
+        {
+            "locale": "ar",
             "key": "ID",
             "value": "ID"
         },
@@ -27140,6 +27775,11 @@
             "locale": "ar",
             "key": "ID Card Layout",
             "value": "ID Card Layout"
+        },
+        {
+            "locale": "ar",
+            "key": "ID Card Layout Builder",
+            "value": "ID Card Layout Builder"
         },
         {
             "locale": "ar",
@@ -27243,11 +27883,6 @@
         },
         {
             "locale": "ar",
-            "key": "Interactive ID Card SVG Editor",
-            "value": "Interactive ID Card SVG Editor"
-        },
-        {
-            "locale": "ar",
             "key": "Invalid JSON format.",
             "value": "Invalid JSON format."
         },
@@ -27305,6 +27940,11 @@
             "locale": "ar",
             "key": "Job Title",
             "value": "Job Title"
+        },
+        {
+            "locale": "ar",
+            "key": "Joined",
+            "value": "Joined"
         },
         {
             "locale": "ar",
@@ -27585,6 +28225,11 @@
             "locale": "ar",
             "key": "Managers can add assets but cannot edit any asset record after creation.",
             "value": "مديرون can add أصول but cannot تعديل any أصل record after creation."
+        },
+        {
+            "locale": "ar",
+            "key": "Manifest URL required",
+            "value": "Manifest URL required"
         },
         {
             "locale": "ar",
@@ -28028,6 +28673,11 @@
         },
         {
             "locale": "ar",
+            "key": "No update package selected",
+            "value": "No update package selected"
+        },
+        {
+            "locale": "ar",
             "key": "No valid translation rows found.",
             "value": "No valid translation rows found."
         },
@@ -28458,6 +29108,21 @@
         },
         {
             "locale": "ar",
+            "key": "Preview Update",
+            "value": "Preview Update"
+        },
+        {
+            "locale": "ar",
+            "key": "Preview failed",
+            "value": "Preview failed"
+        },
+        {
+            "locale": "ar",
+            "key": "Preview required",
+            "value": "Preview required"
+        },
+        {
+            "locale": "ar",
             "key": "Previous",
             "value": "Previous"
         },
@@ -28530,6 +29195,11 @@
             "locale": "ar",
             "key": "Publishable Key",
             "value": "Publishable Key"
+        },
+        {
+            "locale": "ar",
+            "key": "Pull Remote Update",
+            "value": "Pull Remote Update"
         },
         {
             "locale": "ar",
@@ -28815,6 +29485,11 @@
             "locale": "ar",
             "key": "Reset",
             "value": "Reset"
+        },
+        {
+            "locale": "ar",
+            "key": "Reset Defaults",
+            "value": "Reset Defaults"
         },
         {
             "locale": "ar",
@@ -29118,11 +29793,6 @@
         },
         {
             "locale": "ar",
-            "key": "Select a block on the card to edit it.",
-            "value": "Select a block on the card to تعديل it."
-        },
-        {
-            "locale": "ar",
             "key": "Select a language and fill translated values. Keys are prefilled from the system translation catalog.",
             "value": "Select a language and fill translated values. Keys are prefilled from the النظام translation catalog."
         },
@@ -29135,11 +29805,6 @@
             "locale": "ar",
             "key": "Select option",
             "value": "Select option"
-        },
-        {
-            "locale": "ar",
-            "key": "Selected Block",
-            "value": "Selected Block"
         },
         {
             "locale": "ar",
@@ -29303,11 +29968,6 @@
         },
         {
             "locale": "ar",
-            "key": "Snap",
-            "value": "Snap"
-        },
-        {
-            "locale": "ar",
             "key": "Sort Order",
             "value": "Sort Order"
         },
@@ -29330,6 +29990,11 @@
             "locale": "ar",
             "key": "Staff",
             "value": "Staff"
+        },
+        {
+            "locale": "ar",
+            "key": "Staff Code",
+            "value": "Staff Code"
         },
         {
             "locale": "ar",
@@ -29813,13 +30478,53 @@
         },
         {
             "locale": "ar",
+            "key": "Update Manifest URL",
+            "value": "Update Manifest URL"
+        },
+        {
+            "locale": "ar",
             "key": "Update Profile",
             "value": "Update Profile"
         },
         {
             "locale": "ar",
+            "key": "Update Zip File",
+            "value": "Update Zip File"
+        },
+        {
+            "locale": "ar",
+            "key": "Update applied successfully",
+            "value": "Update applied successfully"
+        },
+        {
+            "locale": "ar",
+            "key": "Update cancelled.",
+            "value": "Update cancelled."
+        },
+        {
+            "locale": "ar",
+            "key": "Update failed",
+            "value": "Update failed"
+        },
+        {
+            "locale": "ar",
+            "key": "Update package downloaded",
+            "value": "Update package downloaded"
+        },
+        {
+            "locale": "ar",
+            "key": "Update package required",
+            "value": "Update package required"
+        },
+        {
+            "locale": "ar",
             "key": "Update password",
             "value": "Update password"
+        },
+        {
+            "locale": "ar",
+            "key": "Update preview ready",
+            "value": "Update preview ready"
         },
         {
             "locale": "ar",
@@ -29855,6 +30560,11 @@
             "locale": "ar",
             "key": "Upload Profile Picture",
             "value": "Upload Profile Picture"
+        },
+        {
+            "locale": "ar",
+            "key": "Upload Update ZIP",
+            "value": "Upload Update ZIP"
         },
         {
             "locale": "ar",
@@ -29930,6 +30640,11 @@
             "locale": "ar",
             "key": "Verify Authentication Code",
             "value": "Verify Authentication Code"
+        },
+        {
+            "locale": "ar",
+            "key": "Version & Source",
+            "value": "Version & Source"
         },
         {
             "locale": "ar",
@@ -30118,6 +30833,11 @@
         },
         {
             "locale": "ar",
+            "key": "https://example.com/updates/manifest.json",
+            "value": "https://example.com/updates/manifest.json"
+        },
+        {
+            "locale": "ar",
             "key": "https://hooks.zapier.com/...",
             "value": "https://hooks.zapier.com/..."
         },
@@ -30213,6 +30933,11 @@
         },
         {
             "locale": "he",
+            "key": "+2349000000000",
+            "value": "+2349000000000"
+        },
+        {
+            "locale": "he",
             "key": "-",
             "value": "-"
         },
@@ -30225,11 +30950,6 @@
             "locale": "he",
             "key": "587",
             "value": "587"
-        },
-        {
-            "locale": "he",
-            "key": "+2349000000000",
-            "value": "+2349000000000"
         },
         {
             "locale": "he",
@@ -30338,6 +31058,11 @@
         },
         {
             "locale": "he",
+            "key": "Add",
+            "value": "Add"
+        },
+        {
+            "locale": "he",
             "key": "Add Asset",
             "value": "Add נכס"
         },
@@ -30345,11 +31070,6 @@
             "locale": "he",
             "key": "Add Bed Space",
             "value": "Add מיטה Space"
-        },
-        {
-            "locale": "he",
-            "key": "Add Block",
-            "value": "Add Block"
         },
         {
             "locale": "he",
@@ -31193,6 +31913,11 @@
         },
         {
             "locale": "he",
+            "key": "Confirmation required",
+            "value": "Confirmation required"
+        },
+        {
+            "locale": "he",
             "key": "Contact",
             "value": "Contact"
         },
@@ -31213,6 +31938,11 @@
         },
         {
             "locale": "he",
+            "key": "Continue & Apply",
+            "value": "Continue & Apply"
+        },
+        {
+            "locale": "he",
             "key": "Continue Booking",
             "value": "Continue הזמנה"
         },
@@ -31225,6 +31955,11 @@
             "locale": "he",
             "key": "Control base fields and add custom fields shown on the staff registration page.",
             "value": "Control base fields and add custom fields shown on the staff registration page."
+        },
+        {
+            "locale": "he",
+            "key": "Copy",
+            "value": "Copy"
         },
         {
             "locale": "he",
@@ -31295,6 +32030,11 @@
             "locale": "he",
             "key": "Current Stay",
             "value": "Current Stay"
+        },
+        {
+            "locale": "he",
+            "key": "Current Version",
+            "value": "Current Version"
         },
         {
             "locale": "he",
@@ -31423,8 +32163,18 @@
         },
         {
             "locale": "he",
+            "key": "Decline",
+            "value": "Decline"
+        },
+        {
+            "locale": "he",
             "key": "Default Language",
             "value": "שפת ברירת מחדל"
+        },
+        {
+            "locale": "he",
+            "key": "Del",
+            "value": "Del"
         },
         {
             "locale": "he",
@@ -31553,16 +32303,6 @@
         },
         {
             "locale": "he",
-            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
-            "value": "Drag each block, resize it, change text size and color, and lock it when done."
-        },
-        {
-            "locale": "he",
-            "key": "Duplicate",
-            "value": "Duplicate"
-        },
-        {
-            "locale": "he",
             "key": "Duration",
             "value": "Duration"
         },
@@ -31590,6 +32330,11 @@
             "locale": "he",
             "key": "Edit Profile",
             "value": "עריכה Profile"
+        },
+        {
+            "locale": "he",
+            "key": "Edit blocks on the left and preview the card on the right. Changes save automatically.",
+            "value": "עריכה blocks on the left and preview the card on the right. Changes save automatically."
         },
         {
             "locale": "he",
@@ -31825,6 +32570,11 @@
             "locale": "he",
             "key": "Export Translations JSON",
             "value": "ייצוא Translations JSON"
+        },
+        {
+            "locale": "he",
+            "key": "Failed to pull update",
+            "value": "Failed to pull update"
         },
         {
             "locale": "he",
@@ -32158,6 +32908,11 @@
         },
         {
             "locale": "he",
+            "key": "I understand customized files may be overwritten",
+            "value": "I understand customized files may be overwritten"
+        },
+        {
+            "locale": "he",
             "key": "ID",
             "value": "ID"
         },
@@ -32175,6 +32930,11 @@
             "locale": "he",
             "key": "ID Card Layout",
             "value": "ID Card Layout"
+        },
+        {
+            "locale": "he",
+            "key": "ID Card Layout Builder",
+            "value": "ID Card Layout Builder"
         },
         {
             "locale": "he",
@@ -32278,11 +33038,6 @@
         },
         {
             "locale": "he",
-            "key": "Interactive ID Card SVG Editor",
-            "value": "Interactive ID Card SVG Editor"
-        },
-        {
-            "locale": "he",
             "key": "Invalid JSON format.",
             "value": "Invalid JSON format."
         },
@@ -32340,6 +33095,11 @@
             "locale": "he",
             "key": "Job Title",
             "value": "Job Title"
+        },
+        {
+            "locale": "he",
+            "key": "Joined",
+            "value": "Joined"
         },
         {
             "locale": "he",
@@ -32620,6 +33380,11 @@
             "locale": "he",
             "key": "Managers can add assets but cannot edit any asset record after creation.",
             "value": "מנהלים can add נכסים but cannot עריכה any נכס record after creation."
+        },
+        {
+            "locale": "he",
+            "key": "Manifest URL required",
+            "value": "Manifest URL required"
         },
         {
             "locale": "he",
@@ -33063,6 +33828,11 @@
         },
         {
             "locale": "he",
+            "key": "No update package selected",
+            "value": "No update package selected"
+        },
+        {
+            "locale": "he",
             "key": "No valid translation rows found.",
             "value": "No valid translation rows found."
         },
@@ -33493,6 +34263,21 @@
         },
         {
             "locale": "he",
+            "key": "Preview Update",
+            "value": "Preview Update"
+        },
+        {
+            "locale": "he",
+            "key": "Preview failed",
+            "value": "Preview failed"
+        },
+        {
+            "locale": "he",
+            "key": "Preview required",
+            "value": "Preview required"
+        },
+        {
+            "locale": "he",
             "key": "Previous",
             "value": "Previous"
         },
@@ -33565,6 +34350,11 @@
             "locale": "he",
             "key": "Publishable Key",
             "value": "Publishable Key"
+        },
+        {
+            "locale": "he",
+            "key": "Pull Remote Update",
+            "value": "Pull Remote Update"
         },
         {
             "locale": "he",
@@ -33850,6 +34640,11 @@
             "locale": "he",
             "key": "Reset",
             "value": "Reset"
+        },
+        {
+            "locale": "he",
+            "key": "Reset Defaults",
+            "value": "Reset Defaults"
         },
         {
             "locale": "he",
@@ -34153,11 +34948,6 @@
         },
         {
             "locale": "he",
-            "key": "Select a block on the card to edit it.",
-            "value": "Select a block on the card to עריכה it."
-        },
-        {
-            "locale": "he",
             "key": "Select a language and fill translated values. Keys are prefilled from the system translation catalog.",
             "value": "Select a language and fill translated values. Keys are prefilled from the מערכת translation catalog."
         },
@@ -34170,11 +34960,6 @@
             "locale": "he",
             "key": "Select option",
             "value": "Select option"
-        },
-        {
-            "locale": "he",
-            "key": "Selected Block",
-            "value": "Selected Block"
         },
         {
             "locale": "he",
@@ -34338,11 +35123,6 @@
         },
         {
             "locale": "he",
-            "key": "Snap",
-            "value": "Snap"
-        },
-        {
-            "locale": "he",
             "key": "Sort Order",
             "value": "Sort Order"
         },
@@ -34365,6 +35145,11 @@
             "locale": "he",
             "key": "Staff",
             "value": "Staff"
+        },
+        {
+            "locale": "he",
+            "key": "Staff Code",
+            "value": "Staff Code"
         },
         {
             "locale": "he",
@@ -34848,13 +35633,53 @@
         },
         {
             "locale": "he",
+            "key": "Update Manifest URL",
+            "value": "Update Manifest URL"
+        },
+        {
+            "locale": "he",
             "key": "Update Profile",
             "value": "Update Profile"
         },
         {
             "locale": "he",
+            "key": "Update Zip File",
+            "value": "Update Zip File"
+        },
+        {
+            "locale": "he",
+            "key": "Update applied successfully",
+            "value": "Update applied successfully"
+        },
+        {
+            "locale": "he",
+            "key": "Update cancelled.",
+            "value": "Update cancelled."
+        },
+        {
+            "locale": "he",
+            "key": "Update failed",
+            "value": "Update failed"
+        },
+        {
+            "locale": "he",
+            "key": "Update package downloaded",
+            "value": "Update package downloaded"
+        },
+        {
+            "locale": "he",
+            "key": "Update package required",
+            "value": "Update package required"
+        },
+        {
+            "locale": "he",
             "key": "Update password",
             "value": "Update password"
+        },
+        {
+            "locale": "he",
+            "key": "Update preview ready",
+            "value": "Update preview ready"
         },
         {
             "locale": "he",
@@ -34890,6 +35715,11 @@
             "locale": "he",
             "key": "Upload Profile Picture",
             "value": "Upload Profile Picture"
+        },
+        {
+            "locale": "he",
+            "key": "Upload Update ZIP",
+            "value": "Upload Update ZIP"
         },
         {
             "locale": "he",
@@ -34965,6 +35795,11 @@
             "locale": "he",
             "key": "Verify Authentication Code",
             "value": "Verify Authentication Code"
+        },
+        {
+            "locale": "he",
+            "key": "Version & Source",
+            "value": "Version & Source"
         },
         {
             "locale": "he",
@@ -35153,6 +35988,11 @@
         },
         {
             "locale": "he",
+            "key": "https://example.com/updates/manifest.json",
+            "value": "https://example.com/updates/manifest.json"
+        },
+        {
+            "locale": "he",
             "key": "https://hooks.zapier.com/...",
             "value": "https://hooks.zapier.com/..."
         },
@@ -35248,6 +36088,11 @@
         },
         {
             "locale": "ur",
+            "key": "+2349000000000",
+            "value": "+2349000000000"
+        },
+        {
+            "locale": "ur",
             "key": "-",
             "value": "-"
         },
@@ -35260,11 +36105,6 @@
             "locale": "ur",
             "key": "587",
             "value": "587"
-        },
-        {
-            "locale": "ur",
-            "key": "+2349000000000",
-            "value": "+2349000000000"
         },
         {
             "locale": "ur",
@@ -35373,6 +36213,11 @@
         },
         {
             "locale": "ur",
+            "key": "Add",
+            "value": "Add"
+        },
+        {
+            "locale": "ur",
             "key": "Add Asset",
             "value": "Add اثاثہ"
         },
@@ -35380,11 +36225,6 @@
             "locale": "ur",
             "key": "Add Bed Space",
             "value": "Add بیڈ Space"
-        },
-        {
-            "locale": "ur",
-            "key": "Add Block",
-            "value": "Add Block"
         },
         {
             "locale": "ur",
@@ -36228,6 +37068,11 @@
         },
         {
             "locale": "ur",
+            "key": "Confirmation required",
+            "value": "Confirmation required"
+        },
+        {
+            "locale": "ur",
             "key": "Contact",
             "value": "Contact"
         },
@@ -36248,6 +37093,11 @@
         },
         {
             "locale": "ur",
+            "key": "Continue & Apply",
+            "value": "Continue & Apply"
+        },
+        {
+            "locale": "ur",
             "key": "Continue Booking",
             "value": "Continue بکنگ"
         },
@@ -36260,6 +37110,11 @@
             "locale": "ur",
             "key": "Control base fields and add custom fields shown on the staff registration page.",
             "value": "Control base fields and add custom fields shown on the staff registration page."
+        },
+        {
+            "locale": "ur",
+            "key": "Copy",
+            "value": "Copy"
         },
         {
             "locale": "ur",
@@ -36330,6 +37185,11 @@
             "locale": "ur",
             "key": "Current Stay",
             "value": "Current Stay"
+        },
+        {
+            "locale": "ur",
+            "key": "Current Version",
+            "value": "Current Version"
         },
         {
             "locale": "ur",
@@ -36458,8 +37318,18 @@
         },
         {
             "locale": "ur",
+            "key": "Decline",
+            "value": "Decline"
+        },
+        {
+            "locale": "ur",
             "key": "Default Language",
             "value": "ڈیفالٹ زبان"
+        },
+        {
+            "locale": "ur",
+            "key": "Del",
+            "value": "Del"
         },
         {
             "locale": "ur",
@@ -36588,16 +37458,6 @@
         },
         {
             "locale": "ur",
-            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
-            "value": "Drag each block, resize it, change text size and color, and lock it when done."
-        },
-        {
-            "locale": "ur",
-            "key": "Duplicate",
-            "value": "Duplicate"
-        },
-        {
-            "locale": "ur",
             "key": "Duration",
             "value": "Duration"
         },
@@ -36625,6 +37485,11 @@
             "locale": "ur",
             "key": "Edit Profile",
             "value": "ترمیم Profile"
+        },
+        {
+            "locale": "ur",
+            "key": "Edit blocks on the left and preview the card on the right. Changes save automatically.",
+            "value": "ترمیم blocks on the left and preview the card on the right. Changes save automatically."
         },
         {
             "locale": "ur",
@@ -36860,6 +37725,11 @@
             "locale": "ur",
             "key": "Export Translations JSON",
             "value": "برآمد Translations JSON"
+        },
+        {
+            "locale": "ur",
+            "key": "Failed to pull update",
+            "value": "Failed to pull update"
         },
         {
             "locale": "ur",
@@ -37193,6 +38063,11 @@
         },
         {
             "locale": "ur",
+            "key": "I understand customized files may be overwritten",
+            "value": "I understand customized files may be overwritten"
+        },
+        {
+            "locale": "ur",
             "key": "ID",
             "value": "ID"
         },
@@ -37210,6 +38085,11 @@
             "locale": "ur",
             "key": "ID Card Layout",
             "value": "ID Card Layout"
+        },
+        {
+            "locale": "ur",
+            "key": "ID Card Layout Builder",
+            "value": "ID Card Layout Builder"
         },
         {
             "locale": "ur",
@@ -37313,11 +38193,6 @@
         },
         {
             "locale": "ur",
-            "key": "Interactive ID Card SVG Editor",
-            "value": "Interactive ID Card SVG Editor"
-        },
-        {
-            "locale": "ur",
             "key": "Invalid JSON format.",
             "value": "Invalid JSON format."
         },
@@ -37375,6 +38250,11 @@
             "locale": "ur",
             "key": "Job Title",
             "value": "Job Title"
+        },
+        {
+            "locale": "ur",
+            "key": "Joined",
+            "value": "Joined"
         },
         {
             "locale": "ur",
@@ -37655,6 +38535,11 @@
             "locale": "ur",
             "key": "Managers can add assets but cannot edit any asset record after creation.",
             "value": "منیجرز can add اثاثے but cannot ترمیم any اثاثہ record after creation."
+        },
+        {
+            "locale": "ur",
+            "key": "Manifest URL required",
+            "value": "Manifest URL required"
         },
         {
             "locale": "ur",
@@ -38098,6 +38983,11 @@
         },
         {
             "locale": "ur",
+            "key": "No update package selected",
+            "value": "No update package selected"
+        },
+        {
+            "locale": "ur",
             "key": "No valid translation rows found.",
             "value": "No valid translation rows found."
         },
@@ -38528,6 +39418,21 @@
         },
         {
             "locale": "ur",
+            "key": "Preview Update",
+            "value": "Preview Update"
+        },
+        {
+            "locale": "ur",
+            "key": "Preview failed",
+            "value": "Preview failed"
+        },
+        {
+            "locale": "ur",
+            "key": "Preview required",
+            "value": "Preview required"
+        },
+        {
+            "locale": "ur",
             "key": "Previous",
             "value": "Previous"
         },
@@ -38600,6 +39505,11 @@
             "locale": "ur",
             "key": "Publishable Key",
             "value": "Publishable Key"
+        },
+        {
+            "locale": "ur",
+            "key": "Pull Remote Update",
+            "value": "Pull Remote Update"
         },
         {
             "locale": "ur",
@@ -38885,6 +39795,11 @@
             "locale": "ur",
             "key": "Reset",
             "value": "Reset"
+        },
+        {
+            "locale": "ur",
+            "key": "Reset Defaults",
+            "value": "Reset Defaults"
         },
         {
             "locale": "ur",
@@ -39188,11 +40103,6 @@
         },
         {
             "locale": "ur",
-            "key": "Select a block on the card to edit it.",
-            "value": "Select a block on the card to ترمیم it."
-        },
-        {
-            "locale": "ur",
             "key": "Select a language and fill translated values. Keys are prefilled from the system translation catalog.",
             "value": "Select a language and fill translated values. Keys are prefilled from the سسٹم translation catalog."
         },
@@ -39205,11 +40115,6 @@
             "locale": "ur",
             "key": "Select option",
             "value": "Select option"
-        },
-        {
-            "locale": "ur",
-            "key": "Selected Block",
-            "value": "Selected Block"
         },
         {
             "locale": "ur",
@@ -39373,11 +40278,6 @@
         },
         {
             "locale": "ur",
-            "key": "Snap",
-            "value": "Snap"
-        },
-        {
-            "locale": "ur",
             "key": "Sort Order",
             "value": "Sort Order"
         },
@@ -39400,6 +40300,11 @@
             "locale": "ur",
             "key": "Staff",
             "value": "Staff"
+        },
+        {
+            "locale": "ur",
+            "key": "Staff Code",
+            "value": "Staff Code"
         },
         {
             "locale": "ur",
@@ -39883,13 +40788,53 @@
         },
         {
             "locale": "ur",
+            "key": "Update Manifest URL",
+            "value": "Update Manifest URL"
+        },
+        {
+            "locale": "ur",
             "key": "Update Profile",
             "value": "Update Profile"
         },
         {
             "locale": "ur",
+            "key": "Update Zip File",
+            "value": "Update Zip File"
+        },
+        {
+            "locale": "ur",
+            "key": "Update applied successfully",
+            "value": "Update applied successfully"
+        },
+        {
+            "locale": "ur",
+            "key": "Update cancelled.",
+            "value": "Update cancelled."
+        },
+        {
+            "locale": "ur",
+            "key": "Update failed",
+            "value": "Update failed"
+        },
+        {
+            "locale": "ur",
+            "key": "Update package downloaded",
+            "value": "Update package downloaded"
+        },
+        {
+            "locale": "ur",
+            "key": "Update package required",
+            "value": "Update package required"
+        },
+        {
+            "locale": "ur",
             "key": "Update password",
             "value": "Update password"
+        },
+        {
+            "locale": "ur",
+            "key": "Update preview ready",
+            "value": "Update preview ready"
         },
         {
             "locale": "ur",
@@ -39925,6 +40870,11 @@
             "locale": "ur",
             "key": "Upload Profile Picture",
             "value": "Upload Profile Picture"
+        },
+        {
+            "locale": "ur",
+            "key": "Upload Update ZIP",
+            "value": "Upload Update ZIP"
         },
         {
             "locale": "ur",
@@ -40000,6 +40950,11 @@
             "locale": "ur",
             "key": "Verify Authentication Code",
             "value": "Verify Authentication Code"
+        },
+        {
+            "locale": "ur",
+            "key": "Version & Source",
+            "value": "Version & Source"
         },
         {
             "locale": "ur",
@@ -40188,6 +41143,11 @@
         },
         {
             "locale": "ur",
+            "key": "https://example.com/updates/manifest.json",
+            "value": "https://example.com/updates/manifest.json"
+        },
+        {
+            "locale": "ur",
             "key": "https://hooks.zapier.com/...",
             "value": "https://hooks.zapier.com/..."
         },
@@ -40283,6 +41243,11 @@
         },
         {
             "locale": "hi",
+            "key": "+2349000000000",
+            "value": "+2349000000000"
+        },
+        {
+            "locale": "hi",
             "key": "-",
             "value": "-"
         },
@@ -40295,11 +41260,6 @@
             "locale": "hi",
             "key": "587",
             "value": "587"
-        },
-        {
-            "locale": "hi",
-            "key": "+2349000000000",
-            "value": "+2349000000000"
         },
         {
             "locale": "hi",
@@ -40408,6 +41368,11 @@
         },
         {
             "locale": "hi",
+            "key": "Add",
+            "value": "Add"
+        },
+        {
+            "locale": "hi",
             "key": "Add Asset",
             "value": "Add संपत्ति"
         },
@@ -40415,11 +41380,6 @@
             "locale": "hi",
             "key": "Add Bed Space",
             "value": "Add बेड Space"
-        },
-        {
-            "locale": "hi",
-            "key": "Add Block",
-            "value": "Add Block"
         },
         {
             "locale": "hi",
@@ -41263,6 +42223,11 @@
         },
         {
             "locale": "hi",
+            "key": "Confirmation required",
+            "value": "Confirmation required"
+        },
+        {
+            "locale": "hi",
             "key": "Contact",
             "value": "Contact"
         },
@@ -41283,6 +42248,11 @@
         },
         {
             "locale": "hi",
+            "key": "Continue & Apply",
+            "value": "Continue & Apply"
+        },
+        {
+            "locale": "hi",
             "key": "Continue Booking",
             "value": "Continue बुकिंग"
         },
@@ -41295,6 +42265,11 @@
             "locale": "hi",
             "key": "Control base fields and add custom fields shown on the staff registration page.",
             "value": "Control base fields and add custom fields shown on the staff registration page."
+        },
+        {
+            "locale": "hi",
+            "key": "Copy",
+            "value": "Copy"
         },
         {
             "locale": "hi",
@@ -41365,6 +42340,11 @@
             "locale": "hi",
             "key": "Current Stay",
             "value": "Current Stay"
+        },
+        {
+            "locale": "hi",
+            "key": "Current Version",
+            "value": "Current Version"
         },
         {
             "locale": "hi",
@@ -41493,8 +42473,18 @@
         },
         {
             "locale": "hi",
+            "key": "Decline",
+            "value": "Decline"
+        },
+        {
+            "locale": "hi",
             "key": "Default Language",
             "value": "डिफ़ॉल्ट भाषा"
+        },
+        {
+            "locale": "hi",
+            "key": "Del",
+            "value": "Del"
         },
         {
             "locale": "hi",
@@ -41623,16 +42613,6 @@
         },
         {
             "locale": "hi",
-            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
-            "value": "Drag each block, resize it, change text size and color, and lock it when done."
-        },
-        {
-            "locale": "hi",
-            "key": "Duplicate",
-            "value": "Duplicate"
-        },
-        {
-            "locale": "hi",
             "key": "Duration",
             "value": "Duration"
         },
@@ -41660,6 +42640,11 @@
             "locale": "hi",
             "key": "Edit Profile",
             "value": "संपादित Profile"
+        },
+        {
+            "locale": "hi",
+            "key": "Edit blocks on the left and preview the card on the right. Changes save automatically.",
+            "value": "संपादित blocks on the left and preview the card on the right. Changes save automatically."
         },
         {
             "locale": "hi",
@@ -41895,6 +42880,11 @@
             "locale": "hi",
             "key": "Export Translations JSON",
             "value": "निर्यात Translations JSON"
+        },
+        {
+            "locale": "hi",
+            "key": "Failed to pull update",
+            "value": "Failed to pull update"
         },
         {
             "locale": "hi",
@@ -42228,6 +43218,11 @@
         },
         {
             "locale": "hi",
+            "key": "I understand customized files may be overwritten",
+            "value": "I understand customized files may be overwritten"
+        },
+        {
+            "locale": "hi",
             "key": "ID",
             "value": "ID"
         },
@@ -42245,6 +43240,11 @@
             "locale": "hi",
             "key": "ID Card Layout",
             "value": "ID Card Layout"
+        },
+        {
+            "locale": "hi",
+            "key": "ID Card Layout Builder",
+            "value": "ID Card Layout Builder"
         },
         {
             "locale": "hi",
@@ -42348,11 +43348,6 @@
         },
         {
             "locale": "hi",
-            "key": "Interactive ID Card SVG Editor",
-            "value": "Interactive ID Card SVG Editor"
-        },
-        {
-            "locale": "hi",
             "key": "Invalid JSON format.",
             "value": "Invalid JSON format."
         },
@@ -42410,6 +43405,11 @@
             "locale": "hi",
             "key": "Job Title",
             "value": "Job Title"
+        },
+        {
+            "locale": "hi",
+            "key": "Joined",
+            "value": "Joined"
         },
         {
             "locale": "hi",
@@ -42690,6 +43690,11 @@
             "locale": "hi",
             "key": "Managers can add assets but cannot edit any asset record after creation.",
             "value": "प्रबंधक can add संपत्तियां but cannot संपादित any संपत्ति record after creation."
+        },
+        {
+            "locale": "hi",
+            "key": "Manifest URL required",
+            "value": "Manifest URL required"
         },
         {
             "locale": "hi",
@@ -43133,6 +44138,11 @@
         },
         {
             "locale": "hi",
+            "key": "No update package selected",
+            "value": "No update package selected"
+        },
+        {
+            "locale": "hi",
             "key": "No valid translation rows found.",
             "value": "No valid translation rows found."
         },
@@ -43563,6 +44573,21 @@
         },
         {
             "locale": "hi",
+            "key": "Preview Update",
+            "value": "Preview Update"
+        },
+        {
+            "locale": "hi",
+            "key": "Preview failed",
+            "value": "Preview failed"
+        },
+        {
+            "locale": "hi",
+            "key": "Preview required",
+            "value": "Preview required"
+        },
+        {
+            "locale": "hi",
             "key": "Previous",
             "value": "Previous"
         },
@@ -43635,6 +44660,11 @@
             "locale": "hi",
             "key": "Publishable Key",
             "value": "Publishable Key"
+        },
+        {
+            "locale": "hi",
+            "key": "Pull Remote Update",
+            "value": "Pull Remote Update"
         },
         {
             "locale": "hi",
@@ -43920,6 +44950,11 @@
             "locale": "hi",
             "key": "Reset",
             "value": "Reset"
+        },
+        {
+            "locale": "hi",
+            "key": "Reset Defaults",
+            "value": "Reset Defaults"
         },
         {
             "locale": "hi",
@@ -44223,11 +45258,6 @@
         },
         {
             "locale": "hi",
-            "key": "Select a block on the card to edit it.",
-            "value": "Select a block on the card to संपादित it."
-        },
-        {
-            "locale": "hi",
             "key": "Select a language and fill translated values. Keys are prefilled from the system translation catalog.",
             "value": "Select a language and fill translated values. Keys are prefilled from the सिस्टम translation catalog."
         },
@@ -44240,11 +45270,6 @@
             "locale": "hi",
             "key": "Select option",
             "value": "Select option"
-        },
-        {
-            "locale": "hi",
-            "key": "Selected Block",
-            "value": "Selected Block"
         },
         {
             "locale": "hi",
@@ -44408,11 +45433,6 @@
         },
         {
             "locale": "hi",
-            "key": "Snap",
-            "value": "Snap"
-        },
-        {
-            "locale": "hi",
             "key": "Sort Order",
             "value": "Sort Order"
         },
@@ -44435,6 +45455,11 @@
             "locale": "hi",
             "key": "Staff",
             "value": "Staff"
+        },
+        {
+            "locale": "hi",
+            "key": "Staff Code",
+            "value": "Staff Code"
         },
         {
             "locale": "hi",
@@ -44918,13 +45943,53 @@
         },
         {
             "locale": "hi",
+            "key": "Update Manifest URL",
+            "value": "Update Manifest URL"
+        },
+        {
+            "locale": "hi",
             "key": "Update Profile",
             "value": "Update Profile"
         },
         {
             "locale": "hi",
+            "key": "Update Zip File",
+            "value": "Update Zip File"
+        },
+        {
+            "locale": "hi",
+            "key": "Update applied successfully",
+            "value": "Update applied successfully"
+        },
+        {
+            "locale": "hi",
+            "key": "Update cancelled.",
+            "value": "Update cancelled."
+        },
+        {
+            "locale": "hi",
+            "key": "Update failed",
+            "value": "Update failed"
+        },
+        {
+            "locale": "hi",
+            "key": "Update package downloaded",
+            "value": "Update package downloaded"
+        },
+        {
+            "locale": "hi",
+            "key": "Update package required",
+            "value": "Update package required"
+        },
+        {
+            "locale": "hi",
             "key": "Update password",
             "value": "Update password"
+        },
+        {
+            "locale": "hi",
+            "key": "Update preview ready",
+            "value": "Update preview ready"
         },
         {
             "locale": "hi",
@@ -44960,6 +46025,11 @@
             "locale": "hi",
             "key": "Upload Profile Picture",
             "value": "Upload Profile Picture"
+        },
+        {
+            "locale": "hi",
+            "key": "Upload Update ZIP",
+            "value": "Upload Update ZIP"
         },
         {
             "locale": "hi",
@@ -45035,6 +46105,11 @@
             "locale": "hi",
             "key": "Verify Authentication Code",
             "value": "Verify Authentication Code"
+        },
+        {
+            "locale": "hi",
+            "key": "Version & Source",
+            "value": "Version & Source"
         },
         {
             "locale": "hi",
@@ -45223,6 +46298,11 @@
         },
         {
             "locale": "hi",
+            "key": "https://example.com/updates/manifest.json",
+            "value": "https://example.com/updates/manifest.json"
+        },
+        {
+            "locale": "hi",
             "key": "https://hooks.zapier.com/...",
             "value": "https://hooks.zapier.com/..."
         },
@@ -45318,6 +46398,11 @@
         },
         {
             "locale": "zh_CN",
+            "key": "+2349000000000",
+            "value": "+2349000000000"
+        },
+        {
+            "locale": "zh_CN",
             "key": "-",
             "value": "-"
         },
@@ -45330,11 +46415,6 @@
             "locale": "zh_CN",
             "key": "587",
             "value": "587"
-        },
-        {
-            "locale": "zh_CN",
-            "key": "+2349000000000",
-            "value": "+2349000000000"
         },
         {
             "locale": "zh_CN",
@@ -45443,6 +46523,11 @@
         },
         {
             "locale": "zh_CN",
+            "key": "Add",
+            "value": "Add"
+        },
+        {
+            "locale": "zh_CN",
             "key": "Add Asset",
             "value": "Add 资产"
         },
@@ -45450,11 +46535,6 @@
             "locale": "zh_CN",
             "key": "Add Bed Space",
             "value": "Add 床位 Space"
-        },
-        {
-            "locale": "zh_CN",
-            "key": "Add Block",
-            "value": "Add Block"
         },
         {
             "locale": "zh_CN",
@@ -46298,6 +47378,11 @@
         },
         {
             "locale": "zh_CN",
+            "key": "Confirmation required",
+            "value": "Confirmation required"
+        },
+        {
+            "locale": "zh_CN",
             "key": "Contact",
             "value": "Contact"
         },
@@ -46318,6 +47403,11 @@
         },
         {
             "locale": "zh_CN",
+            "key": "Continue & Apply",
+            "value": "Continue & Apply"
+        },
+        {
+            "locale": "zh_CN",
             "key": "Continue Booking",
             "value": "Continue 预订"
         },
@@ -46330,6 +47420,11 @@
             "locale": "zh_CN",
             "key": "Control base fields and add custom fields shown on the staff registration page.",
             "value": "Control base fields and add custom fields shown on the staff registration page."
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Copy",
+            "value": "Copy"
         },
         {
             "locale": "zh_CN",
@@ -46400,6 +47495,11 @@
             "locale": "zh_CN",
             "key": "Current Stay",
             "value": "Current Stay"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Current Version",
+            "value": "Current Version"
         },
         {
             "locale": "zh_CN",
@@ -46528,8 +47628,18 @@
         },
         {
             "locale": "zh_CN",
+            "key": "Decline",
+            "value": "Decline"
+        },
+        {
+            "locale": "zh_CN",
             "key": "Default Language",
             "value": "默认语言"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Del",
+            "value": "Del"
         },
         {
             "locale": "zh_CN",
@@ -46658,16 +47768,6 @@
         },
         {
             "locale": "zh_CN",
-            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
-            "value": "Drag each block, resize it, change text size and color, and lock it when done."
-        },
-        {
-            "locale": "zh_CN",
-            "key": "Duplicate",
-            "value": "Duplicate"
-        },
-        {
-            "locale": "zh_CN",
             "key": "Duration",
             "value": "Duration"
         },
@@ -46695,6 +47795,11 @@
             "locale": "zh_CN",
             "key": "Edit Profile",
             "value": "编辑 Profile"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Edit blocks on the left and preview the card on the right. Changes save automatically.",
+            "value": "编辑 blocks on the left and preview the card on the right. Changes save automatically."
         },
         {
             "locale": "zh_CN",
@@ -46930,6 +48035,11 @@
             "locale": "zh_CN",
             "key": "Export Translations JSON",
             "value": "导出 Translations JSON"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Failed to pull update",
+            "value": "Failed to pull update"
         },
         {
             "locale": "zh_CN",
@@ -47263,6 +48373,11 @@
         },
         {
             "locale": "zh_CN",
+            "key": "I understand customized files may be overwritten",
+            "value": "I understand customized files may be overwritten"
+        },
+        {
+            "locale": "zh_CN",
             "key": "ID",
             "value": "ID"
         },
@@ -47280,6 +48395,11 @@
             "locale": "zh_CN",
             "key": "ID Card Layout",
             "value": "ID Card Layout"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "ID Card Layout Builder",
+            "value": "ID Card Layout Builder"
         },
         {
             "locale": "zh_CN",
@@ -47383,11 +48503,6 @@
         },
         {
             "locale": "zh_CN",
-            "key": "Interactive ID Card SVG Editor",
-            "value": "Interactive ID Card SVG Editor"
-        },
-        {
-            "locale": "zh_CN",
             "key": "Invalid JSON format.",
             "value": "Invalid JSON format."
         },
@@ -47445,6 +48560,11 @@
             "locale": "zh_CN",
             "key": "Job Title",
             "value": "Job Title"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Joined",
+            "value": "Joined"
         },
         {
             "locale": "zh_CN",
@@ -47725,6 +48845,11 @@
             "locale": "zh_CN",
             "key": "Managers can add assets but cannot edit any asset record after creation.",
             "value": "经理 can add 资产 but cannot 编辑 any 资产 record after creation."
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Manifest URL required",
+            "value": "Manifest URL required"
         },
         {
             "locale": "zh_CN",
@@ -48168,6 +49293,11 @@
         },
         {
             "locale": "zh_CN",
+            "key": "No update package selected",
+            "value": "No update package selected"
+        },
+        {
+            "locale": "zh_CN",
             "key": "No valid translation rows found.",
             "value": "No valid translation rows found."
         },
@@ -48598,6 +49728,21 @@
         },
         {
             "locale": "zh_CN",
+            "key": "Preview Update",
+            "value": "Preview Update"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Preview failed",
+            "value": "Preview failed"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Preview required",
+            "value": "Preview required"
+        },
+        {
+            "locale": "zh_CN",
             "key": "Previous",
             "value": "Previous"
         },
@@ -48670,6 +49815,11 @@
             "locale": "zh_CN",
             "key": "Publishable Key",
             "value": "Publishable Key"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Pull Remote Update",
+            "value": "Pull Remote Update"
         },
         {
             "locale": "zh_CN",
@@ -48955,6 +50105,11 @@
             "locale": "zh_CN",
             "key": "Reset",
             "value": "Reset"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Reset Defaults",
+            "value": "Reset Defaults"
         },
         {
             "locale": "zh_CN",
@@ -49258,11 +50413,6 @@
         },
         {
             "locale": "zh_CN",
-            "key": "Select a block on the card to edit it.",
-            "value": "Select a block on the card to 编辑 it."
-        },
-        {
-            "locale": "zh_CN",
             "key": "Select a language and fill translated values. Keys are prefilled from the system translation catalog.",
             "value": "Select a language and fill translated values. Keys are prefilled from the 系统 translation catalog."
         },
@@ -49275,11 +50425,6 @@
             "locale": "zh_CN",
             "key": "Select option",
             "value": "Select option"
-        },
-        {
-            "locale": "zh_CN",
-            "key": "Selected Block",
-            "value": "Selected Block"
         },
         {
             "locale": "zh_CN",
@@ -49443,11 +50588,6 @@
         },
         {
             "locale": "zh_CN",
-            "key": "Snap",
-            "value": "Snap"
-        },
-        {
-            "locale": "zh_CN",
             "key": "Sort Order",
             "value": "Sort Order"
         },
@@ -49470,6 +50610,11 @@
             "locale": "zh_CN",
             "key": "Staff",
             "value": "Staff"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Staff Code",
+            "value": "Staff Code"
         },
         {
             "locale": "zh_CN",
@@ -49953,13 +51098,53 @@
         },
         {
             "locale": "zh_CN",
+            "key": "Update Manifest URL",
+            "value": "Update Manifest URL"
+        },
+        {
+            "locale": "zh_CN",
             "key": "Update Profile",
             "value": "Update Profile"
         },
         {
             "locale": "zh_CN",
+            "key": "Update Zip File",
+            "value": "Update Zip File"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Update applied successfully",
+            "value": "Update applied successfully"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Update cancelled.",
+            "value": "Update cancelled."
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Update failed",
+            "value": "Update failed"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Update package downloaded",
+            "value": "Update package downloaded"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Update package required",
+            "value": "Update package required"
+        },
+        {
+            "locale": "zh_CN",
             "key": "Update password",
             "value": "Update password"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Update preview ready",
+            "value": "Update preview ready"
         },
         {
             "locale": "zh_CN",
@@ -49995,6 +51180,11 @@
             "locale": "zh_CN",
             "key": "Upload Profile Picture",
             "value": "Upload Profile Picture"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Upload Update ZIP",
+            "value": "Upload Update ZIP"
         },
         {
             "locale": "zh_CN",
@@ -50070,6 +51260,11 @@
             "locale": "zh_CN",
             "key": "Verify Authentication Code",
             "value": "Verify Authentication Code"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Version & Source",
+            "value": "Version & Source"
         },
         {
             "locale": "zh_CN",
@@ -50258,6 +51453,11 @@
         },
         {
             "locale": "zh_CN",
+            "key": "https://example.com/updates/manifest.json",
+            "value": "https://example.com/updates/manifest.json"
+        },
+        {
+            "locale": "zh_CN",
             "key": "https://hooks.zapier.com/...",
             "value": "https://hooks.zapier.com/..."
         },
@@ -50350,6 +51550,356 @@
             "locale": "zh_CN",
             "key": "••••••••",
             "value": "••••••••"
+        },
+        {
+            "locale": "en",
+            "key": "Add Block",
+            "value": "Add Block"
+        },
+        {
+            "locale": "en",
+            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
+            "value": "Drag each block, resize it, change text size and color, and lock it when done."
+        },
+        {
+            "locale": "en",
+            "key": "Duplicate",
+            "value": "Duplicate"
+        },
+        {
+            "locale": "en",
+            "key": "Interactive ID Card SVG Editor",
+            "value": "Interactive ID Card SVG Editor"
+        },
+        {
+            "locale": "en",
+            "key": "Select a block on the card to edit it.",
+            "value": "Select a block on the card to edit it."
+        },
+        {
+            "locale": "en",
+            "key": "Selected Block",
+            "value": "Selected Block"
+        },
+        {
+            "locale": "en",
+            "key": "Snap",
+            "value": "Snap"
+        },
+        {
+            "locale": "fr",
+            "key": "Add Block",
+            "value": "Add Block"
+        },
+        {
+            "locale": "fr",
+            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
+            "value": "Drag each block, resize it, change text size and color, and lock it when done."
+        },
+        {
+            "locale": "fr",
+            "key": "Duplicate",
+            "value": "Duplicate"
+        },
+        {
+            "locale": "fr",
+            "key": "Interactive ID Card SVG Editor",
+            "value": "Interactive ID Card SVG Editor"
+        },
+        {
+            "locale": "fr",
+            "key": "Select a block on the card to edit it.",
+            "value": "Select a block on the card to modifier it."
+        },
+        {
+            "locale": "fr",
+            "key": "Selected Block",
+            "value": "Selected Block"
+        },
+        {
+            "locale": "fr",
+            "key": "Snap",
+            "value": "Snap"
+        },
+        {
+            "locale": "es",
+            "key": "Add Block",
+            "value": "Add Block"
+        },
+        {
+            "locale": "es",
+            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
+            "value": "Drag each block, resize it, change text size and color, and lock it when done."
+        },
+        {
+            "locale": "es",
+            "key": "Duplicate",
+            "value": "Duplicate"
+        },
+        {
+            "locale": "es",
+            "key": "Interactive ID Card SVG Editor",
+            "value": "Interactive ID Card SVG Editor"
+        },
+        {
+            "locale": "es",
+            "key": "Select a block on the card to edit it.",
+            "value": "Select a block on the card to editar it."
+        },
+        {
+            "locale": "es",
+            "key": "Selected Block",
+            "value": "Selected Block"
+        },
+        {
+            "locale": "es",
+            "key": "Snap",
+            "value": "Snap"
+        },
+        {
+            "locale": "de",
+            "key": "Add Block",
+            "value": "Add Block"
+        },
+        {
+            "locale": "de",
+            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
+            "value": "Drag each block, resize it, change text size and color, and lock it when done."
+        },
+        {
+            "locale": "de",
+            "key": "Duplicate",
+            "value": "Duplicate"
+        },
+        {
+            "locale": "de",
+            "key": "Interactive ID Card SVG Editor",
+            "value": "Interactive ID Card SVG Editor"
+        },
+        {
+            "locale": "de",
+            "key": "Select a block on the card to edit it.",
+            "value": "Select a block on the card to bearbeiten it."
+        },
+        {
+            "locale": "de",
+            "key": "Selected Block",
+            "value": "Selected Block"
+        },
+        {
+            "locale": "de",
+            "key": "Snap",
+            "value": "Snap"
+        },
+        {
+            "locale": "pt",
+            "key": "Add Block",
+            "value": "Add Block"
+        },
+        {
+            "locale": "pt",
+            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
+            "value": "Drag each block, resize it, change text size and color, and lock it when done."
+        },
+        {
+            "locale": "pt",
+            "key": "Duplicate",
+            "value": "Duplicate"
+        },
+        {
+            "locale": "pt",
+            "key": "Interactive ID Card SVG Editor",
+            "value": "Interactive ID Card SVG Editor"
+        },
+        {
+            "locale": "pt",
+            "key": "Select a block on the card to edit it.",
+            "value": "Select a block on the card to editar it."
+        },
+        {
+            "locale": "pt",
+            "key": "Selected Block",
+            "value": "Selected Block"
+        },
+        {
+            "locale": "pt",
+            "key": "Snap",
+            "value": "Snap"
+        },
+        {
+            "locale": "ar",
+            "key": "Add Block",
+            "value": "Add Block"
+        },
+        {
+            "locale": "ar",
+            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
+            "value": "Drag each block, resize it, change text size and color, and lock it when done."
+        },
+        {
+            "locale": "ar",
+            "key": "Duplicate",
+            "value": "Duplicate"
+        },
+        {
+            "locale": "ar",
+            "key": "Interactive ID Card SVG Editor",
+            "value": "Interactive ID Card SVG Editor"
+        },
+        {
+            "locale": "ar",
+            "key": "Select a block on the card to edit it.",
+            "value": "Select a block on the card to تعديل it."
+        },
+        {
+            "locale": "ar",
+            "key": "Selected Block",
+            "value": "Selected Block"
+        },
+        {
+            "locale": "ar",
+            "key": "Snap",
+            "value": "Snap"
+        },
+        {
+            "locale": "he",
+            "key": "Add Block",
+            "value": "Add Block"
+        },
+        {
+            "locale": "he",
+            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
+            "value": "Drag each block, resize it, change text size and color, and lock it when done."
+        },
+        {
+            "locale": "he",
+            "key": "Duplicate",
+            "value": "Duplicate"
+        },
+        {
+            "locale": "he",
+            "key": "Interactive ID Card SVG Editor",
+            "value": "Interactive ID Card SVG Editor"
+        },
+        {
+            "locale": "he",
+            "key": "Select a block on the card to edit it.",
+            "value": "Select a block on the card to עריכה it."
+        },
+        {
+            "locale": "he",
+            "key": "Selected Block",
+            "value": "Selected Block"
+        },
+        {
+            "locale": "he",
+            "key": "Snap",
+            "value": "Snap"
+        },
+        {
+            "locale": "ur",
+            "key": "Add Block",
+            "value": "Add Block"
+        },
+        {
+            "locale": "ur",
+            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
+            "value": "Drag each block, resize it, change text size and color, and lock it when done."
+        },
+        {
+            "locale": "ur",
+            "key": "Duplicate",
+            "value": "Duplicate"
+        },
+        {
+            "locale": "ur",
+            "key": "Interactive ID Card SVG Editor",
+            "value": "Interactive ID Card SVG Editor"
+        },
+        {
+            "locale": "ur",
+            "key": "Select a block on the card to edit it.",
+            "value": "Select a block on the card to ترمیم it."
+        },
+        {
+            "locale": "ur",
+            "key": "Selected Block",
+            "value": "Selected Block"
+        },
+        {
+            "locale": "ur",
+            "key": "Snap",
+            "value": "Snap"
+        },
+        {
+            "locale": "hi",
+            "key": "Add Block",
+            "value": "Add Block"
+        },
+        {
+            "locale": "hi",
+            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
+            "value": "Drag each block, resize it, change text size and color, and lock it when done."
+        },
+        {
+            "locale": "hi",
+            "key": "Duplicate",
+            "value": "Duplicate"
+        },
+        {
+            "locale": "hi",
+            "key": "Interactive ID Card SVG Editor",
+            "value": "Interactive ID Card SVG Editor"
+        },
+        {
+            "locale": "hi",
+            "key": "Select a block on the card to edit it.",
+            "value": "Select a block on the card to संपादित it."
+        },
+        {
+            "locale": "hi",
+            "key": "Selected Block",
+            "value": "Selected Block"
+        },
+        {
+            "locale": "hi",
+            "key": "Snap",
+            "value": "Snap"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Add Block",
+            "value": "Add Block"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Drag each block, resize it, change text size and color, and lock it when done.",
+            "value": "Drag each block, resize it, change text size and color, and lock it when done."
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Duplicate",
+            "value": "Duplicate"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Interactive ID Card SVG Editor",
+            "value": "Interactive ID Card SVG Editor"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Select a block on the card to edit it.",
+            "value": "Select a block on the card to 编辑 it."
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Selected Block",
+            "value": "Selected Block"
+        },
+        {
+            "locale": "zh_CN",
+            "key": "Snap",
+            "value": "Snap"
         }
     ]
 }

@@ -37,6 +37,21 @@
                 <input type="text" name="phone" value="{{ old('phone') }}" required class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
             </div>
 
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ $config['label_bank_name'] }}</label>
+                <input type="text" name="bank_name" value="{{ old('bank_name') }}" required class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ $config['label_bank_account_name'] }}</label>
+                <input type="text" name="bank_account_name" value="{{ old('bank_account_name') }}" required class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ $config['label_bank_account_number'] }}</label>
+                <input type="text" name="bank_account_number" value="{{ old('bank_account_number') }}" required class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+            </div>
+
             @if($config['show_department'])
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ $config['label_department'] }}</label>
@@ -91,7 +106,7 @@
                     </label>
                     <div x-show="!generalStaff" x-transition>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ $config['label_assigned_hostel'] }}</label>
-                        <select name="assigned_hostel_id" :required="{{ !empty($config['require_hostel_selector']) ? 'true' : 'false' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+                        <select name="assigned_hostel_id" :required="!generalStaff && {{ !empty($config['require_hostel_selector']) ? 'true' : 'false' }}" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
                             <option value="">{{ __('Select hostel') }}</option>
                             @foreach($hostels as $hostelId => $hostelName)
                                 <option value="{{ $hostelId }}" @selected((string) old('assigned_hostel_id') === (string) $hostelId)>{{ $hostelName }}</option>

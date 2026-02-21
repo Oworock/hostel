@@ -40,6 +40,9 @@ class StaffRegistrationController extends Controller
             'full_name' => ['required', 'string', 'max:160'],
             'email' => ['required', 'email', 'max:160', Rule::unique('staff_members', 'email')],
             'phone' => ['required', 'string', 'max:32'],
+            'bank_name' => ['required', 'string', 'max:120'],
+            'bank_account_name' => ['required', 'string', 'max:160'],
+            'bank_account_number' => ['required', 'string', 'max:64'],
         ];
 
         if ($config['show_department']) {
@@ -111,6 +114,9 @@ class StaffRegistrationController extends Controller
             'full_name' => (string) $data['full_name'],
             'email' => (string) $data['email'],
             'phone' => (string) $data['phone'],
+            'bank_name' => (string) ($data['bank_name'] ?? ''),
+            'bank_account_name' => (string) ($data['bank_account_name'] ?? ''),
+            'bank_account_number' => (string) ($data['bank_account_number'] ?? ''),
             'department' => (string) ($data['department'] ?? ''),
             'category' => (string) ($data['category'] ?? ''),
             'job_title' => (string) ($data['job_title'] ?? ''),
@@ -166,6 +172,9 @@ class StaffRegistrationController extends Controller
             'label_full_name' => (string) get_setting('staff_payroll_registration_label_full_name', __('Full Name')),
             'label_email' => (string) get_setting('staff_payroll_registration_label_email', __('Email')),
             'label_phone' => (string) get_setting('staff_payroll_registration_label_phone', __('Phone')),
+            'label_bank_name' => (string) get_setting('staff_payroll_registration_label_bank_name', __('Bank Name')),
+            'label_bank_account_name' => (string) get_setting('staff_payroll_registration_label_bank_account_name', __('Account Name')),
+            'label_bank_account_number' => (string) get_setting('staff_payroll_registration_label_bank_account_number', __('Account Number')),
             'label_department' => (string) get_setting('staff_payroll_registration_label_department', __('Department')),
             'label_job_title' => (string) get_setting('staff_payroll_registration_label_job_title', __('Job Title')),
             'label_category' => (string) get_setting('staff_payroll_registration_label_category', __('Category')),

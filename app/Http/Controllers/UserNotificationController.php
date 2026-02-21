@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PopupAnnouncement;
 use App\Services\OutboundWebhookService;
 use Illuminate\Http\Request;
 
@@ -53,5 +54,30 @@ class UserNotificationController extends Controller
         }
 
         return back();
+    }
+
+    public function dismissLoginPopup(PopupAnnouncement $announcement)
+    {
+        $user = auth()->user();
+        abort_unless($user && ($user->isStudent() || $user->isManager()), 403);
+
+        if (
+            ($announcement->target === 'students' && !$user->isStudent()) ||
+            ($announcement->target === 'managers' && !$user->isManager())
+        ) {
+            abort(403);
+        }
+
+        $dismissed = session('dismissed_popup_ids', []);
+        if (!is_array($dismissed)) {
+            $dismissed = [];
+        }
+        $dismissed[] = $announcement->id;
+        session(['dismissed_popup_ids' => array_values(array_unique(array_map('intval', $dismissed)))]);
+        $announcement->seenByUsers()->syncWithoutDetaching([
+            $user->id => ['seen_at' => now()],
+        ]);
+
+        return response()->json(['ok' => true]);
     }
 }

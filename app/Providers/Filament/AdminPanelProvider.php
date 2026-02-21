@@ -24,6 +24,8 @@ use App\Filament\Pages\SystemSettings;
 use App\Filament\Pages\FileManagerPage;
 use App\Filament\Pages\BackupManagerPage;
 use App\Filament\Pages\StaffPayrollSettings;
+use App\Filament\Pages\ReferralSettings;
+use App\Filament\Pages\SystemUpdatePage;
 use App\Filament\Pages\Dashboard as AdminDashboard;
 
 class AdminPanelProvider extends PanelProvider
@@ -86,6 +88,10 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::USER_MENU_BEFORE,
                 fn () => view('filament.partials.topbar-notifications')
             )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn () => view('filament.partials.intl-phone-script')
+            )
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -101,8 +107,10 @@ class AdminPanelProvider extends PanelProvider
                 SendEmail::class,
                 SystemSettings::class,
                 StaffPayrollSettings::class,
+                ReferralSettings::class,
                 FileManagerPage::class,
                 BackupManagerPage::class,
+                SystemUpdatePage::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([])

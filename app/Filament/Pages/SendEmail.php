@@ -5,9 +5,10 @@ namespace App\Filament\Pages;
 use Filament\Pages\Page;
 use Filament\Forms;
 use Filament\Notifications\Notification;
+use App\Models\Hostel;
 use App\Models\User;
-use App\Mail\BulkEmail;
 use Illuminate\Support\Facades\Mail;
+use App\Services\StudentAudienceService;
 
 class SendEmail extends Page
 {
@@ -42,24 +43,41 @@ class SendEmail extends Page
                     ->label('Send To')
                     ->options([
                         'all' => 'All Students',
+                        'active' => 'Active Students',
+                        'inactive' => 'Inactive Students',
+                        'expired_booking' => 'Students With Expired Bookings',
                         'hostel' => 'Specific Hostel',
-                        'managers' => 'All Managers',
-                        'student' => 'Specific Student',
+                        'specific' => 'Specific Students',
+                        'all_managers' => 'All Managers',
+                        'managers_hostel' => 'Managers In Specific Hostel',
+                        'specific_managers' => 'Specific Managers',
                     ])
                     ->required()
                     ->live(),
 
                 Forms\Components\Select::make('hostel_id')
                     ->label('Hostel')
-                    ->options(fn() => \App\Models\Hostel::pluck('name', 'id'))
-                    ->visible(fn(Forms\Get $get) => $get('recipient_type') === 'hostel')
-                    ->required(fn(Forms\Get $get) => $get('recipient_type') === 'hostel'),
+                    ->options(fn () => Hostel::query()->orderBy('name')->pluck('name', 'id'))
+                    ->visible(fn(Forms\Get $get) => in_array($get('recipient_type'), ['hostel', 'managers_hostel'], true))
+                    ->required(fn(Forms\Get $get) => in_array($get('recipient_type'), ['hostel', 'managers_hostel'], true)),
 
-                Forms\Components\Select::make('student_id')
-                    ->label('Student')
-                    ->options(fn() => \App\Models\User::where('role', 'student')->pluck('name', 'id'))
-                    ->visible(fn(Forms\Get $get) => $get('recipient_type') === 'student')
-                    ->required(fn(Forms\Get $get) => $get('recipient_type') === 'student'),
+                Forms\Components\Select::make('student_ids')
+                    ->label('Students')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->options(fn () => User::query()->where('role', 'student')->orderBy('name')->pluck('name', 'id'))
+                    ->visible(fn (Forms\Get $get) => $get('recipient_type') === 'specific')
+                    ->required(fn (Forms\Get $get) => $get('recipient_type') === 'specific'),
+
+                Forms\Components\Select::make('manager_ids')
+                    ->label('Managers')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->options(fn () => User::query()->where('role', 'manager')->orderBy('name')->pluck('name', 'id'))
+                    ->visible(fn (Forms\Get $get) => $get('recipient_type') === 'specific_managers')
+                    ->required(fn (Forms\Get $get) => $get('recipient_type') === 'specific_managers'),
 
                 Forms\Components\TextInput::make('subject')
                     ->label('Email Subject')
@@ -78,13 +96,17 @@ class SendEmail extends Page
         $data = $this->form->getState();
 
         try {
-            $recipients = $this->getRecipients($data['recipient_type'], $data);
+            $recipients = $this->resolveRecipients($data);
+            $recipientCount = count($recipients);
+            if ($recipientCount === 0) {
+                throw new \RuntimeException('No recipient matched your current audience filter.');
+            }
 
             foreach ($recipients as $email) {
                 Mail::send('emails.bulk', [
                     'subject' => $data['subject'],
                     'message' => $data['message'],
-                ], function ($message) use ($email) {
+                ], function ($message) use ($email, $data) {
                     $message->to($email)
                         ->subject($data['subject']);
                 });
@@ -92,7 +114,7 @@ class SendEmail extends Page
             
             Notification::make()
                 ->title('Success')
-                ->body('Email sent to ' . count($recipients) . ' recipient(s)!')
+                ->body('Email sent to ' . $recipientCount . ' recipient(s)!')
                 ->success()
                 ->send();
 
@@ -106,26 +128,54 @@ class SendEmail extends Page
         }
     }
 
-    protected function getRecipients(string $type, array $data): array
+    protected function resolveRecipients(array $data): array
     {
-        $emails = [];
-
-        if ($type === 'all') {
-            $users = User::where('role', 'student')->pluck('email')->filter()->toArray();
-        } elseif ($type === 'hostel') {
-            $users = User::whereHas('bookings', function ($query) use ($data) {
-                $query->whereHas('room', function ($q) use ($data) {
-                    $q->where('hostel_id', $data['hostel_id']);
-                });
-            })->where('role', 'student')->pluck('email')->filter()->toArray();
-        } elseif ($type === 'managers') {
-            $users = User::where('role', 'manager')->pluck('email')->filter()->toArray();
-        } else {
-            $user = User::find($data['student_id']);
-            $users = $user ? [$user->email] : [];
+        $segment = (string) ($data['recipient_type'] ?? 'all');
+        if ($segment === 'all_managers') {
+            return User::query()
+                ->where('role', 'manager')
+                ->pluck('email')
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+        }
+        if ($segment === 'specific_managers') {
+            $managerIds = collect($data['manager_ids'] ?? [])->map(fn ($id) => (int) $id)->filter()->values()->all();
+            return User::query()
+                ->where('role', 'manager')
+                ->whereIn('id', $managerIds)
+                ->pluck('email')
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+        }
+        if ($segment === 'managers_hostel') {
+            $hostelId = (int) ($data['hostel_id'] ?? 0);
+            return User::query()
+                ->where('role', 'manager')
+                ->where(function ($q) use ($hostelId): void {
+                    $q->where('hostel_id', $hostelId)
+                        ->orWhereHas('managedHostels', fn ($mq) => $mq->where('hostels.id', $hostelId));
+                })
+                ->pluck('email')
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
         }
 
-        return array_filter($users);
+        return app(StudentAudienceService::class)
+            ->resolve($segment, [
+                'hostel_id' => $data['hostel_id'] ?? null,
+                'student_ids' => $data['student_ids'] ?? [],
+            ])
+            ->pluck('email')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 
     protected function getFormActions(): array

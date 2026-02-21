@@ -94,6 +94,15 @@ class StaffMemberResource extends Resource
                     ->tel()
                     ->required()
                     ->maxLength(32),
+                Forms\Components\TextInput::make('bank_name')
+                    ->maxLength(120)
+                    ->visible(fn (): bool => Schema::hasColumn('staff_members', 'bank_name')),
+                Forms\Components\TextInput::make('bank_account_name')
+                    ->maxLength(160)
+                    ->visible(fn (): bool => Schema::hasColumn('staff_members', 'bank_account_name')),
+                Forms\Components\TextInput::make('bank_account_number')
+                    ->maxLength(64)
+                    ->visible(fn (): bool => Schema::hasColumn('staff_members', 'bank_account_number')),
                 Forms\Components\TextInput::make('employee_code')
                     ->maxLength(64)
                     ->unique(ignoreRecord: true),
@@ -171,6 +180,15 @@ class StaffMemberResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('bank_name')
+                    ->label(__('Bank'))
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('bank_account_name')
+                    ->label(__('Account Name'))
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('bank_account_number')
+                    ->label(__('Account Number'))
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('employee_code')
                     ->searchable()
                     ->toggleable(),

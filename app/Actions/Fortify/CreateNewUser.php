@@ -3,7 +3,9 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use App\Models\ReferralAgent;
 use App\Models\SystemSetting;
+use App\Services\ReferralNotificationService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -46,6 +48,7 @@ class CreateNewUser implements CreatesNewUsers
                 Rule::unique(User::class),
             ],
             'password' => $this->passwordRules(),
+            'referral_code' => ['nullable', 'string', 'max:50'],
         ];
 
         foreach ($optionalMap as $field => $baseRules) {
@@ -87,6 +90,15 @@ class CreateNewUser implements CreatesNewUsers
 
         Validator::make($input, $rules)->validate();
 
+        $referralCode = strtoupper(trim((string) ($input['referral_code'] ?? '')));
+        $referralAgent = null;
+        if ($referralCode !== '') {
+            $referralAgent = ReferralAgent::query()
+                ->where('is_active', true)
+                ->whereRaw('UPPER(referral_code) = ?', [$referralCode])
+                ->first();
+        }
+
         $payload = [
             'first_name' => $input['first_name'],
             'last_name' => $input['last_name'],
@@ -95,6 +107,7 @@ class CreateNewUser implements CreatesNewUsers
             'password' => $input['password'],
             'role' => 'student',
             'is_active' => true,
+            'referred_by_referral_agent_id' => $referralAgent?->id,
         ];
 
         foreach (array_keys($optionalMap) as $field) {
@@ -122,6 +135,13 @@ class CreateNewUser implements CreatesNewUsers
             $payload['extra_data'] = $extraData;
         }
 
-        return User::create($payload);
+        $user = User::create($payload);
+        if ($referralAgent) {
+            app(ReferralNotificationService::class)->notifyStudentRegistered($referralAgent, $user);
+        }
+
+        request()->session()->forget('referral_code');
+
+        return $user;
     }
 }

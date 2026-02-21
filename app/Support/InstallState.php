@@ -36,9 +36,12 @@ class InstallState
 
     public static function needsInstallation(): bool
     {
+        if (!file_exists(base_path('.env'))) {
+            return true;
+        }
+
         return !self::hasDatabaseConfiguration()
-            || !self::appInstalledFlag()
-            || !self::isRuntimeReady();
+            || !self::appInstalledFlag();
     }
 
     public static function isRuntimeReady(): bool

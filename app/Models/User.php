@@ -28,6 +28,7 @@ class User extends Authenticatable implements FilamentUser
         'guardian_phone',
         'extra_data',
         'hostel_id',
+        'referred_by_referral_agent_id',
         'is_active',
         'is_admin_uploaded',
         'must_change_password',
@@ -74,6 +75,16 @@ class User extends Authenticatable implements FilamentUser
     public function hostel()
     {
         return $this->belongsTo(Hostel::class);
+    }
+
+    public function referralAgent()
+    {
+        return $this->belongsTo(ReferralAgent::class, 'referred_by_referral_agent_id');
+    }
+
+    public function userManagement()
+    {
+        return $this->hasOne(UserManagement::class);
     }
 
     public function ownedHostels()

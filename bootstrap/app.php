@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\RedirectToInstaller::class,
             \App\Http\Middleware\HandleImpersonation::class,
+            \App\Http\Middleware\NormalizeInternationalPhones::class,
             \App\Http\Middleware\SecureHeaders::class,
             \App\Http\Middleware\EnforcePasswordChange::class,
         ]);
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'manager' => \App\Http\Middleware\ManagerMiddleware::class,
             'student' => \App\Http\Middleware\StudentMiddleware::class,
+            'referral.auth' => \App\Http\Middleware\EnsureReferralAuthenticated::class,
             'addon.active' => \App\Http\Middleware\EnsureAddonActive::class,
             'api.key' => \App\Http\Middleware\EnsureApiAccessKey::class,
             'prevent.spam.registration' => \App\Http\Middleware\PreventSpamRegistration::class,

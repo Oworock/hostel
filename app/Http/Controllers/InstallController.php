@@ -155,13 +155,17 @@ class InstallController extends Controller
     {
         $envExamplePath = base_path('.env.example');
         $envPath = base_path('.env');
+        $envExampleContent = file_exists($envExamplePath) ? (string) file_get_contents($envExamplePath) : '';
         $content = file_exists($envPath)
             ? file_get_contents($envPath)
-            : (file_exists($envExamplePath)
-                ? file_get_contents($envExamplePath)
+            : ($envExampleContent !== ''
+                ? $envExampleContent
                 : "APP_NAME=Hostel\nAPP_ENV=production\nAPP_KEY=\nAPP_DEBUG=false\nAPP_URL=http://localhost\nDB_CONNECTION=sqlite\nDB_DATABASE=database/database.sqlite\n");
 
         $resolvedAppKey = $this->extractEnvValue((string) $content, 'APP_KEY');
+        if ($resolvedAppKey === '') {
+            $resolvedAppKey = $this->extractEnvValue($envExampleContent, 'APP_KEY');
+        }
         if ($resolvedAppKey === '') {
             $resolvedAppKey = trim((string) config('app.key'));
         }
@@ -360,6 +364,16 @@ class InstallController extends Controller
 
         foreach ($artisanCommands as [$command, $args]) {
             $result = $this->executeArtisanCommand($command, $args);
+            if (
+                $command === 'storage:link'
+                && !$result['passed']
+                && str_contains(strtolower($result['message']), 'illuminate\\filesystem\\exec')
+            ) {
+                $result = [
+                    'passed' => true,
+                    'message' => 'Skipped: storage:link requires PHP exec() on this server.',
+                ];
+            }
             $steps[] = [
                 'label' => "Run artisan {$command}",
                 'passed' => $result['passed'],

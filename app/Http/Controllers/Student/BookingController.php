@@ -12,6 +12,7 @@ use App\Models\Semester;
 use App\Services\OutboundWebhookService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Carbon;
 
 class BookingController extends Controller
 {
@@ -82,8 +83,24 @@ class BookingController extends Controller
         $semesters = Semester::whereHas('academicSession', function($q) {
             $q->where('is_active', true);
         })->get();
+        $sessionBookingEnabled = filter_var(get_setting('session_booking_enabled', true), FILTER_VALIDATE_BOOL);
+        $sessionPrice = (float) get_setting('session_booking_price', 0);
+        $sessionDiscountType = (string) get_setting('session_booking_discount_type', 'none');
+        $sessionDiscountValue = (float) get_setting('session_booking_discount_value', 0);
+        $sessionPayable = $this->calculateSessionAmount($sessionPrice, $sessionDiscountType, $sessionDiscountValue);
 
-        return view('student.bookings.create', compact('room', 'availableBeds', 'periodType', 'academicSessions', 'semesters'));
+        return view('student.bookings.create', compact(
+            'room',
+            'availableBeds',
+            'periodType',
+            'academicSessions',
+            'semesters',
+            'sessionBookingEnabled',
+            'sessionPrice',
+            'sessionDiscountType',
+            'sessionDiscountValue',
+            'sessionPayable'
+        ));
     }
 
     public function store(Request $request)
@@ -110,24 +127,85 @@ class BookingController extends Controller
                 'check_in_date' => 'required|date|after:today',
                 'check_out_date' => 'required|date|after:check_in_date',
             ]);
+            $calculatedAmount = null;
+        } elseif ($periodType === 'semesters') {
+            $sessionBookingEnabled = filter_var(get_setting('session_booking_enabled', true), FILTER_VALIDATE_BOOL);
+            $validated = $request->validate([
+                'room_id' => 'required|exists:rooms,id',
+                'bed_id' => 'nullable|exists:beds,id',
+                'booking_scope' => 'required|in:semester,session',
+                'semester_id' => 'nullable|exists:semesters,id',
+                'academic_session_id' => 'nullable|exists:academic_sessions,id',
+            ]);
+
+            $scope = (string) ($validated['booking_scope'] ?? 'semester');
+            if ($scope === 'session') {
+                if (!$sessionBookingEnabled) {
+                    return redirect()->back()->with('error', 'Session booking is currently disabled by admin settings.');
+                }
+
+                if (empty($validated['academic_session_id'])) {
+                    return redirect()->back()->with('error', 'Academic session is required for session booking.');
+                }
+
+                $academicSession = AcademicSession::where('id', $validated['academic_session_id'])
+                    ->where('is_active', true)
+                    ->first();
+
+                if (!$academicSession) {
+                    return redirect()->back()->with('error', 'Invalid academic session selection.');
+                }
+
+                $range = $this->resolveSessionDateRange($academicSession->id, $academicSession->start_year, $academicSession->end_year);
+                $validated['semester_id'] = null;
+                $validated['check_in_date'] = $range['start'];
+                $validated['check_out_date'] = $range['end'];
+                $calculatedAmount = $this->calculateSessionAmount(
+                    (float) get_setting('session_booking_price', 0),
+                    (string) get_setting('session_booking_discount_type', 'none'),
+                    (float) get_setting('session_booking_discount_value', 0)
+                );
+            } else {
+                if (empty($validated['semester_id']) || empty($validated['academic_session_id'])) {
+                    return redirect()->back()->with('error', 'Semester and session are required for semester booking.');
+                }
+
+                $semester = Semester::where('id', $validated['semester_id'])
+                    ->where('academic_session_id', $validated['academic_session_id'])
+                    ->first();
+
+                if (!$semester) {
+                    return redirect()->back()->with('error', 'Invalid semester/session selection.');
+                }
+
+                $validated['check_in_date'] = $semester->start_date;
+                $validated['check_out_date'] = $semester->end_date;
+                $calculatedAmount = null;
+            }
         } else {
             $validated = $request->validate([
                 'room_id' => 'required|exists:rooms,id',
                 'bed_id' => 'nullable|exists:beds,id',
-                'semester_id' => 'required|exists:semesters,id',
                 'academic_session_id' => 'required|exists:academic_sessions,id',
             ]);
 
-            $semester = Semester::where('id', $validated['semester_id'])
-                ->where('academic_session_id', $validated['academic_session_id'])
+            $academicSession = AcademicSession::where('id', $validated['academic_session_id'])
+                ->where('is_active', true)
                 ->first();
 
-            if (!$semester) {
-                return redirect()->back()->with('error', 'Invalid semester/session selection.');
+            if (!$academicSession) {
+                return redirect()->back()->with('error', 'Invalid academic session selection.');
             }
 
-            $validated['check_in_date'] = $semester->start_date;
-            $validated['check_out_date'] = $semester->end_date;
+            $range = $this->resolveSessionDateRange($academicSession->id, $academicSession->start_year, $academicSession->end_year);
+            $validated['semester_id'] = null;
+            $validated['check_in_date'] = $range['start'];
+            $validated['check_out_date'] = $range['end'];
+            $calculatedAmount = $this->calculateSessionAmount(
+                (float) get_setting('session_booking_price', 0),
+                (string) get_setting('session_booking_discount_type', 'none'),
+                (float) get_setting('session_booking_discount_value', 0)
+            );
         }
 
         $room = Room::find($validated['room_id']);
@@ -150,8 +228,9 @@ class BookingController extends Controller
             $validated['bed_id'] = $autoBed?->id;
         }
 
+        unset($validated['booking_scope']);
         $validated['user_id'] = auth()->id();
-        $validated['total_amount'] = $room->price_per_month;
+        $validated['total_amount'] = $calculatedAmount ?? (float) $room->price_per_month;
 
         $booking = Booking::create($validated);
         app(OutboundWebhookService::class)->dispatch('booking.created', [
@@ -225,5 +304,41 @@ class BookingController extends Controller
         }
 
         return 'You already have an active booking. Apply for hostel change or room change instead of creating another booking.';
+    }
+
+    /**
+     * @return array{start: string, end: string}
+     */
+    private function resolveSessionDateRange(int $academicSessionId, int $startYear, int $endYear): array
+    {
+        $semesters = Semester::where('academic_session_id', $academicSessionId)
+            ->orderBy('start_date')
+            ->get();
+
+        if ($semesters->isNotEmpty()) {
+            return [
+                'start' => (string) $semesters->first()->start_date,
+                'end' => (string) $semesters->last()->end_date,
+            ];
+        }
+
+        return [
+            'start' => Carbon::create($startYear, 1, 1)->toDateString(),
+            'end' => Carbon::create($endYear, 12, 31)->toDateString(),
+        ];
+    }
+
+    private function calculateSessionAmount(float $basePrice, string $discountType, float $discountValue): float
+    {
+        $base = max(0, $basePrice);
+        $discount = 0.0;
+
+        if ($discountType === 'percentage') {
+            $discount = $base * (max(0, min(100, $discountValue)) / 100);
+        } elseif ($discountType === 'fixed') {
+            $discount = max(0, $discountValue);
+        }
+
+        return round(max(0, $base - $discount), 2);
     }
 }

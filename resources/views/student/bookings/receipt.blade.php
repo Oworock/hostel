@@ -137,8 +137,36 @@
     </style>
 </head>
 <body>
+    @php
+        $logoSetting = (string) (\App\Models\SystemSetting::getSetting(
+            'global_header_logo_light',
+            \App\Models\SystemSetting::getSetting('app_logo', '')
+        ));
+        $logoSetting = ltrim((string) preg_replace('/^(storage\/|public\/)/', '', $logoSetting), '/');
+        $logoDataUri = '';
+        if ($logoSetting !== '' && \Illuminate\Support\Facades\Storage::disk('public')->exists($logoSetting)) {
+            $logoPath = \Illuminate\Support\Facades\Storage::disk('public')->path($logoSetting);
+            $ext = strtolower((string) pathinfo($logoPath, PATHINFO_EXTENSION));
+            $mime = match ($ext) {
+                'jpg', 'jpeg' => 'image/jpeg',
+                'gif' => 'image/gif',
+                'webp' => 'image/webp',
+                'svg' => 'image/svg+xml',
+                default => 'image/png',
+            };
+            $contents = @file_get_contents($logoPath);
+            if ($contents !== false) {
+                $logoDataUri = 'data:' . $mime . ';base64,' . base64_encode($contents);
+            }
+        }
+    @endphp
     <div class="receipt-container">
         <div class="header">
+            @if($logoDataUri !== '')
+                <p style="margin: 0 0 12px 0;">
+                    <img src="{{ $logoDataUri }}" alt="System Logo" style="max-height: 70px; max-width: 220px;">
+                </p>
+            @endif
             <h1>{{ config('app.name', 'Hostel System') }}</h1>
             <p>{{ __('Booking Receipt') }}</p>
             <p>{{ __('Receipt #:id', ['id' => $booking->id]) }}</p>

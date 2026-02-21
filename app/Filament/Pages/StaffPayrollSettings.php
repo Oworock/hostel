@@ -84,6 +84,9 @@ class StaffPayrollSettings extends Page
             'staff_payroll_registration_label_full_name' => (string) SystemSetting::getSetting('staff_payroll_registration_label_full_name', 'Full Name'),
             'staff_payroll_registration_label_email' => (string) SystemSetting::getSetting('staff_payroll_registration_label_email', 'Email'),
             'staff_payroll_registration_label_phone' => (string) SystemSetting::getSetting('staff_payroll_registration_label_phone', 'Phone'),
+            'staff_payroll_registration_label_bank_name' => (string) SystemSetting::getSetting('staff_payroll_registration_label_bank_name', 'Bank Name'),
+            'staff_payroll_registration_label_bank_account_name' => (string) SystemSetting::getSetting('staff_payroll_registration_label_bank_account_name', 'Account Name'),
+            'staff_payroll_registration_label_bank_account_number' => (string) SystemSetting::getSetting('staff_payroll_registration_label_bank_account_number', 'Account Number'),
             'staff_payroll_registration_label_department' => (string) SystemSetting::getSetting('staff_payroll_registration_label_department', 'Department'),
             'staff_payroll_registration_label_job_title' => (string) SystemSetting::getSetting('staff_payroll_registration_label_job_title', 'Job Title'),
             'staff_payroll_registration_label_category' => (string) SystemSetting::getSetting('staff_payroll_registration_label_category', 'Category'),
@@ -172,6 +175,9 @@ class StaffPayrollSettings extends Page
                                         Forms\Components\TextInput::make('staff_payroll_registration_label_full_name')->label('Label: Full Name'),
                                         Forms\Components\TextInput::make('staff_payroll_registration_label_email')->label('Label: Email'),
                                         Forms\Components\TextInput::make('staff_payroll_registration_label_phone')->label('Label: Phone'),
+                                        Forms\Components\TextInput::make('staff_payroll_registration_label_bank_name')->label('Label: Bank Name'),
+                                        Forms\Components\TextInput::make('staff_payroll_registration_label_bank_account_name')->label('Label: Account Name'),
+                                        Forms\Components\TextInput::make('staff_payroll_registration_label_bank_account_number')->label('Label: Account Number'),
                                         Forms\Components\TextInput::make('staff_payroll_registration_label_department')->label('Label: Department'),
                                         Forms\Components\TextInput::make('staff_payroll_registration_label_job_title')->label('Label: Job Title'),
                                         Forms\Components\TextInput::make('staff_payroll_registration_label_category')->label('Label: Category'),
@@ -364,6 +370,9 @@ class StaffPayrollSettings extends Page
         SystemSetting::setSetting('staff_payroll_registration_label_full_name', (string) ($data['staff_payroll_registration_label_full_name'] ?? 'Full Name'));
         SystemSetting::setSetting('staff_payroll_registration_label_email', (string) ($data['staff_payroll_registration_label_email'] ?? 'Email'));
         SystemSetting::setSetting('staff_payroll_registration_label_phone', (string) ($data['staff_payroll_registration_label_phone'] ?? 'Phone'));
+        SystemSetting::setSetting('staff_payroll_registration_label_bank_name', (string) ($data['staff_payroll_registration_label_bank_name'] ?? 'Bank Name'));
+        SystemSetting::setSetting('staff_payroll_registration_label_bank_account_name', (string) ($data['staff_payroll_registration_label_bank_account_name'] ?? 'Account Name'));
+        SystemSetting::setSetting('staff_payroll_registration_label_bank_account_number', (string) ($data['staff_payroll_registration_label_bank_account_number'] ?? 'Account Number'));
         SystemSetting::setSetting('staff_payroll_registration_label_department', (string) ($data['staff_payroll_registration_label_department'] ?? 'Department'));
         SystemSetting::setSetting('staff_payroll_registration_label_job_title', (string) ($data['staff_payroll_registration_label_job_title'] ?? 'Job Title'));
         SystemSetting::setSetting('staff_payroll_registration_label_category', (string) ($data['staff_payroll_registration_label_category'] ?? 'Category'));
