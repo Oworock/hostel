@@ -1,0 +1,5 @@
+{
+  "version": "1.0.5",
+  "zip_url": "https://oworock.com/hostel/packages/hostel-1.0.5.zip",
+  "notes": "Adds admin update checker notice, fixes update workflow buttons/preview behavior, resolves popup delivery issues, and includes file-manager + migration stability improvements."
+}
