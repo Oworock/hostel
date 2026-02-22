@@ -1,0 +1,98 @@
+SYSTEM UPDATE INSTRUCTIONS (DEVELOPER)
+=====================================
+
+Purpose
+-------
+This project update page pulls update metadata from:
+https://oworock.com/hostel/manifest.json
+
+Then it downloads the zip in that manifest, previews affected files, and lets admin continue/decline.
+
+
+1) Manifest format
+------------------
+Create a JSON file at the exact URL above with this structure:
+
+{
+  "version": "1.0.5",
+  "zip_url": "https://oworock.com/hostel/packages/hostel-1.0.5.zip",
+  "notes": "Short release notes here"
+}
+
+Required keys:
+- version: string
+- zip_url: valid absolute URL to a .zip package
+
+Optional keys:
+- notes: string
+
+
+2) Build the update package zip
+-------------------------------
+The zip should contain files at project-relative paths, for example:
+- app/...
+- resources/...
+- routes/...
+- config/...
+- public/...
+
+Do NOT include dangerous paths like:
+- .env
+- storage/
+- vendor/
+- node_modules/
+- bootstrap/cache/
+
+The update service already blocks unsafe paths, but package cleanly anyway.
+
+
+3) Host the package and manifest
+--------------------------------
+Upload:
+- manifest.json to: https://oworock.com/hostel/manifest.json
+- update zip to a public URL (example):
+  https://oworock.com/hostel/packages/hostel-1.0.5.zip
+
+Ensure both URLs are reachable over HTTPS.
+
+
+4) Database migration requirement (audit log)
+---------------------------------------------
+If you want update audit history, run:
+
+php artisan migrate
+
+This creates:
+- system_update_audits table
+
+The update page is now fail-safe if this table is missing, but audit entries will only save after migration.
+
+
+5) How admin uses the update page
+---------------------------------
+1. Open Admin > System Updates
+2. Click "Pull Update"
+3. Review preview (file list)
+4. Choose:
+   - Continue with update
+   - Decline update
+
+Continue requires confirmation toggle before apply.
+
+
+6) Safety and customization note
+--------------------------------
+Before updating customized systems:
+- backup files and database
+- read preview affected files
+- decline if critical customized files are included
+
+
+7) Optional release checklist
+-----------------------------
+- Bump app version (system setting or release metadata)
+- Generate zip from clean branch/tag
+- Update manifest version/zip_url/notes
+- Verify download URL returns the correct zip
+- Test preview + continue on staging
+

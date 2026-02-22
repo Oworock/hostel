@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Payment Receipt - Booking #{{ $booking->id }}</title>
+    <title>{{ __('Payment Receipt - Booking #:id', ['id' => $booking->id]) }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -137,11 +137,39 @@
     </style>
 </head>
 <body>
+    @php
+        $logoSetting = (string) (\App\Models\SystemSetting::getSetting(
+            'global_header_logo_light',
+            \App\Models\SystemSetting::getSetting('app_logo', '')
+        ));
+        $logoSetting = ltrim((string) preg_replace('/^(storage\/|public\/)/', '', $logoSetting), '/');
+        $logoDataUri = '';
+        if ($logoSetting !== '' && \Illuminate\Support\Facades\Storage::disk('public')->exists($logoSetting)) {
+            $logoPath = \Illuminate\Support\Facades\Storage::disk('public')->path($logoSetting);
+            $ext = strtolower((string) pathinfo($logoPath, PATHINFO_EXTENSION));
+            $mime = match ($ext) {
+                'jpg', 'jpeg' => 'image/jpeg',
+                'gif' => 'image/gif',
+                'webp' => 'image/webp',
+                'svg' => 'image/svg+xml',
+                default => 'image/png',
+            };
+            $contents = @file_get_contents($logoPath);
+            if ($contents !== false) {
+                $logoDataUri = 'data:' . $mime . ';base64,' . base64_encode($contents);
+            }
+        }
+    @endphp
     <div class="receipt-container">
         <div class="header">
+            @if($logoDataUri !== '')
+                <p style="margin: 0 0 12px 0;">
+                    <img src="{{ $logoDataUri }}" alt="System Logo" style="max-height: 70px; max-width: 220px;">
+                </p>
+            @endif
             <h1>{{ config('app.name', 'Hostel System') }}</h1>
-            <p>Booking Receipt</p>
-            <p>Receipt #{{ $booking->id }}</p>
+            <p>{{ __('Booking Receipt') }}</p>
+            <p>{{ __('Receipt #:id', ['id' => $booking->id]) }}</p>
         </div>
 
         <div class="receipt-id">
@@ -151,54 +179,54 @@
         <div class="section">
             <div class="section-title">Student Information</div>
             <div class="info-row">
-                <label>Name:</label>
+                <label>{{ __('Name:') }}</label>
                 <div class="value">{{ $booking->user->name }}</div>
             </div>
             <div class="info-row">
-                <label>Email:</label>
+                <label>{{ __('Email:') }}</label>
                 <div class="value">{{ $booking->user->email }}</div>
             </div>
             <div class="info-row">
-                <label>Phone:</label>
+                <label>{{ __('Phone:') }}</label>
                 <div class="value">{{ $booking->user->phone ?? 'N/A' }}</div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-title">Booking Details</div>
+            <div class="section-title">{{ __("Booking Details") }}</div>
             <div class="info-row">
-                <label>Hostel:</label>
+                <label>{{ __('Hostel:') }}</label>
                 <div class="value">{{ $booking->room->hostel->name }}</div>
             </div>
             <div class="info-row">
-                <label>Room:</label>
+                <label>{{ __('Room:') }}</label>
                 <div class="value">{{ $booking->room->room_number }}</div>
             </div>
             <div class="info-row">
-                <label>Bed:</label>
+                <label>{{ __('Bed:') }}</label>
                 <div class="value">{{ $booking->bed ? $booking->bed->bed_number : 'N/A' }}</div>
             </div>
             <div class="info-row">
-                <label>Check-in Date:</label>
+                <label>{{ __('Check-in Date:') }}</label>
                 <div class="value">{{ $booking->check_in_date->format('d M Y') }}</div>
             </div>
             <div class="info-row">
-                <label>Check-out Date:</label>
+                <label>{{ __('Check-out Date:') }}</label>
                 <div class="value">{{ $booking->check_out_date->format('d M Y') }}</div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-title">Payment Information</div>
+            <div class="section-title">{{ __("Payment Information") }}</div>
             @if ($booking->payments->count() > 0)
                 <table class="payments-table">
                     <thead>
                         <tr>
-                            <th>Amount</th>
-                            <th>Method</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Details</th>
+                            <th>{{ __("Amount") }}</th>
+                            <th>{{ __("Method") }}</th>
+                            <th>{{ __("Status") }}</th>
+                            <th>{{ __("Date") }}</th>
+                            <th>{{ __('Details') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -207,7 +235,7 @@
                                 <td>{{ formatCurrency($payment->amount) }}</td>
                                 <td>{{ ucfirst(str_replace('_', ' ', $payment->payment_method ?? 'N/A')) }}</td>
                                 <td>{{ ucfirst($payment->status) }}</td>
-                                <td>{{ $payment->payment_date ? $payment->payment_date->format('d M Y') : 'N/A' }}</td>
+                                <td>{{ $payment->payment_date ? $payment->payment_date->format('d M Y') : __('N/A') }}</td>
                                 <td>
                                     @if($payment->is_manual && $payment->status === 'paid')
                                         Cleared by admin{{ $payment->createdByAdmin ? ': ' . $payment->createdByAdmin->name : '' }}
@@ -221,14 +249,14 @@
                 </table>
             @else
                 <div class="info-row">
-                    <label>No payments recorded</label>
+                    <label>{{ __('No payments recorded') }}</label>
                 </div>
             @endif
         </div>
 
         <div class="section">
             <div class="total-row">
-                <label>Total Amount:</label>
+                <label>{{ __('Total Amount:') }}</label>
                 <div>{{ formatCurrency($booking->total_amount) }}</div>
             </div>
             @php
@@ -236,17 +264,17 @@
                 $balance = max(0, (float) $booking->total_amount - $paidTotal);
             @endphp
             <div class="info-row">
-                <label>Total Paid:</label>
+                <label>{{ __('Total Paid:') }}</label>
                 <div class="value">{{ formatCurrency($paidTotal) }}</div>
             </div>
             <div class="info-row">
-                <label>Outstanding:</label>
+                <label>{{ __('Outstanding:') }}</label>
                 <div class="value">{{ formatCurrency($balance) }}</div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-title">Booking Status</div>
+            <div class="section-title">{{ __("Booking Status") }}</div>
             @php
                 $statusClass = match($booking->status) {
                     'approved', 'completed' => 'status-paid',
@@ -261,7 +289,7 @@
 
         <div class="footer">
             <p>Thank you for using {{ config('app.name', 'Hostel System') }}!</p>
-            <p>This is a computer-generated receipt. Please keep it safe for your records.</p>
+            <p>{{ __('This is a computer-generated receipt. Please keep it safe for your records.') }}</p>
         </div>
     </div>
 </body>

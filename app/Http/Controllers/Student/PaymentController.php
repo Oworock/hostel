@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\Addon;
 use App\Models\Booking;
 use App\Models\PaymentGateway;
 use App\Models\Payment;
+use App\Models\ReferralCommission;
 use App\Services\OutboundWebhookService;
+use App\Services\ReferralNotificationService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -825,6 +828,52 @@ class PaymentController extends Controller
     {
         if ($booking->isFullyPaid() && $booking->status === 'pending') {
             $booking->update(['status' => 'approved']);
+        }
+
+        $referralEnabled = Addon::isActive('referral-system')
+            && filter_var(get_setting('referral_enabled', true), FILTER_VALIDATE_BOOL);
+
+        $booking->loadMissing('user.referralAgent', 'payments');
+        $student = $booking->user;
+        $agent = $student?->referralAgent;
+
+        if ($referralEnabled && $booking->isFullyPaid() && $agent && $agent->is_active) {
+            $alreadyExists = ReferralCommission::query()
+                ->where('referral_agent_id', $agent->id)
+                ->where('booking_id', $booking->id)
+                ->exists();
+
+            if (!$alreadyExists) {
+                $base = (float) $booking->total_amount;
+                $commission = $agent->commission_type === 'fixed'
+                    ? (float) $agent->commission_value
+                    : ($base * ((float) $agent->commission_value / 100));
+                $commission = round(max(0, $commission), 2);
+
+                if ($commission > 0) {
+                    $lastPaidPayment = $booking->payments
+                        ->where('status', 'paid')
+                        ->sortByDesc('id')
+                        ->first();
+
+                    $createdCommission = ReferralCommission::create([
+                        'referral_agent_id' => $agent->id,
+                        'student_id' => $student->id,
+                        'booking_id' => $booking->id,
+                        'payment_id' => $lastPaidPayment?->id,
+                        'amount' => $commission,
+                        'status' => 'pending',
+                        'earned_at' => now(),
+                    ]);
+
+                    $agent->total_earned = round(((float) $agent->total_earned) + $commission, 2);
+                    $agent->balance = round(((float) $agent->balance) + $commission, 2);
+                    $agent->last_referred_at = now();
+                    $agent->save();
+
+                    app(ReferralNotificationService::class)->notifyCommissionEarned($agent, $createdCommission);
+                }
+            }
         }
 
         app(OutboundWebhookService::class)->dispatch('payment.completed', [

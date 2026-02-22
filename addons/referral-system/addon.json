@@ -1,0 +1,16 @@
+{
+  "name": "Referral System",
+  "slug": "referral-system",
+  "version": "1.0.0",
+  "description": "Manage student and partner referral onboarding, commissions, payouts, and notifications.",
+  "requires": {
+    "php": ">=8.2",
+    "laravel": ">=12"
+  },
+  "features": [
+    "student_referral_dashboard",
+    "partner_referral_portal",
+    "commission_tracking",
+    "payout_requests"
+  ]
+}

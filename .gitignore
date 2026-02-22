@@ -21,3 +21,11 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# macOS / local artifacts
+.DS_Store
+*.DS_Store
+
+# local dumps / temp artifacts
+*.sql
+*.sql.gz

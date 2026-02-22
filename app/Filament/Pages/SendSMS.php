@@ -5,8 +5,10 @@ namespace App\Filament\Pages;
 use Filament\Pages\Page;
 use Filament\Forms;
 use Filament\Notifications\Notification;
+use App\Models\Hostel;
 use App\Models\User;
-use Illuminate\Support\Facades\Http;
+use App\Services\SmsGatewayService;
+use App\Services\StudentAudienceService;
 
 class SendSMS extends Page
 {
@@ -40,23 +42,41 @@ class SendSMS extends Page
                     ->label('Send To')
                     ->options([
                         'all' => 'All Students',
+                        'active' => 'Active Students',
+                        'inactive' => 'Inactive Students',
+                        'expired_booking' => 'Students With Expired Bookings',
                         'hostel' => 'Specific Hostel',
-                        'student' => 'Specific Student',
+                        'specific' => 'Specific Students',
+                        'all_managers' => 'All Managers',
+                        'managers_hostel' => 'Managers In Specific Hostel',
+                        'specific_managers' => 'Specific Managers',
                     ])
                     ->required()
                     ->live(),
 
                 Forms\Components\Select::make('hostel_id')
                     ->label('Hostel')
-                    ->options(fn() => \App\Models\Hostel::pluck('name', 'id'))
-                    ->visible(fn(Forms\Get $get) => $get('recipient_type') === 'hostel')
-                    ->required(fn(Forms\Get $get) => $get('recipient_type') === 'hostel'),
+                    ->options(fn () => Hostel::query()->orderBy('name')->pluck('name', 'id'))
+                    ->visible(fn(Forms\Get $get) => in_array($get('recipient_type'), ['hostel', 'managers_hostel'], true))
+                    ->required(fn(Forms\Get $get) => in_array($get('recipient_type'), ['hostel', 'managers_hostel'], true)),
 
-                Forms\Components\Select::make('student_id')
-                    ->label('Student')
-                    ->options(fn() => \App\Models\User::where('role', 'student')->pluck('name', 'id'))
-                    ->visible(fn(Forms\Get $get) => $get('recipient_type') === 'student')
-                    ->required(fn(Forms\Get $get) => $get('recipient_type') === 'student'),
+                Forms\Components\Select::make('student_ids')
+                    ->label('Students')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->options(fn () => User::query()->where('role', 'student')->orderBy('name')->pluck('name', 'id'))
+                    ->visible(fn (Forms\Get $get) => $get('recipient_type') === 'specific')
+                    ->required(fn (Forms\Get $get) => $get('recipient_type') === 'specific'),
+
+                Forms\Components\Select::make('manager_ids')
+                    ->label('Managers')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->options(fn () => User::query()->where('role', 'manager')->orderBy('name')->pluck('name', 'id'))
+                    ->visible(fn (Forms\Get $get) => $get('recipient_type') === 'specific_managers')
+                    ->required(fn (Forms\Get $get) => $get('recipient_type') === 'specific_managers'),
 
                 Forms\Components\Textarea::make('message')
                     ->label('Message (Max 160 characters)')
@@ -73,11 +93,11 @@ class SendSMS extends Page
         $data = $this->form->getState();
 
         try {
-            $this->sendSMS($data);
+            [$successCount, $failedCount, $totalCount] = $this->sendSMS($data);
             
             Notification::make()
                 ->title('Success')
-                ->body('SMS sent successfully!')
+                ->body("SMS processed for {$totalCount} recipient(s). Successful: {$successCount}, Failed: {$failedCount}.")
                 ->success()
                 ->send();
 
@@ -91,83 +111,82 @@ class SendSMS extends Page
         }
     }
 
-    protected function sendSMS(array $data): void
+    /**
+     * @return array{0:int,1:int,2:int}
+     */
+    protected function sendSMS(array $data): array
     {
-        $settings = get_system_settings();
-        
-        if (empty($settings['sms_url'])) {
-            throw new \Exception('SMS gateway not configured');
+        $sms = app(SmsGatewayService::class);
+        if (!$sms->isConfigured()) {
+            throw new \RuntimeException('SMS gateway is not configured. Configure SMS in system settings first.');
         }
 
-        $recipients = $this->getRecipients($data['recipient_type'], $data);
-        $method = strtoupper($settings['sms_http_method'] ?? 'POST');
-        $headers = is_array($settings['sms_custom_headers'] ?? null) ? $settings['sms_custom_headers'] : [];
-        $payloadTemplate = is_array($settings['sms_payload_template'] ?? null) ? $settings['sms_payload_template'] : [];
+        $recipients = $this->resolveRecipients($data);
+        $totalCount = $recipients->count();
+        if ($totalCount === 0) {
+            throw new \RuntimeException('No recipient matched your current audience filter.');
+        }
 
-        foreach ($recipients as $phone) {
-            $sender = $settings['sms_sender_id'] ?? 'Hostel App';
-            $payload = $this->buildSmsPayload($payloadTemplate, [
-                'phone' => $phone,
-                'to' => $phone,
-                'message' => $data['message'],
-                'sender_id' => $sender,
-                'from' => $sender,
-                'api_key' => $settings['sms_api_key'] ?? '',
-            ]);
-
-            $request = Http::withHeaders(array_filter($headers, fn ($value) => $value !== null && $value !== ''));
-
-            $response = $method === 'GET'
-                ? $request->get($settings['sms_url'], $payload)
-                : $request->post($settings['sms_url'], $payload);
-
-            if (!$response->successful()) {
-                throw new \Exception('SMS provider returned error: ' . $response->body());
+        $successCount = 0;
+        $failedCount = 0;
+        foreach ($recipients as $recipient) {
+            if ($sms->send((string) $recipient->phone, (string) $data['message'])) {
+                $successCount++;
+            } else {
+                $failedCount++;
             }
         }
+
+        return [$successCount, $failedCount, $totalCount];
     }
 
-    protected function buildSmsPayload(array $template, array $replacements): array
+    protected function resolveRecipients(array $data)
     {
-        if (empty($template)) {
-            return [
-                'to' => $replacements['phone'],
-                'message' => $replacements['message'],
-                'sender_id' => $replacements['sender_id'],
-                'api_key' => $replacements['api_key'],
-            ];
+        $segment = (string) ($data['recipient_type'] ?? 'all');
+        if ($segment === 'all_managers') {
+            return User::query()
+                ->where('role', 'manager')
+                ->whereNotNull('phone')
+                ->where('phone', '!=', '')
+                ->get()
+                ->unique('id')
+                ->values();
+        }
+        if ($segment === 'specific_managers') {
+            $managerIds = collect($data['manager_ids'] ?? [])->map(fn ($id) => (int) $id)->filter()->values()->all();
+            return User::query()
+                ->where('role', 'manager')
+                ->whereIn('id', $managerIds)
+                ->whereNotNull('phone')
+                ->where('phone', '!=', '')
+                ->get()
+                ->unique('id')
+                ->values();
+        }
+        if ($segment === 'managers_hostel') {
+            $hostelId = (int) ($data['hostel_id'] ?? 0);
+            return User::query()
+                ->where('role', 'manager')
+                ->where(function ($q) use ($hostelId): void {
+                    $q->where('hostel_id', $hostelId)
+                        ->orWhereHas('managedHostels', fn ($mq) => $mq->where('hostels.id', $hostelId));
+                })
+                ->whereNotNull('phone')
+                ->where('phone', '!=', '')
+                ->get()
+                ->unique('id')
+                ->values();
         }
 
-        $payload = [];
-        foreach ($template as $key => $value) {
-            $resolved = (string) $value;
-            foreach ($replacements as $placeholder => $replacement) {
-                $resolved = str_replace('{' . $placeholder . '}', (string) $replacement, $resolved);
-            }
-            $payload[$key] = $resolved;
-        }
+        $students = app(StudentAudienceService::class)->resolve($segment, [
+            'hostel_id' => $data['hostel_id'] ?? null,
+            'student_ids' => $data['student_ids'] ?? [],
+        ]);
 
-        return $payload;
-    }
-
-    protected function getRecipients(string $type, array $data): array
-    {
-        $phones = [];
-
-        if ($type === 'all') {
-            $users = User::where('role', 'student')->pluck('phone')->filter()->toArray();
-        } elseif ($type === 'hostel') {
-            $users = User::whereHas('bookings', function ($query) use ($data) {
-                $query->whereHas('room', function ($q) use ($data) {
-                    $q->where('hostel_id', $data['hostel_id']);
-                });
-            })->where('role', 'student')->pluck('phone')->filter()->toArray();
-        } else {
-            $user = User::find($data['student_id']);
-            $users = $user ? [$user->phone] : [];
-        }
-
-        return array_filter($users);
+        return $students
+            ->filter(fn (User $user) => filled($user->phone))
+            ->unique('id')
+            ->values();
     }
 
     protected function getFormActions(): array

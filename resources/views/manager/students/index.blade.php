@@ -5,8 +5,8 @@
 
     <div class="uniform-page">
         <div class="uniform-header">
-            <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Students in Assigned Hostels</h1>
-            <p class="text-slate-600 dark:text-slate-300 mt-1">View student occupancy and latest booking status across your hostels.</p>
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">{{ __("Students in Assigned Hostels") }}</h1>
+            <p class="text-slate-600 dark:text-slate-300 mt-1">{{ __('View student occupancy and latest booking status across your hostels.') }}</p>
         </div>
 
         <div class="uniform-grid-3">
@@ -34,7 +34,7 @@
                             <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Additional Info</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Current Room</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Check-in</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Booking Status</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __("Booking Status") }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
@@ -69,7 +69,7 @@
                                                 <p><span class="font-medium text-slate-800 dark:text-slate-100">{{ ucwords(str_replace('_', ' ', $key)) }}:</span> {{ $value }}</p>
                                             @endforeach
                                             @if($extraData->count() > 2)
-                                                <p class="text-xs text-slate-500 dark:text-slate-400">+{{ $extraData->count() - 2 }} more</p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('+:count more', ['count' => $extraData->count() - 2]) }}</p>
                                             @endif
                                         </div>
                                     @else
@@ -80,7 +80,7 @@
                                     @if($activeBooking)
                                         Room {{ $activeBooking->room->room_number }}
                                     @else
-                                        <span class="text-slate-400 dark:text-slate-500">No active booking</span>
+                                        <span class="text-slate-400 dark:text-slate-500">{{ __('No active booking') }}</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
@@ -105,13 +105,13 @@
                                             {{ ucfirst($latestBooking->status) }}
                                         </span>
                                     @else
-                                        <span class="text-slate-400 dark:text-slate-500">No bookings</span>
+                                        <span class="text-slate-400 dark:text-slate-500">{{ __('No bookings') }}</span>
                                     @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-8 text-center text-slate-600 dark:text-slate-300">No students found in your assigned hostels.</td>
+                                <td colspan="6" class="px-6 py-8 text-center text-slate-600 dark:text-slate-300">{{ __("No students found in your assigned hostels.") }}</td>
                             </tr>
                         @endforelse
                     </tbody>

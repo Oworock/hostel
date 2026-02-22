@@ -2,6 +2,9 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
 class InstallState
 {
     public static function appInstalledFlag(): bool
@@ -33,7 +36,40 @@ class InstallState
 
     public static function needsInstallation(): bool
     {
-        return !self::hasDatabaseConfiguration() || !self::appInstalledFlag();
+        if (!file_exists(base_path('.env'))) {
+            return true;
+        }
+
+        return !self::hasDatabaseConfiguration()
+            || !self::appInstalledFlag();
+    }
+
+    public static function isRuntimeReady(): bool
+    {
+        if (!file_exists(base_path('vendor/autoload.php'))) {
+            return false;
+        }
+
+        $env = self::readEnvFile();
+        if (trim((string) ($env['APP_KEY'] ?? '')) === '') {
+            return false;
+        }
+
+        if (!self::hasDatabaseConfiguration()) {
+            return false;
+        }
+
+        try {
+            DB::connection()->getPdo();
+
+            if (!Schema::hasTable('users') || !Schema::hasTable('system_settings')) {
+                return false;
+            }
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

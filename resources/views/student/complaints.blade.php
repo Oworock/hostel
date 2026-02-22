@@ -1,14 +1,14 @@
-<x-dashboard-layout title="Complaints">
+<x-dashboard-layout :title="__('Complaints')">
     <x-slot name="sidebar">
         @include('components.student-sidebar')
     </x-slot>
 
     <div class="uniform-page">
-        <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">File a Complaint</h1>
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">{{ __("File a Complaint") }}</h1>
 
         @if ($errors->any())
             <div class="p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
-                <h3 class="text-sm font-medium text-red-800 dark:text-red-200">Please fix the following errors:</h3>
+                <h3 class="text-sm font-medium text-red-800 dark:text-red-200">{{ __('Please fix the following errors:') }}</h3>
                 <ul class="mt-2 text-sm text-red-700 dark:text-red-300 list-disc list-inside">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -28,38 +28,38 @@
                 @csrf
 
                 <div>
-                    <label for="subject" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Subject</label>
-                    <input type="text" id="subject" name="subject" value="{{ old('subject') }}" placeholder="Brief description of your complaint" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    <label for="subject" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ __("Subject") }}</label>
+                    <input type="text" id="subject" name="subject" value="{{ old('subject') }}" placeholder="{{ __("Brief description of your complaint") }}" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
                     @error('subject')<p class="text-red-600 text-sm mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
-                    <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Description</label>
-                    <textarea id="description" name="description" rows="6" placeholder="Please provide detailed information about your complaint..." class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>{{ old('description') }}</textarea>
+                    <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ __("Description") }}</label>
+                    <textarea id="description" name="description" rows="6" placeholder="{{ __("Please provide detailed information about your complaint...") }}" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>{{ old('description') }}</textarea>
                     @error('description')<p class="text-red-600 text-sm mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
-                    <label for="booking_id" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Related Booking (Optional)</label>
+                    <label for="booking_id" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ __("Related Booking (Optional)") }}</label>
                     <select id="booking_id" name="booking_id" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Select a booking...</option>
                         @forelse($bookings as $booking)
                             <option value="{{ $booking->id }}">{{ $booking->room->room_number ?? 'Room' }} - {{ $booking->check_in_date->format('M d, Y') }}</option>
                         @empty
-                            <option disabled>No bookings found</option>
+                            <option disabled>{{ __('No bookings found') }}</option>
                         @endforelse
                     </select>
                     @error('booking_id')<p class="text-red-600 text-sm mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 <div class="flex gap-3">
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 font-medium">Submit Complaint</button>
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 font-medium">{{ __("Submit Complaint") }}</button>
                     <a href="{{ route('dashboard') }}" class="px-6 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-medium">Cancel</a>
                 </div>
             </form>
 
             <div class="space-y-4">
-            <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">My Complaints</h2>
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ __("My Complaints") }}</h2>
             @forelse($myComplaints as $complaint)
                 <article class="uniform-card p-6">
                     <div class="flex items-start justify-between gap-3">
@@ -87,7 +87,7 @@
                     </div>
                 </article>
             @empty
-                <p class="text-slate-600 dark:text-slate-300 text-center py-8">No complaints filed yet.</p>
+                <p class="text-slate-600 dark:text-slate-300 text-center py-8">{{ __('No complaints filed yet.') }}</p>
             @endforelse
             </div>
         </div>

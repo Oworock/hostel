@@ -1,28 +1,28 @@
 @extends('layouts.app')
 
-@section('title', 'Welcome')
+@section('title', __('Welcome'))
 
 @section('content')
 @php
     $appName = \App\Models\SystemSetting::getSetting('app_name', 'Universal Hostel Manager');
 
-    $heroTitle = \App\Models\SystemSetting::getSetting('global_header_hero_title', 'Welcome to ' . $appName);
-    $heroSubtitle = \App\Models\SystemSetting::getSetting('global_header_hero_subtitle', 'Your complete solution for hostel room booking and management');
+    $heroTitle = \App\Models\SystemSetting::getSetting('global_header_hero_title', __('Welcome to :app', ['app' => $appName]));
+    $heroSubtitle = \App\Models\SystemSetting::getSetting('global_header_hero_subtitle', __('Your complete solution for hostel room booking and management'));
 
-    $guestPrimaryText = \App\Models\SystemSetting::getSetting('global_header_primary_button_text', 'Sign In');
-    $guestSecondaryText = \App\Models\SystemSetting::getSetting('global_header_secondary_button_text', 'Create Account');
+    $guestPrimaryText = \App\Models\SystemSetting::getSetting('global_header_primary_button_text', __('Sign In'));
+    $guestSecondaryText = \App\Models\SystemSetting::getSetting('global_header_secondary_button_text', __('Create Account'));
     $guestPrimaryUrl = \App\Models\SystemSetting::getSetting('global_header_primary_button_url', route('login'));
     $guestSecondaryUrl = \App\Models\SystemSetting::getSetting('global_header_secondary_button_url', route('register'));
-    $authPrimaryText = \App\Models\SystemSetting::getSetting('global_header_authenticated_cta_text', 'Go to Dashboard');
+    $authPrimaryText = \App\Models\SystemSetting::getSetting('global_header_authenticated_cta_text', __('Go to Dashboard'));
 
-    $studentTitle = 'For Students';
-    $studentDescription = '<p>Browse available rooms, create bookings, and manage your accommodation with ease.</p>';
+    $studentTitle = __('For Students');
+    $studentDescription = '<p>' . __('Browse available rooms, create bookings, and manage your accommodation with ease.') . '</p>';
 
-    $managerTitle = 'For Managers';
-    $managerDescription = '<p>Manage rooms, approve bookings, and monitor occupancy rates efficiently.</p>';
+    $managerTitle = __('For Managers');
+    $managerDescription = '<p>' . __('Manage rooms, approve bookings, and monitor occupancy rates efficiently.') . '</p>';
 
-    $adminTitle = 'For Admins';
-    $adminDescription = '<p>Oversee multiple hostels, assign managers, and track system-wide statistics.</p>';
+    $adminTitle = __('For Admins');
+    $adminDescription = '<p>' . __('Oversee multiple hostels, assign managers, and track system-wide statistics.') . '</p>';
     $dynamicSections = \App\Models\WelcomeSection::query()
         ->where('is_active', true)
         ->orderBy('display_order')

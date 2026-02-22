@@ -1,18 +1,18 @@
-<x-dashboard-layout title="Room Change Requests">
+<x-dashboard-layout :title="__('Room Change Requests')">
     <x-slot name="sidebar">
         @include('components.student-sidebar')
     </x-slot>
 
     <div class="uniform-page">
         <div class="uniform-header">
-            <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Request Room Change</h1>
-            <p class="text-slate-600 dark:text-slate-300 mt-1">You can request a room move within your current hostel. Manager approval is required.</p>
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">{{ __('Request Room Change') }}</h1>
+            <p class="text-slate-600 dark:text-slate-300 mt-1">{{ __('You can request a room move within your current hostel. Manager approval is required.') }}</p>
         </div>
 
         <section class="uniform-card p-6">
-            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">New Request</h2>
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">{{ __("New Request") }}</h2>
             @if(!$activeBooking)
-                <p class="text-slate-600 dark:text-slate-300">You need an approved active booking before requesting room change.</p>
+                <p class="text-slate-600 dark:text-slate-300">{{ __('You need an approved active booking before requesting room change.') }}</p>
             @else
                 <form action="{{ route('student.room-change.store') }}" method="POST" class="space-y-4">
                     @csrf
@@ -20,7 +20,7 @@
                         Current: <span class="font-semibold text-slate-900 dark:text-slate-100">{{ $activeBooking->room->hostel->name }} - Room {{ $activeBooking->room->room_number }}</span>
                     </div>
                     <div>
-                        <label for="requested_room_id" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Choose New Room</label>
+                        <label for="requested_room_id" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ __('Choose New Room') }}</label>
                         <select id="requested_room_id" name="requested_room_id" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" required>
                             <option value="">Select room</option>
                             @foreach($availableRooms as $room)
@@ -31,17 +31,17 @@
                         </select>
                     </div>
                     <div>
-                        <label for="reason" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Reason (optional)</label>
+                        <label for="reason" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">{{ __("Reason (optional)") }}</label>
                         <textarea id="reason" name="reason" rows="3" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"></textarea>
                     </div>
-                    <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 font-medium">Submit Request</button>
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 font-medium">{{ __("Submit Request") }}</button>
                 </form>
             @endif
         </section>
 
         <section class="uniform-card overflow-hidden">
             <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">My Room Change Requests</h2>
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ __('My Room Change Requests') }}</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[900px]">
@@ -49,10 +49,10 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Current Room</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Requested Room</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __("Status") }}</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Reason</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Manager Feedback</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">{{ __("Date") }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
@@ -79,7 +79,7 @@
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{{ $request->created_at->format('M d, Y') }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="px-6 py-8 text-center text-slate-600 dark:text-slate-300">No requests yet.</td></tr>
+                            <tr><td colspan="6" class="px-6 py-8 text-center text-slate-600 dark:text-slate-300">{{ __("No requests yet.") }}</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -88,4 +88,3 @@
         </section>
     </div>
 </x-dashboard-layout>
-

@@ -1,0 +1,146 @@
+Universal Hostel Management System - Deployment Guide
+=====================================================
+
+This package is prepared for shared hosting panels and VPS panels:
+- cPanel
+- aaPanel
+- DirectAdmin
+- Other Apache/Nginx servers
+
+Important
+---------
+1) Do NOT use your local .env file in production.
+2) Use PHP 8.2+.
+3) Point web root to the Laravel public directory.
+4) Use a real database (MySQL/MariaDB/PostgreSQL) for production.
+
+Package Content Notes
+---------------------
+- This package includes project code and dependencies.
+- It excludes local secrets and development artifacts.
+- You must create your own production .env on the server.
+
+========================================
+A) cPanel Deployment
+========================================
+1. Upload zip to your account (File Manager), for example:
+   /home/youruser/
+2. Extract to:
+   /home/youruser/hostel
+3. Create a subdomain/domain and set Document Root to:
+   /home/youruser/hostel/public
+4. Create database + user in MySQL Database Wizard.
+5. Copy .env.example to .env:
+   cp /home/youruser/hostel/.env.example /home/youruser/hostel/.env
+6. Edit .env values:
+   APP_NAME, APP_URL, DB_*, MAIL_*, APP_ENV=production, APP_DEBUG=false
+7. In Terminal (or SSH), run:
+   cd /home/youruser/hostel
+   php artisan key:generate --force
+   php artisan migrate --force
+   php artisan db:seed --force
+   php artisan storage:link
+   php artisan optimize:clear
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+8. Set permissions:
+   chmod -R 775 storage bootstrap/cache
+
+========================================
+B) aaPanel Deployment
+========================================
+1. Create website in aaPanel.
+2. Set site root to:
+   /www/wwwroot/hostel/public
+3. Upload and extract project to:
+   /www/wwwroot/hostel
+4. Create database/user from aaPanel.
+5. Create .env from .env.example and configure production values.
+6. In aaPanel terminal:
+   cd /www/wwwroot/hostel
+   php artisan key:generate --force
+   php artisan migrate --force
+   php artisan db:seed --force
+   php artisan storage:link
+   php artisan optimize:clear
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+7. Permissions:
+chown -R www:www /www/wwwroot/hostel
+
+========================================
+SYSTEM UPDATE MANIFEST DOCUMENTATION
+========================================
+For developer update flow (manifest.json + update package setup), see:
+UPDATE-MANIFEST-INSTRUCTIONS.txt
+   chmod -R 775 /www/wwwroot/hostel/storage /www/wwwroot/hostel/bootstrap/cache
+
+========================================
+C) DirectAdmin Deployment
+========================================
+1. Upload zip under your domain path, extract to:
+   /home/username/domains/yourdomain.com/hostel
+2. Set public_html/document root to:
+   /home/username/domains/yourdomain.com/hostel/public
+3. Create database/user in DirectAdmin.
+4. Create .env from .env.example and set production values.
+5. SSH/Terminal commands:
+   cd /home/username/domains/yourdomain.com/hostel
+   php artisan key:generate --force
+   php artisan migrate --force
+   php artisan db:seed --force
+   php artisan storage:link
+   php artisan optimize:clear
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+6. Permissions:
+   chmod -R 775 storage bootstrap/cache
+
+========================================
+D) Generic Linux (Nginx/Apache) Deployment
+========================================
+1. Upload and extract project to server path, e.g.:
+   /var/www/hostel
+2. Configure vhost root to:
+   /var/www/hostel/public
+3. Create .env from .env.example and configure.
+4. Run:
+   cd /var/www/hostel
+   php artisan key:generate --force
+   php artisan migrate --force
+   php artisan db:seed --force
+   php artisan storage:link
+   php artisan optimize:clear
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+5. Set ownership and permissions:
+   chown -R www-data:www-data /var/www/hostel
+   chmod -R 775 storage bootstrap/cache
+
+========================================
+Troubleshooting
+========================================
+1) 500 Error:
+   - Check .env values
+   - Check PHP version/extensions
+   - Check storage/bootstrap/cache permissions
+   - Run: php artisan optimize:clear
+2) Blank page:
+   - Check web root points to /public
+3) Images not loading:
+   - Run: php artisan storage:link
+4) DB errors:
+   - Re-check DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD
+5) Mail/SMS not sending:
+   - Configure MAIL_* and SMS provider settings in app/admin panel
+
+Post-Deployment Security
+------------------------
+1) APP_DEBUG=false
+2) Use HTTPS SSL certificate
+3) Restrict access to .env
+4) Schedule backups

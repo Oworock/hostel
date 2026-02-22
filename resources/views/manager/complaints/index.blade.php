@@ -1,4 +1,4 @@
-<x-dashboard-layout title="Complaints">
+<x-dashboard-layout :title="__('Complaints')">
     <x-slot name="sidebar">
         @include('components.manager-sidebar')
     </x-slot>
@@ -7,7 +7,7 @@
         <section class="uniform-header">
             <div>
                 <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Complaints Queue</h1>
-                <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">Only complaints from students in your assigned hostels are visible.</p>
+                <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">{{ __('Only complaints from students in your assigned hostels are visible.') }}</p>
             </div>
         </section>
 
@@ -63,7 +63,7 @@
                         </div>
                         <div class="md:col-span-2 flex flex-col gap-3">
                             <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Status</label>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">{{ __("Status") }}</label>
                                 <select name="status" class="mt-1 w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg px-3 py-2">
                                     @foreach(['open' => 'Open', 'in_progress' => 'In Progress', 'resolved' => 'Resolved', 'closed' => 'Closed'] as $value => $label)
                                         <option value="{{ $value }}" @selected(old('status', $complaint->status) === $value)>{{ $label }}</option>

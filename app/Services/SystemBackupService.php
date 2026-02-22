@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Connection;
 use ZipArchive;
 
 class SystemBackupService
@@ -285,22 +286,147 @@ class SystemBackupService
     private function restoreDatabaseFromDump(string $dbDumpPath): void
     {
         $sql = File::get($dbDumpPath);
-        $statements = preg_split("/;\s*\n/", (string) $sql) ?: [];
+        $connection = DB::connection();
+        $driver = $connection->getDriverName();
+        $statements = $this->splitSqlStatements((string) $sql);
 
-        DB::beginTransaction();
+        $this->prepareDatabaseForRestore($connection, $driver);
         try {
             foreach ($statements as $statement) {
                 $statement = trim($statement);
-                if ($statement === '' || str_starts_with($statement, '--')) {
+                if ($statement === '') {
                     continue;
                 }
 
-                DB::unprepared($statement . ';');
+                $connection->unprepared($statement . ';');
             }
-            DB::commit();
         } catch (\Throwable $exception) {
-            DB::rollBack();
             throw $exception;
+        } finally {
+            $this->restoreDatabaseSafetyFlags($connection, $driver);
+        }
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function splitSqlStatements(string $sql): array
+    {
+        $sql = preg_replace('/^\s*--.*$/m', '', $sql) ?? $sql;
+        $sql = preg_replace('/^\s*\/\*.*?\*\/\s*$/ms', '', $sql) ?? $sql;
+
+        $statements = [];
+        $buffer = '';
+        $inSingle = false;
+        $inDouble = false;
+        $inBacktick = false;
+        $escape = false;
+        $length = strlen($sql);
+
+        for ($i = 0; $i < $length; $i++) {
+            $char = $sql[$i];
+
+            if ($escape) {
+                $buffer .= $char;
+                $escape = false;
+                continue;
+            }
+
+            if ($char === '\\') {
+                $buffer .= $char;
+                $escape = true;
+                continue;
+            }
+
+            if ($char === "'" && !$inDouble && !$inBacktick) {
+                $inSingle = !$inSingle;
+                $buffer .= $char;
+                continue;
+            }
+
+            if ($char === '"' && !$inSingle && !$inBacktick) {
+                $inDouble = !$inDouble;
+                $buffer .= $char;
+                continue;
+            }
+
+            if ($char === '`' && !$inSingle && !$inDouble) {
+                $inBacktick = !$inBacktick;
+                $buffer .= $char;
+                continue;
+            }
+
+            if ($char === ';' && !$inSingle && !$inDouble && !$inBacktick) {
+                $statement = trim($buffer);
+                if ($statement !== '') {
+                    $statements[] = $statement;
+                }
+                $buffer = '';
+                continue;
+            }
+
+            $buffer .= $char;
+        }
+
+        $tail = trim($buffer);
+        if ($tail !== '') {
+            $statements[] = $tail;
+        }
+
+        return $statements;
+    }
+
+    private function prepareDatabaseForRestore(Connection $connection, string $driver): void
+    {
+        if ($driver === 'sqlite') {
+            $connection->statement('PRAGMA foreign_keys = OFF');
+            $tables = collect($connection->select("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"))
+                ->pluck('name')
+                ->all();
+
+            foreach ($tables as $table) {
+                $name = str_replace('"', '""', (string) $table);
+                $connection->statement("DROP TABLE IF EXISTS \"{$name}\"");
+            }
+
+            return;
+        }
+
+        if ($driver === 'mysql') {
+            $connection->statement('SET FOREIGN_KEY_CHECKS=0');
+            $tables = collect($connection->select('SHOW TABLES'))
+                ->map(fn ($row) => (string) array_values((array) $row)[0])
+                ->all();
+
+            foreach ($tables as $table) {
+                $name = str_replace('`', '``', (string) $table);
+                $connection->statement("DROP TABLE IF EXISTS `{$name}`");
+            }
+
+            return;
+        }
+
+        if ($driver === 'pgsql') {
+            $tables = collect($connection->select("SELECT tablename FROM pg_tables WHERE schemaname = 'public'"))
+                ->pluck('tablename')
+                ->all();
+
+            foreach ($tables as $table) {
+                $name = str_replace('"', '""', (string) $table);
+                $connection->statement("DROP TABLE IF EXISTS \"{$name}\" CASCADE");
+            }
+        }
+    }
+
+    private function restoreDatabaseSafetyFlags(Connection $connection, string $driver): void
+    {
+        if ($driver === 'sqlite') {
+            $connection->statement('PRAGMA foreign_keys = ON');
+            return;
+        }
+
+        if ($driver === 'mysql') {
+            $connection->statement('SET FOREIGN_KEY_CHECKS=1');
         }
     }
 

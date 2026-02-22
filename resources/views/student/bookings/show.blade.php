@@ -1,14 +1,14 @@
-<x-dashboard-layout title="Booking Details">
+<x-dashboard-layout :title="__('Booking Details')">
     <x-slot name="sidebar">
         @include('components.student-sidebar')
     </x-slot>
 
     <div class="uniform-page">
-        <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">Booking Details</h1>
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100">{{ __("Booking Details") }}</h1>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section class="uniform-card p-6">
-                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Room Information</h2>
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">{{ __("Room Information") }}</h2>
                 <dl class="space-y-3">
                     <div><dt class="text-sm text-slate-500 dark:text-slate-400">Room Number</dt><dd class="font-semibold text-slate-900 dark:text-slate-100">{{ $booking->room->room_number }}</dd></div>
                     <div><dt class="text-sm text-slate-500 dark:text-slate-400">Room Type</dt><dd class="font-semibold text-slate-900 dark:text-slate-100">{{ ucfirst($booking->room->type) }}</dd></div>
@@ -18,10 +18,10 @@
             </section>
 
             <section class="uniform-card p-6">
-                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Booking Status</h2>
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">{{ __("Booking Status") }}</h2>
                 <div class="space-y-3">
                     <div>
-                        <p class="text-sm text-slate-500 dark:text-slate-400">Status</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">{{ __("Status") }}</p>
                         <span class="inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold
                             @if($booking->status === 'approved') bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300
                             @elseif($booking->status === 'pending') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300
@@ -39,18 +39,18 @@
         </div>
 
         <section class="uniform-card p-6">
-            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Stay Duration</h2>
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">{{ __("Stay Duration") }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div class="rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3">
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Check-in Date</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ __("Check-in Date") }}</p>
                     <p class="font-semibold text-slate-900 dark:text-slate-100">{{ $booking->check_in_date->format('M d, Y') }}</p>
                 </div>
                 <div class="rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3">
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Check-out Date</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ __("Check-out Date") }}</p>
                     <p class="font-semibold text-slate-900 dark:text-slate-100">{{ $booking->check_out_date?->format('M d, Y') ?? '-' }}</p>
                 </div>
                 <div class="rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3">
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Duration</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ __("Duration") }}</p>
                     <p class="font-semibold text-slate-900 dark:text-slate-100">
                         @if($booking->check_out_date)
                             {{ $booking->check_in_date->diffInDays($booking->check_out_date) }} days
@@ -63,22 +63,22 @@
         </section>
 
         <section class="uniform-card p-6">
-            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Payment Information</h2>
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">{{ __("Payment Information") }}</h2>
             @php
                 $paidAmount = $booking->payments->where('status', 'paid')->sum('amount');
                 $outstandingAmount = max(0, (float) $booking->total_amount - (float) $paidAmount);
             @endphp
             <div class="space-y-3">
                 <div class="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700">
-                    <span class="text-slate-600 dark:text-slate-300">Total Amount</span>
+                    <span class="text-slate-600 dark:text-slate-300">{{ __("Total Amount") }}</span>
                     <span class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ formatCurrency($booking->total_amount) }}</span>
                 </div>
                 <div class="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700">
-                    <span class="text-slate-600 dark:text-slate-300">Paid Amount</span>
+                    <span class="text-slate-600 dark:text-slate-300">{{ __("Paid Amount") }}</span>
                     <span class="font-semibold text-green-700 dark:text-green-400">{{ formatCurrency($paidAmount) }}</span>
                 </div>
                 <div class="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700">
-                    <span class="text-slate-600 dark:text-slate-300">Outstanding Amount</span>
+                    <span class="text-slate-600 dark:text-slate-300">{{ __("Outstanding Amount") }}</span>
                     <span class="font-semibold {{ $outstandingAmount > 0 ? 'text-red-700 dark:text-red-400' : 'text-green-700 dark:text-green-400' }}">
                         {{ formatCurrency($outstandingAmount) }}
                     </span>
@@ -86,7 +86,7 @@
 
                 @if($booking->payments->isNotEmpty())
                     <div class="pt-2">
-                        <h3 class="font-semibold text-slate-900 dark:text-slate-100 mb-2">Payment History</h3>
+                        <h3 class="font-semibold text-slate-900 dark:text-slate-100 mb-2">{{ __("Payment History") }}</h3>
                         <div class="space-y-2">
                             @foreach($booking->payments as $payment)
                                 <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
@@ -108,7 +108,7 @@
                     </div>
                 </div>
                 @else
-                    <p class="text-slate-600 dark:text-slate-300">No payments recorded yet.</p>
+                    <p class="text-slate-600 dark:text-slate-300">{{ __("No payments recorded yet.") }}</p>
                 @endif
 
                 @if($outstandingAmount > 0 && in_array($booking->status, ['pending', 'approved']))
@@ -123,7 +123,7 @@
                         ];
                     @endphp
                     <div id="payment-gateway-actions" class="pt-4 border-t border-slate-200 dark:border-slate-700">
-                        <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">Complete payment to conclude your booking.</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">{{ __('Complete payment to conclude your booking.') }}</p>
                         <div class="flex flex-wrap gap-3">
                             @forelse($activeGateways as $gatewayKey => $gatewayRecord)
                                 <form method="POST" action="{{ route('student.payments.initialize', ['booking' => $booking->id, 'gateway' => $gatewayKey]) }}">
@@ -133,7 +133,7 @@
                                     </button>
                                 </form>
                             @empty
-                                <p class="text-sm text-red-600 dark:text-red-400">No active payment gateway is configured by admin.</p>
+                                <p class="text-sm text-red-600 dark:text-red-400">{{ __('No active payment gateway is configured by admin.') }}</p>
                             @endforelse
                         </div>
                     </div>
@@ -155,25 +155,25 @@
         @endphp
 
         <div class="flex items-center justify-between">
-            <a href="{{ route('student.bookings.index') }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">Back to My Bookings</a>
+            <a href="{{ route('student.bookings.index') }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">{{ __("Back to My Bookings") }}</a>
 
             <div class="flex items-center gap-3">
                 @if($booking->isFullyPaid())
-                    <a href="{{ route('student.bookings.receipt', $booking) }}" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 font-medium">Download Receipt</a>
+                    <a href="{{ route('student.bookings.receipt', $booking) }}" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 font-medium">{{ __("Download Receipt") }}</a>
                 @endif
 
                 @if($canPay)
                     <form method="POST" action="{{ route('student.payments.initialize', ['booking' => $booking->id, 'gateway' => $preferredGateway]) }}" class="inline">
                         @csrf
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium">Pay Now</button>
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium">{{ __("Pay Now") }}</button>
                     </form>
                 @endif
 
                 @if($canCancel)
-                    <form method="POST" action="{{ route('student.bookings.cancel', $booking) }}" onsubmit="return confirm('Are you sure you want to cancel this booking?')" class="inline">
+                    <form method="POST" action="{{ route('student.bookings.cancel', $booking) }}" onsubmit="return confirm(@js(__('Are you sure you want to cancel this booking?')))" class="inline">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="bg-red-600 text-white px-6 py-2.5 rounded-lg hover:bg-red-700 font-medium">Cancel Booking</button>
+                        <button type="submit" class="bg-red-600 text-white px-6 py-2.5 rounded-lg hover:bg-red-700 font-medium">{{ __("Cancel Booking") }}</button>
                     </form>
                 @endif
             </div>

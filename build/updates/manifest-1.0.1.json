@@ -1,0 +1,5 @@
+{
+  "version": "1.0.1",
+  "zip_url": "https://oworock.com/hostel/packages/hostel-1.0.1.zip",
+  "notes": "Stability update: MySQL-safe addon migration identifiers, cleaner student/manager sidebar layout, and packaging refinements."
+}
